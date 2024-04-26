@@ -29,4 +29,14 @@ class Product extends Model
     {
         return $this->belongsToMany(Pembeli::class, 'pesanan', 'id_produk', 'id_pembeli');
     }
+
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
+    }
+
+    public function petani()
+    {
+        return $this->belongsTo(Petani::class, 'id_petani', 'id_petani');
+    }
 }

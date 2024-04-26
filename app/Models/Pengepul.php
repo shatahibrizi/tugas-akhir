@@ -25,4 +25,9 @@ class Pengepul extends Model
     {
         return $this->belongsToMany(Product::class, 'tambah_produk', 'id_pengepul', 'id_produk');
     }
+
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'id_admin', 'id_admin');
+    }
 }

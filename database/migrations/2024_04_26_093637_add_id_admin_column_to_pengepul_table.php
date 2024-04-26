@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            //
+        Schema::table('users', function (Blueprint $table) {
+            $table->unsignedBigInteger('id_admin')->required();
+            $table->foreign('id_admin')->references('id_admin')->on('admin')->onDelete('restrict');
         });
     }
 
@@ -21,8 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            //
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['id_admin']);
+            $table->dropColumn('id_admin');
         });
     }
 };
