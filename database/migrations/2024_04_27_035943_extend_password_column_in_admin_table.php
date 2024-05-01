@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('petani', function (Blueprint $table) {
-            $table->unsignedBigInteger('id_admin');
-            $table->foreign('id_admin')->references('id_admin')->on('admin')->onDelete('restrict');
+        Schema::table('admin', function (Blueprint $table) {
+            $table->string('password', 255)->change();
         });
     }
 
@@ -22,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('petani', function (Blueprint $table) {
-            $table->dropForeign(['id_admin']);
-            $table->dropColumn('id_admin');
+        Schema::table('admin', function (Blueprint $table) {
+            $table->string('password', 20)->change();
         });
     }
 };

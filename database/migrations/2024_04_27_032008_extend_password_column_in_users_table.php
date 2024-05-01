@@ -12,19 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('id_admin');
-            $table->foreign('id_admin')->references('id_admin')->on('admin')->onDelete('restrict');
+            $table->string('password', 255)->change();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['id_admin']);
-            $table->dropColumn('id_admin');
+            $table->string('password', 20)->change();
         });
     }
 };

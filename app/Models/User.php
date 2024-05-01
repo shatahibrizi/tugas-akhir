@@ -12,22 +12,29 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    protected $primaryKey = 'id_pengepul';
+    protected $attributes = [
+        'id_admin' => 1,
+    ];
+
+    public function isUser()
+    {
+        return true;
+    }
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'username',
-        'firstname',
-        'lastname',
+        'nama',
         'email',
+        'username',
+        'alamat',
         'password',
-        'address',
-        'city',
-        'country',
-        'postal',
-        'about'
+        'no_hp',
+        'no_rek',
+        'foto_profil',
     ];
 
     /**
@@ -53,8 +60,8 @@ class User extends Authenticatable
      * Always encrypt the password when it is updated.
      *
      * @param $value
-    * @return string
-    */
+     * @return string
+     */
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = bcrypt($value);

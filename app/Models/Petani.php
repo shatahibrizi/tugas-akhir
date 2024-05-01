@@ -9,7 +9,7 @@ class Petani extends Model
 {
     use HasFactory;
 
-    protected $table = 'kategori';
+    protected $table = 'petani';
     protected $fillable = [
         'nama',
         'alamat',
@@ -20,7 +20,7 @@ class Petani extends Model
         'grup_petani',
     ];
 
-    function product()
+    function products()
     {
         return $this->hasMany(Product::class, 'id_petani', 'id_petani');
     }

@@ -14,10 +14,13 @@ class Product extends Model
         'nama_produk',
         'deskripsi',
         'harga',
+        'id_petani',
+        'id_kategori',
         'jumlah',
         'estimasi_busuk',
         'foto_produk',
         'grade',
+
     ];
 
     public function pengepul()
@@ -30,13 +33,13 @@ class Product extends Model
         return $this->belongsToMany(Pembeli::class, 'pesanan', 'id_produk', 'id_pembeli');
     }
 
-    public function kategori()
-    {
-        return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
-    }
-
     public function petani()
     {
         return $this->belongsTo(Petani::class, 'id_petani', 'id_petani');
+    }
+
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
     }
 }
