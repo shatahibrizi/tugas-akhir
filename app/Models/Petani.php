@@ -10,6 +10,7 @@ class Petani extends Model
     use HasFactory;
 
     protected $table = 'petani';
+    protected $primaryKey = 'id_petani';
     protected $fillable = [
         'nama',
         'alamat',

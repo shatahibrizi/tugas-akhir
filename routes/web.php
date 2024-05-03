@@ -51,9 +51,19 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/profile-static', [PageController::class, 'profile'])->name('profile-static');
 	Route::get('/sign-in-static', [PageController::class, 'signin'])->name('sign-in-static');
 	Route::get('/sign-up-static', [PageController::class, 'signup'])->name('sign-up-static');
-	Route::get('/product-table', [ProductController::class, 'index'])->name('product-table');
-	Route::get('/product-add', [ProductController::class, 'create'])->name('product-table');
-	Route::post('/product', [ProductController::class, 'store'])->name('product.store');
+
+	// Product CRUD routes
+	Route::get('/products', [ProductController::class, 'index'])->name('product');
+	Route::get('/product-add', [ProductController::class, 'create'])->name('product-add');
+	Route::post('/products', [ProductController::class, 'store'])->name('product.store');
+	Route::get('/product-detail/{id_produk}', [ProductController::class, 'show'])->name('product-detail');
+	Route::get('/product-edit/{id_produk}', [ProductController::class, 'edit'])->name('product.edit');
+	Route::put('/product/{id_produk}', [ProductController::class, 'update'])->name('product.update');
+	Route::delete('/product-delete/{id_produk}', [ProductController::class, 'destroy'])->name('product.delete');
+	Route::get('/product-deleted-list', [ProductController::class, 'deletedProduct']);
+	Route::get('/product/{id}/restore', [ProductController::class, 'restore']);
+
+
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });
