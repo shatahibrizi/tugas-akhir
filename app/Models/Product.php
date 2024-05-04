@@ -22,7 +22,6 @@ class Product extends Model
         'estimasi_busuk',
         'foto_produk',
         'grade',
-
     ];
 
     public function pengepul()

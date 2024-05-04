@@ -35,7 +35,7 @@
                     <option value="10000 - 50000">10000 - 50000</option>
                     <option value="Above 50000">Above 50000</option>
                   </select>
-                  <select name="petani" class="form-select" id="petani" style="width: 10%;">
+                  <select name="kategori" class="form-select" id="kategori" style="width: 10%;">
                     <!-- Menyesuaikan lebar select -->
                     <option value="" selected disabled hidden>Kategori</option>
                     @foreach ($kategori as $item)
@@ -88,7 +88,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  @foreach ($products as $item)
+                  @forelse ($products as $item)
                     <tr>
                       <td>
                         <p class="font-weight-bold mb-0 ms-3 text-xs">
@@ -151,31 +151,37 @@
                         </div>
                       </td>
                     </tr>
-                  @endforeach
+                    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                      aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <form action="{{ route('product.delete', ['id_produk' => $item->id_produk]) }}"
+                            method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <div class="modal-header">
+                              <h1 class="modal-title fs-5" id="exampleModalLabel">Hapus produk</h1>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <input type="hidden" name="product_delete_id" id="product_id">
+                              <p>Apakah anda yakin akan menghapus data?</p>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="submit" class="btn btn-danger">Yes delete</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  @empty
+                    <tr>
+                      <td colspan="8" class="text-center">Tidak ada produk tersedia.</td>
+                    </tr>
+                  @endforelse
                 </tbody>
               </table>
-              <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <form action="{{ route('product.delete', ['id_produk' => $item->id_produk]) }}" method="POST">
-                      @csrf
-                      @method('DELETE')
-                      <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Hapus produk</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        <input type="hidden" name="product_delete_id" id="product_id">
-                        <p>Apakah anda yakin akan menghapus data?</p>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="submit" class="btn btn-danger">Yes delete</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>

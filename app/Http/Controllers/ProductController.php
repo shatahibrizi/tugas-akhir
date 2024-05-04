@@ -6,12 +6,18 @@ use App\Models\Petani;
 use App\Models\Product;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
     function index(Request $request)
     {
+        // Mengambil id_pengepul dari user yang saat ini masuk
+        $id_pengepul = auth()->user()->id_pengepul;
+        // dd($id_pengepul);
+
         // Mengambil parameter dari permintaan HTTP
         $keyword = $request->keyword;
         $filter = $request->filter;
@@ -21,6 +27,16 @@ class ProductController extends Controller
 
         // Membangun kueri database untuk produk
         $productQuery = Product::query();
+
+        $productQuery = Product::whereExists(function ($query) use ($id_pengepul) {
+            $query->select(DB::raw(1))
+                ->from('users')
+                ->join('tambah_produk', 'users.id_pengepul', '=', 'tambah_produk.id_pengepul')
+                ->whereColumn('products.id_produk', 'tambah_produk.id_produk')
+                ->where('users.id_pengepul', $id_pengepul);
+        });
+
+
 
         // Filter berdasarkan kata kunci
         if ($keyword) {
@@ -98,9 +114,9 @@ class ProductController extends Controller
             $request['foto_produk'] = $newName;
         }
         $request['foto_produk'] = $newName;
+
         $product = Product::create([
             'nama_produk' => $request->nama_produk,
-            // Sisipkan nama file yang benar ke dalam kolom 'foto_produk'
             'foto_produk' => $newName,
             'deskripsi' => $request->deskripsi,
             'harga' => $request->harga,
@@ -109,8 +125,14 @@ class ProductController extends Controller
             'id_kategori' => $request->id_kategori,
             'id_petani' => $request->id_petani,
         ]);
-        // dd($product);
+
+        $date = now();
+
         if ($product) {
+            $product->pengepul()->attach(auth()->user()->id_pengepul, [
+                'jumlah' => $request->jumlah,
+                'tanggal' => $date,
+            ]);
             session()->flash('status', 'success');
             session()->flash('message', 'add data success!');
         }

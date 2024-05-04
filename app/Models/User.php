@@ -66,4 +66,9 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = bcrypt($value);
     }
+
+    public function product()
+    {
+        return $this->belongsToMany(Product::class, 'tambah_produk', 'id_pengepul', 'id_produk');
+    }
 }
