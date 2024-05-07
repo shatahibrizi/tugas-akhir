@@ -1,7 +1,7 @@
 @extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-  @include('layouts.navbars.auth.topnav', ['title' => 'Product Table'])
+  @include('layouts.navbars.auth.topnav', ['title' => 'Petani Table'])
 
   {{-- Modal --}}
 
@@ -10,9 +10,9 @@
       <div class="col-12">
         <div class="card mb-4">
           <div class="card-header d-flex justify-content-between align-items-center pb-0">
-            <h6>Tabel Produk</h6>
+            <h6>Tabel Petani</h6>
             <div class="col-auto">
-              <a href="product-add" class="btn btn-dark">Tambah Produk</a>
+              <a href="product-add" class="btn btn-dark">Tambah Petani</a>
             </div>
           </div>
           @if (Session::has('status'))
@@ -20,46 +20,6 @@
               {{ Session::get('message') }}
             </div>
           @endif
-          <div class="card-header d-flex align-items-start py-0">
-            <div class="col-10"> <!-- Menggunakan grid kolom penuh untuk memperbesar form -->
-              <form action="" method="GET">
-                <div class="input-group align-items-center"> <!-- Menambahkan kelas align-items-center -->
-                  <input type="text" class="form-control" name="keyword" placeholder="Keyword" style="width: 40%;">
-                  <!-- Menyesuaikan lebar input -->
-                  <button class="input-group-text btn btn-dark mt-3">Search</button>
-                  <select name="price_filter" class="form-select" id="price_filter" style="width: 10%;">
-                    <!-- Menyesuaikan lebar select -->
-                    <option value="" selected disabled hidden>Price</option>
-                    <option value="Below 10000">Below 10000</option>
-                    <option value="10000 - 50000">10000 - 50000</option>
-                    <option value="Above 50000">Above 50000</option>
-                  </select>
-                  <select name="kategori" class="form-select" id="kategori" style="width: 10%;">
-                    <!-- Menyesuaikan lebar select -->
-                    <option value="" selected disabled hidden>Kategori</option>
-                    @foreach ($kategori as $item)
-                      <option value="{{ $item }}">{{ $item }}</option>
-                    @endforeach
-                  </select>
-                  <select name="filter" class="form-select" id="filter" style="width: 10%;">
-                    <!-- Menyesuaikan lebar select -->
-                    <option value="" selected disabled hidden>Grade</option>
-                    <option value="A">A</option>
-                    <option value="B">B</option>
-                    <option value="C">C</option>
-                  </select>
-                  <select name="petani" class="form-select" id="petani" style="width: 10%;">
-                    <!-- Menyesuaikan lebar select -->
-                    <option value="" selected disabled hidden>Petani</option>
-                    @foreach ($petani as $item)
-                      <option value="{{ $item }}">{{ $item }}</option>
-                    @endforeach
-                  </select>
-                </div>
-              </form>
-            </div>
-          </div>
-
           {{-- {{ $productList['petani']['nama'] }} --}}
           <div class="card-body px-0 pb-2 pt-0">
             <div class="table-responsive p-0">
@@ -86,11 +46,11 @@
                   </tr>
                 </thead>
                 <tbody>
-                  @forelse ($products as $item)
+                  @forelse ($petani as $item)
                     <tr>
                       <td>
                         <p class="font-weight-bold mb-0 ms-3 text-xs">
-                          {{ $loop->iteration + $products->firstItem() - 1 }}</p>
+                          {{ $loop->iteration + $petani->firstItem() - 1 }}</p>
                       </td>
                       <td>
                         <div class="d-flex px-2 py-1">
@@ -105,43 +65,46 @@
 
                           </div>
                           <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">{{ $item->nama_produk }}</h6>
+                            <h6 class="mb-0 text-sm">{{ $item->nama }}</h6>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <p class="font-weight-bold mb-0 text-sm">Rp. {{ $item->harga }}</p>
+                        <p class="font-weight-bold mb-0 text-sm">Rp. {{ $item->alamat }}</p>
                         {{-- <p class="text-secondary mb-0 text-sm">/Kg</p> --}}
                       </td>
                       {{-- <td class="text-center align-middle text-sm">
                         <span class="badge badge-sm bg-gradient-success">Online</span>
                       </td> --}}
                       <td class="text-center align-middle">
-                        <span class="text-secondary font-weight-bold text-sm">{{ $item->jumlah }}</span>
+                        <span class="text-secondary font-weight-bold text-sm">{{ $item->no_hp }}</span>
                       </td>
                       <td class="text-center align-middle">
-                        <span class="text-secondary font-weight-bold text-sm">{{ $item->grade }}</span>
+                        <span class="text-secondary font-weight-bold text-sm">{{ $item->lokasi_lahan }}</span>
                       </td>
                       <td class="text-center align-middle">
+                        <span class="text-secondary font-weight-bold text-sm">{{ $item->grup_petani }}</span>
+                      </td>
+                      {{-- <td class="text-center align-middle">
                         <span class="text-secondary font-weight-bold text-sm">{{ $item['kategori']['nama'] }}</span>
                       </td>
                       <td class="text-center align-middle">
                         <span class="text-secondary font-weight-bold text-sm">{{ $item['petani']['nama'] }}</span>
-                      </td>
+                      </td> --}}
                       <td class="pe-4 align-middle">
                         <div class="d-flex align-items-center">
                           <!-- Tombol Edit -->
-                          <a href="product-edit/{{ $item->id_produk }}" class="text-secondary font-weight-bold text-md"
+                          <a href="product-edit/{{ $item->id_petani }}" class="text-secondary font-weight-bold text-md"
                             data-toggle="tooltip" data-original-title="Edit user">
                             <i class="fa fa-pencil-square-o text-success text-sm opacity-10" aria-hidden="true"></i>
                           </a>
                           <!-- Tombol Hapus -->
                           <button type="button" class="btn btn-link deleteProductBtn pt-4"
-                            value="{{ $item->id_produk }}">
+                            value="{{ $item->id_petani }}">
                             <i class="fa fa-trash text-danger text-md opacity-10"></i>
                           </button>
                           <!-- Tombol Detail -->
-                          <a href="product-detail/{{ $item->id_produk }}"
+                          <a href="product-detail/{{ $item->id_petani }}"
                             class="text-secondary font-weight-bold text-center" data-toggle="tooltip"
                             data-original-title="Edit user">
                             <i class="fa fa-info-circle text-dark text-sm opacity-10"></i>
@@ -153,8 +116,7 @@
                       aria-hidden="true">
                       <div class="modal-dialog">
                         <div class="modal-content">
-                          <form action="{{ route('product.delete', ['id_produk' => $item->id_produk]) }}"
-                            method="POST">
+                          <form action="{{ route('petani.delete', ['id_petani' => $item->id_petani]) }}" method="POST">
                             @csrf
                             @method('DELETE')
                             <div class="modal-header">
@@ -185,7 +147,7 @@
         </div>
       </div>
     </div>
-    {{ $products->withQueryString()->links('pagination::bootstrap-5') }}
+    {{ $petani->withQueryString()->links('pagination::bootstrap-5') }}
     @include('layouts.footers.auth.footer')
   </div>
 @endsection

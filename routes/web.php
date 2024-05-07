@@ -21,13 +21,28 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PetaniController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Middleware\Admin;
+use App\Models\Petani;
 
 Route::get('/', function () {
 	return redirect('/dashboard');
 })->middleware('auth');
+
+// Admin
+Route::prefix('admin')->group(function () {
+	Route::get('/login', [AdminController::class, 'show'])->name('admin_login');
+	Route::post('/login-submit', [AdminController::class, 'login_submit'])->name('admin_login_submit');
+
+	Route::group(['middleware' => 'admin'], function () {
+		Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin_dashboard');
+		Route::get('/{page}', [PageController::class, 'admin'])->name('admin.page');
+		Route::post('/logout', [AdminController::class, 'logout'])->name('admin_logout');
+	});
+});
 
 Route::get('/register', [RegisterController::class, 'create'])->middleware('guest')->name('register');
 Route::post('/register', [RegisterController::class, 'store'])->middleware('guest')->name('register.perform');
@@ -41,9 +56,9 @@ Route::post('/reset-password', [ResetPassword::class, 'send'])->middleware('auth
 Route::get('/change-password', [ChangePassword::class, 'show'])->middleware('auth')->name('change-password');
 Route::post('/change-password', [ChangePassword::class, 'update'])->middleware('auth')->name('change.perform');
 
-Route::get('/dashboard', [HomeController::class, 'index'])->name('home')->middleware('auth');
+Route::get('/dashboard', [HomeController::class, 'index'])->name('home')->middleware(['auth']);
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => 'auth:admin,web,'], function () {
 	Route::get('/virtual-reality', [PageController::class, 'vr'])->name('virtual-reality');
 	Route::get('/rtl', [PageController::class, 'rtl'])->name('rtl');
 	Route::get('/profile', [UserProfileController::class, 'show'])->name('profile');
@@ -60,22 +75,16 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/product-edit/{id_produk}', [ProductController::class, 'edit'])->name('product.edit');
 	Route::put('/product/{id_produk}', [ProductController::class, 'update'])->name('product.update');
 	Route::delete('/product-delete/{id_produk}', [ProductController::class, 'destroy'])->name('product.delete');
-	Route::get('/product-deleted-list', [ProductController::class, 'deletedProduct']);
-	Route::get('/product/{id}/restore', [ProductController::class, 'restore']);
 
+	// Petani CRUD routes
+	Route::get('/petani', [PetaniController::class, 'index'])->name('petani');
+	Route::get('/petani-add', [PetaniController::class, 'create'])->name('petani-add');
+	Route::post('/petani', [PetaniController::class, 'store'])->name('petani.store');
+	Route::get('/petani-detail/{id_petani}', [PetaniController::class, 'show'])->name('petani-detail');
+	Route::get('/petani-edit/{id_petani}', [PetaniController::class, 'edit'])->name('petani.edit');
+	Route::put('/petani/{id_petani}', [PetaniController::class, 'update'])->name('petani.update');
+	Route::delete('/petani-delete/{id_petani}', [PetaniController::class, 'destroy'])->name('petani.delete');
 
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });
-
-
-Route::get('/admin/{page}', [PageController::class, 'admin'])->name('admin.page');
-
-
-// Admin
-Route::middleware('admin')->prefix('admin')->group(function () {
-	Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin_dashboard');
-});
-
-Route::get('admin/login', [AdminController::class, 'show'])->name('admin_login');
-Route::post('admin/login-submit', [AdminController::class, 'login_submit'])->name('admin_login_submit');

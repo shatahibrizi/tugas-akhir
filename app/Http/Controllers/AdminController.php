@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,7 +26,7 @@ class AdminController extends Controller
 
     function dashboard()
     {
-        return view('pengepul.dashboard');
+        return view('admin.dashboard');
     }
 
     function show()
@@ -35,38 +36,36 @@ class AdminController extends Controller
 
     public function login_submit(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        $check = $request->all();
-        $data = [
-            'email' => $check['email'],
-            'password' => $check['password']
-        ];
+        $credentials = $request->only('email', 'password');
 
 
-        if (Auth::guard('admin')->attempt($data)) {
+
+        if (auth()->guard('admin')->attempt($credentials)) {
             // Autentikasi berhasil
-            return redirect()->route('admin_dashboard')->with('succes', 'Login succesfully');
+
+            $request->session()->regenerate();
+            \Log::info('Login berhasil');
+            return redirect()->route('admin_dashboard')->with('success', 'Login berhasil');
         } else {
-            return redirect()->route('admin_login')->with('error', 'Invalid credentials');
+            // Autentikasi gagal
+            \Log::info('Login gagal');
+            return redirect()->route('admin_login')->with('error', 'Email atau password salah');
         }
-
-
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
     }
 
-    public function userManagement()
-    {
-        // Logika untuk halaman User Management di sini
-        // Misalnya, ambil data pengguna dari database dan kirimkan ke view
-        $users = \App\Models\User::all(); // Mengambil semua data pengguna dari model User
 
-        return view('admin.user_management', ['users' => $users]);
-        // Anda dapat menyesuaikan view yang digunakan dan data yang dikirimkan sesuai dengan kebutuhan aplikasi Anda
+
+
+    function logout(Request $request)
+    {
+        auth()->guard('admin')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('admin_login')->with('success', 'Logout succesfully');
     }
 }

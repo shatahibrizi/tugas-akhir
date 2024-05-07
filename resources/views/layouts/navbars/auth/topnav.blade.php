@@ -19,15 +19,25 @@
       </div>
       <ul class="navbar-nav justify-content-end">
         <li class="nav-item d-flex align-items-center">
-          <form role="form" method="post" action="{{ route('logout') }}" id="logout-form">
-            @csrf
-            <a href="{{ route('logout') }}"
-              onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-              class="nav-link font-weight-bold px-0 text-white">
-              <i class="fa fa-user me-sm-1"></i>
-              <span class="d-sm-inline d-none">Log out</span>
-            </a>
-          </form>
+          @if (auth()->guard('admin')->check())
+            <form role="form" method="POST" action="{{ route('admin_logout') }}" id="logout-form">
+              @csrf
+              <button type="submit" class="btn btn-link nav-link font-weight-bold mt-3 px-0 text-white">
+                <i class="fa fa-user me-sm-1"></i>
+                <span class="d-sm-inline d-none">Log out</span>
+              </button>
+            </form>
+          @else
+            <form role="form" method="POST" action="{{ route('logout') }}" id="logout-form">
+              @csrf
+              <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                class="nav-link font-weight-bold px-0 text-white">
+                <i class="fa fa-user me-sm-1"></i>
+                <span class="d-sm-inline d-none">Log out</span>
+              </a>
+            </form>
+          @endif
         </li>
         <li class="nav-item d-xl-none d-flex align-items-center ps-3">
           <a href="javascript:;" class="nav-link p-0 text-white" id="iconNavbarSidenav">

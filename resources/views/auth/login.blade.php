@@ -25,14 +25,14 @@
                     @method('post')
                     <div class="mb-3 flex flex-col">
                       <input type="email" name="email" class="form-control form-control-lg"
-                        value="{{ old('email') ?? 'admin@argon.com' }}" aria-label="Email">
+                        value="{{ old('email') ?? 'hibrizi@mail.com' }}" aria-label="Email">
                       @error('email')
                         <p class="text-danger pt-1 text-xs"> {{ $message }} </p>
                       @enderror
                     </div>
                     <div class="mb-3 flex flex-col">
                       <input type="password" name="password" class="form-control form-control-lg" aria-label="Password"
-                        value="secret">
+                        value="12345">
                       @error('password')
                         <p class="text-danger pt-1 text-xs"> {{ $message }} </p>
                       @enderror
@@ -65,12 +65,11 @@
               <div
                 class="position-relative bg-gradient-primary h-100 border-radius-lg d-flex flex-column justify-content-center m-3 overflow-hidden px-7"
                 style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg');
-              background-size: cover;">
+                background-size: cover;">
                 <span class="mask bg-gradient-primary opacity-6"></span>
-                <h4 class="font-weight-bolder position-relative mt-5 text-white">"Attention is the new
-                  currency"</h4>
-                <p class="position-relative text-white">The more effortless the writing looks, the more
-                  effort the writer actually put into the process.</p>
+                <h4 class="font-weight-bolder position-relative mt-5 text-white">"Attention is the new currency"</h4>
+                <p class="position-relative text-white">The more effortless the writing looks, the more effort the writer
+                  actually put into the process.</p>
               </div>
             </div>
           </div>

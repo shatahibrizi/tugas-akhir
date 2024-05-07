@@ -11,8 +11,14 @@ use Laravel\Sanctum\HasApiTokens;
 class Admin extends Authenticatable
 {
     use HasApiTokens, HasFactory;
+    protected $primaryKey = 'id_admin';
     protected $table = 'admin';
     protected $guard = 'admin';
+
+    protected $fillable = [
+        'email',
+        'password'
+    ];
 
     function pengepul()
     {
@@ -22,5 +28,10 @@ class Admin extends Authenticatable
     function petani()
     {
         return $this->hasMany(Petani::class, 'id_admin', 'id_admin');
+    }
+
+    public function isAdmin()
+    {
+        return $this->is_admin;
     }
 }
