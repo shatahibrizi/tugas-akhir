@@ -17,6 +17,8 @@ class User extends Authenticatable
         'id_admin' => 1,
     ];
 
+
+
     public function isUser()
     {
         return true;
@@ -36,6 +38,12 @@ class User extends Authenticatable
         'no_rek',
         'foto_profil',
     ];
+
+
+    public function updateProfile($data)
+    {
+        return $this->fill($data)->save();
+    }
 
     /**
      * The attributes that should be hidden for serialization.

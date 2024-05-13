@@ -18,6 +18,10 @@ class PageController extends Controller
             return view("pengepul.{$page}");
         }
 
+        if (view()->exists("admin.{$page}")) {
+            return view("admin.{$page}");
+        }
+
         return abort(404);
     }
 

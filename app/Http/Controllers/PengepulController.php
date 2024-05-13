@@ -3,35 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Models\Petani;
-use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-class PetaniController extends Controller
+class PengepulController extends Controller
 {
     function index()
     {
         // Mengambil id_pengepul dari user yang saat ini masuk
-        $id_pengepul = auth()->user()->id_pengepul;
+        // $id_pengepul = auth()->user()->id_pengepul;
         // dd($id_pengepul);
 
-        $petani = Petani::paginate(5);
+        $pengepul = User::paginate(5);
+        // dd($pengepul);
 
         // Kirim data ke view
-        return view('pengepul.petani.petani', ['petani' => $petani]);
+        return view('admin.pengepul', ['pengepul' => $pengepul]);
     }
 
-    function show($id_petani)
+    function show($id_pengepul)
     {
-        $petani = Petani::with('products')->findOrFail($id_petani);
-        return view('pengepul.petani.petani-detail', ['petani' => $petani]);
+        $pengepul = User::findOrFail($id_pengepul);
+        return view('admin.pengepul-detail', ['pengepul' => $pengepul]);
     }
 
     function create()
     {
-        $petani = Petani::all();
+        $pengepul = User::all();
 
-        return view('pengepul.petani.petani-add', ['petani' => $petani]);
+        return view('admin.pengepul-add', ['pengepul' => $pengepul]);
     }
 
     function store(Request $request)
@@ -48,56 +49,56 @@ class PetaniController extends Controller
         }
         $request['foto'] = $newName;
 
-        $petani = Petani::create([
+        $pengepul = User::create([
             'nama' => $request->nama,
             'foto' => $newName,
+            'email' => $request->email,
+            'username' => $request->username,
             'alamat' => $request->alamat,
             'no_hp' => $request->no_hp,
-            'luas_lahan' => $request->luas_lahan,
-            'lokasi_lahan' => $request->lokasi_lahan,
-            'grup_petani' => $request->grup_petani,
+            'no_rek' => $request->no_rek,
         ]);
 
         $date = now();
 
-        if ($petani) {
+        if ($pengepul) {
             session()->flash('status', 'success');
             session()->flash('message', 'add data success!');
         }
         return redirect('/petani');
     }
 
-    public function edit(Request $request, $id_petani)
+    public function edit(Request $request, $id_pengepul)
     {
-        $petani = Petani::findOrFail($id_petani);
-        // dd($petani);
-        return view('pengepul.petani.petani-edit', ['petani' => $petani]);
+        $pengepul = User::findOrFail($id_pengepul);
+        // dd($pengepul);
+        return view('admin.pengepul-edit', ['pengepul' => $pengepul]);
     }
 
 
-    function update(Request $request, $id_petani)
+    function update(Request $request, $id_pengepul)
     {
-        $petani = Petani::findOrFail($id_petani);
+        $pengepul = User::findOrFail($id_pengepul);
 
         // Perbarui informasi produk lainnya
-        $petani->update($request->except('foto')); // Hindari menyertakan 'foto_produk' dalam proses update
+        $pengepul->update($request->except('foto')); // Hindari menyertakan 'foto_produk' dalam proses update
 
         // Periksa apakah ada file baru yang diunggah
         if ($request->hasFile('foto')) {
             // Hapus gambar lama jika ada
-            if ($petani->foto) {
-                Storage::delete('foto/' . $petani->foto);
+            if ($pengepul->foto) {
+                Storage::delete('foto/' . $pengepul->foto);
             }
 
             // Simpan gambar baru dan perbarui nama file di basis data
             $extension = $request->file('foto')->getClientOriginalExtension();
             $newName = $request->nama . '-' . now()->timestamp . '.' . $extension;
             $request->file('foto')->storeAs('foto', $newName);
-            $petani->foto = $newName;
+            $pengepul->foto = $newName;
         }
 
         // Simpan perubahan produk
-        $petani->save();
+        $pengepul->save();
 
 
         session()->flash('status', 'success');
@@ -106,13 +107,13 @@ class PetaniController extends Controller
         return redirect('/petani');
     }
 
-    function destroy(Request $request, $id_petani)
+    function destroy(Request $request, $id_pengepul)
     {
-        $deletedPetani = Petani::findOrFail($id_petani);
-        $deletedPetani->delete();
-        if ($deletedPetani) {
+        $deletedPengepul = User::findOrFail($id_pengepul);
+        $deletedPengepul->delete();
+        if ($deletedPengepul) {
             session()->flash('status', 'success');
-            session()->flash('message', 'delete ' . $deletedPetani->nama . ' success!');
+            session()->flash('message', 'delete ' . $deletedPengepul->nama . ' success!');
         }
         return redirect('/petani');
     }

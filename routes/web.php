@@ -13,6 +13,8 @@
 |
 */
 
+use App\Models\Petani;
+use App\Http\Middleware\Admin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResetPassword;
 use App\Http\Controllers\ChangePassword;
@@ -23,14 +25,15 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PetaniController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PengepulController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserProfileController;
-use App\Http\Middleware\Admin;
-use App\Models\Petani;
 
 Route::get('/', function () {
 	return redirect('/dashboard');
 })->middleware('auth');
+
+
 
 // Admin
 Route::prefix('admin')->group(function () {
@@ -58,7 +61,7 @@ Route::post('/change-password', [ChangePassword::class, 'update'])->middleware('
 
 Route::get('/dashboard', [HomeController::class, 'index'])->name('home')->middleware(['auth']);
 
-Route::group(['middleware' => 'auth:admin,web,'], function () {
+Route::group(['middleware' => 'auth:web,admin'], function () {
 	Route::get('/virtual-reality', [PageController::class, 'vr'])->name('virtual-reality');
 	Route::get('/rtl', [PageController::class, 'rtl'])->name('rtl');
 	Route::get('/profile', [UserProfileController::class, 'show'])->name('profile');
@@ -85,6 +88,17 @@ Route::group(['middleware' => 'auth:admin,web,'], function () {
 	Route::put('/petani/{id_petani}', [PetaniController::class, 'update'])->name('petani.update');
 	Route::delete('/petani-delete/{id_petani}', [PetaniController::class, 'destroy'])->name('petani.delete');
 
+	// Pengepul CRUD routes
+	Route::group(['middleware' => 'admin'], function () {
+		Route::get('/pengepul', [PengepulController::class, 'index'])->name('pengepul');
+		Route::get('/pengepul-add', [PengepulController::class, 'create'])->name('pengepul-add');
+		Route::post('/pengepul', [PengepulController::class, 'store'])->name('pengepul.store');
+		Route::get('/pengepul-detail/{id_pengepul}', [PengepulController::class, 'show'])->name('pengepul-detail');
+		Route::get('/pengepul-edit/{id_pengepul}', [PengepulController::class, 'edit'])->name('pengepul.edit');
+		Route::put('/pengepul/{id_pengepul}', [PengepulController::class, 'update'])->name('pengepul.update');
+		Route::delete('/pengepul-delete/{id_pengepul}', [PengepulController::class, 'destroy'])->name('pengepul.delete');
+		Route::get('/{page}', [PageController::class, 'index'])->name('page');
+	});
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });

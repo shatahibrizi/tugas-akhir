@@ -15,27 +15,25 @@ class UserProfileController extends Controller
     public function update(Request $request)
     {
         $attributes = $request->validate([
-            'username' => ['required', 'max:255', 'min:2'],
-            'firstname' => ['max:100'],
-            'lastname' => ['max:100'],
+            'nama' => ['required', 'max:64', 'min:2'],
             'email' => ['required', 'email', 'max:255',  Rule::unique('users')->ignore(auth()->user()->id),],
-            'address' => ['max:100'],
-            'city' => ['max:100'],
-            'country' => ['max:100'],
-            'postal' => ['max:100'],
-            'about' => ['max:255']
+            'alamat' => ['max:100'],
+            'username' => ['max:20'],
+            'no_hp' => ['max:11', 'numeric'],
+            'no_rek' => ['max:11', 'numeric'],
+            'foto_profil' => ['required|image|mimes:jpeg,png,jpg,gif|max:2048'],
         ]);
 
+        dd($attributes);
+
         auth()->user()->update([
-            'username' => $request->get('username'),
-            'firstname' => $request->get('firstname'),
-            'lastname' => $request->get('lastname'),
+            'nama' => $request->get('nama'),
             'email' => $request->get('email'),
-            'address' => $request->get('address'),
-            'city' => $request->get('city'),
-            'country' => $request->get('country'),
-            'postal' => $request->get('postal'),
-            'about' => $request->get('about')
+            'alamat' => $request->get('alamat'),
+            'username' => $request->get('username'),
+            'no_hp' => $request->get('no_hp'),
+            'no_rek' => $request->get('no_rek'),
+            'foto_profil' => $request->get('country'),
         ]);
         return back()->with('succes', 'Profile succesfully updated');
     }

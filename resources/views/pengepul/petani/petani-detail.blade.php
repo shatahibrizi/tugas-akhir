@@ -15,6 +15,16 @@
           </div>
           <div class="card-body">
             <div class="row">
+              <div class="col-md-12 mb-4">
+                <div class="d-flex flex-column align-items-start">
+                  @if ($petani->foto != '')
+                    <img src="{{ asset('storage/foto/' . $petani->foto) }}" class="avatar-xxl rounded"
+                      alt="{{ $petani->nama }}">
+                  @else
+                    <img src="{{ asset('photo/default-product.jpg') }}" class="img-fluid" alt="{{ $petani->nama }}">
+                  @endif
+                </div>
+              </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <x-text-input label="Nama" name="nama" id="nama" value="{{ $petani->nama }}" required
@@ -43,19 +53,6 @@
                 <div class="form-group">
                   <x-text-input label="Lokasi lahan" name="lokasi_lahan" id="lokasi_lahan"
                     value="{{ $petani->lokasi_lahan }}" required readonly />
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="d-flex flex-column align-items-start">
-                  <label for="example-text-input" class="form-label mb-4">Foto</label>
-                  <div class="m-auto">
-                    @if ($petani->foto != '')
-                      <img src="{{ asset('storage/foto/' . $petani->foto) }}" class="img-fluid rounded"
-                        alt="{{ $petani->nama }}">
-                    @else
-                      <img src="{{ asset('photo/default-product.jpg') }}" class="img-fluid" alt="{{ $petani->nama }}">
-                    @endif
-                  </div>
                 </div>
               </div>
             </div>

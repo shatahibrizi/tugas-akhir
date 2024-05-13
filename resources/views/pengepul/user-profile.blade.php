@@ -2,7 +2,7 @@
 
 @section('content')
   @include('layouts.navbars.auth.topnav', ['title' => 'Your Profile'])
-  <div class="card shadow-lg mx-4 card-profile-bottom">
+  <div class="card card-profile-bottom mx-4 shadow-lg">
     <div class="card-body p-3">
       <div class="row gx-4">
         <div class="col-auto">
@@ -15,7 +15,7 @@
             <h5 class="mb-1">
               {{ auth()->user()->firstname ?? 'Firstname' }} {{ auth()->user()->lastname ?? 'Lastname' }}
             </h5>
-            <p class="mb-0 font-weight-bold text-sm">
+            <p class="font-weight-bold mb-0 text-sm">
               Public Relations
             </p>
           </div>
@@ -24,21 +24,21 @@
           <div class="nav-wrapper position-relative end-0">
             <ul class="nav nav-pills nav-fill p-1" role="tablist">
               <li class="nav-item">
-                <a class="nav-link mb-0 px-0 py-1 active d-flex align-items-center justify-content-center "
+                <a class="nav-link active d-flex align-items-center justify-content-center mb-0 px-0 py-1"
                   data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="true">
                   <i class="ni ni-app"></i>
                   <span class="ms-2">App</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center " data-bs-toggle="tab"
+                <a class="nav-link d-flex align-items-center justify-content-center mb-0 px-0 py-1" data-bs-toggle="tab"
                   href="javascript:;" role="tab" aria-selected="false">
                   <i class="ni ni-email-83"></i>
                   <span class="ms-2">Messages</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center " data-bs-toggle="tab"
+                <a class="nav-link d-flex align-items-center justify-content-center mb-0 px-0 py-1" data-bs-toggle="tab"
                   href="javascript:;" role="tab" aria-selected="false">
                   <i class="ni ni-settings-gear-65"></i>
                   <span class="ms-2">Settings</span>
@@ -70,9 +70,9 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label for="example-text-input" class="form-control-label">Username</label>
-                    <input class="form-control" type="text" name="username"
-                      value="{{ old('username', auth()->user()->username) }}">
+                    <label for="example-text-input" class="form-control-label">Nama</label>
+                    <input class="form-control" type="text" name="nama"
+                      value="{{ old('nama', auth()->user()->nama) }}">
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -85,15 +85,15 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="example-text-input" class="form-control-label">First name</label>
-                    <input class="form-control" type="text" name="firstname"
-                      value="{{ old('firstname', auth()->user()->firstname) }}">
+                    <input class="form-control" type="text" name="alamat"
+                      value="{{ old('alamat', auth()->user()->alamat) }}">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="example-text-input" class="form-control-label">Last name</label>
-                    <input class="form-control" type="text" name="lastname"
-                      value="{{ old('lastname', auth()->user()->lastname) }}">
+                    <input class="form-control" type="text" name="username"
+                      value="{{ old('username', auth()->user()->username) }}">
                   </div>
                 </div>
               </div>
@@ -103,18 +103,18 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <label for="example-text-input" class="form-control-label">Address</label>
-                    <input class="form-control" type="text" name="address"
-                      value="{{ old('address', auth()->user()->address) }}">
+                    <input class="form-control" type="text" name="no_hp"
+                      value="{{ old('no_hp', auth()->user()->no_hp) }}">
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="form-group">
                     <label for="example-text-input" class="form-control-label">City</label>
-                    <input class="form-control" type="text" name="city"
-                      value="{{ old('city', auth()->user()->city) }}">
+                    <input class="form-control" type="text" name="no_rek"
+                      value="{{ old('no_rek', auth()->user()->no_rek) }}">
                   </div>
                 </div>
-                <div class="col-md-4">
+                {{-- <div class="col-md-4">
                   <div class="form-group">
                     <label for="example-text-input" class="form-control-label">Country</label>
                     <input class="form-control" type="text" name="country"
@@ -127,7 +127,7 @@
                     <input class="form-control" type="text" name="postal"
                       value="{{ old('postal', auth()->user()->postal) }}">
                   </div>
-                </div>
+                </div> --}}
               </div>
               <hr class="horizontal dark">
               <p class="text-uppercase text-sm">About me</p>
@@ -149,20 +149,20 @@
           <img src="/img/bg-profile.jpg" alt="Image placeholder" class="card-img-top">
           <div class="row justify-content-center">
             <div class="col-4 col-lg-4 order-lg-2">
-              <div class="mt-n4 mt-lg-n6 mb-4 mb-lg-0">
+              <div class="mt-n4 mt-lg-n6 mb-lg-0 mb-4">
                 <a href="javascript:;">
                   <img src="/img/team-2.jpg" class="rounded-circle img-fluid border border-2 border-white">
                 </a>
               </div>
             </div>
           </div>
-          <div class="card-header text-center border-0 pt-0 pt-lg-2 pb-4 pb-lg-3">
+          <div class="card-header pt-lg-2 pb-lg-3 border-0 pb-4 pt-0 text-center">
             <div class="d-flex justify-content-between">
-              <a href="javascript:;" class="btn btn-sm btn-info mb-0 d-none d-lg-block">Connect</a>
-              <a href="javascript:;" class="btn btn-sm btn-info mb-0 d-block d-lg-none"><i
+              <a href="javascript:;" class="btn btn-sm btn-info d-none d-lg-block mb-0">Connect</a>
+              <a href="javascript:;" class="btn btn-sm btn-info d-block d-lg-none mb-0"><i
                   class="ni ni-collection"></i></a>
-              <a href="javascript:;" class="btn btn-sm btn-dark float-right mb-0 d-none d-lg-block">Message</a>
-              <a href="javascript:;" class="btn btn-sm btn-dark float-right mb-0 d-block d-lg-none"><i
+              <a href="javascript:;" class="btn btn-sm btn-dark d-none d-lg-block float-right mb-0">Message</a>
+              <a href="javascript:;" class="btn btn-sm btn-dark d-block d-lg-none float-right mb-0"><i
                   class="ni ni-email-83"></i></a>
             </div>
           </div>
@@ -171,21 +171,21 @@
               <div class="col">
                 <div class="d-flex justify-content-center">
                   <div class="d-grid text-center">
-                    <span class="text-lg font-weight-bolder">22</span>
-                    <span class="text-sm opacity-8">Friends</span>
+                    <span class="font-weight-bolder text-lg">22</span>
+                    <span class="opacity-8 text-sm">Friends</span>
                   </div>
-                  <div class="d-grid text-center mx-4">
-                    <span class="text-lg font-weight-bolder">10</span>
-                    <span class="text-sm opacity-8">Photos</span>
+                  <div class="d-grid mx-4 text-center">
+                    <span class="font-weight-bolder text-lg">10</span>
+                    <span class="opacity-8 text-sm">Photos</span>
                   </div>
                   <div class="d-grid text-center">
-                    <span class="text-lg font-weight-bolder">89</span>
-                    <span class="text-sm opacity-8">Comments</span>
+                    <span class="font-weight-bolder text-lg">89</span>
+                    <span class="opacity-8 text-sm">Comments</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="text-center mt-4">
+            <div class="mt-4 text-center">
               <h5>
                 Mark Davis<span class="font-weight-light">, 35</span>
               </h5>
