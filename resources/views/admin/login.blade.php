@@ -25,14 +25,14 @@
                     @method('post')
                     <div class="mb-3 flex flex-col">
                       <input type="email" name="email" class="form-control form-control-lg"
-                        value="{{ old('email') ?? 'admin@argon.com' }}" aria-label="Email">
+                        value="{{ old('email') ?? 'admin@mail.com' }}" aria-label="Email">
                       @error('email')
                         <p class="text-danger pt-1 text-xs"> {{ $message }} </p>
                       @enderror
                     </div>
                     <div class="mb-3 flex flex-col">
                       <input type="password" name="password" class="form-control form-control-lg" aria-label="Password"
-                        value="secret">
+                        value="12345">
                       @error('password')
                         <p class="text-danger pt-1 text-xs"> {{ $message }} </p>
                       @enderror

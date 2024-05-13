@@ -31,111 +31,99 @@ class PetaniController extends Controller
         return view('pengepul.petani.petani', ['petani' => $petani]);
     }
 
-    function show($id_produk)
+    function show($id_petani)
     {
-        $products = Product::with(
-            ['petani', 'kategori']
-        )->findOrFail($id_produk);
-        return view('pengepul.product.product-detail', ['products' => $products]);
+        $petani = Petani::with('products')->findOrFail($id_petani);
+        return view('pengepul.petani.petani-detail', ['petani' => $petani]);
     }
 
     function create()
     {
-        $products = Product::all();
+        $petani = Petani::all();
 
-        $petani = Petani::select('id_petani', 'nama')->get();
-        $kategori = Kategori::select('id_kategori', 'nama')->get();
-        return view('pengepul.product.product-add', ['products' => $products, 'petani' => $petani, 'kategori' => $kategori]);
+        return view('pengepul.petani.petani-add', ['petani' => $petani]);
     }
 
     function store(Request $request)
     {
         $newName = '';
 
-        if ($request->file('foto_produk')) {
-            $extension = $request->file('foto_produk')->getClientOriginalExtension();
-            $newName = $request->nama_produk . '-' . now()->timestamp . '.' . $extension;
-            $request->file('foto_produk')->storeAs('foto_produk', $newName);
+        if ($request->file('foto')) {
+            $extension = $request->file('foto')->getClientOriginalExtension();
+            $newName = $request->nama . '-' . now()->timestamp . '.' . $extension;
+            $request->file('foto')->storeAs('foto', $newName);
         }
         if (!empty($newName)) {
-            $request['foto_produk'] = $newName;
+            $request['foto'] = $newName;
         }
-        $request['foto_produk'] = $newName;
+        $request['foto'] = $newName;
 
-        $product = Product::create([
-            'nama_produk' => $request->nama_produk,
-            'foto_produk' => $newName,
-            'deskripsi' => $request->deskripsi,
-            'harga' => $request->harga,
-            'jumlah' => $request->jumlah,
-            'grade' => $request->grade,
-            'id_kategori' => $request->id_kategori,
-            'id_petani' => $request->id_petani,
+        $petani = Petani::create([
+            'nama' => $request->nama,
+            'foto' => $newName,
+            'alamat' => $request->alamat,
+            'no_hp' => $request->no_hp,
+            'luas_lahan' => $request->luas_lahan,
+            'lokasi_lahan' => $request->lokasi_lahan,
+            'grup_petani' => $request->grup_petani,
         ]);
 
         $date = now();
 
-        if ($product) {
-            $product->pengepul()->attach(auth()->user()->id_pengepul, [
-                'jumlah' => $request->jumlah,
-                'tanggal' => $date,
-            ]);
+        if ($petani) {
             session()->flash('status', 'success');
             session()->flash('message', 'add data success!');
         }
-        return redirect('/products');
+        return redirect('/petani');
     }
 
-    public function edit(Request $request, $id_produk)
+    public function edit(Request $request, $id_petani)
     {
-        $products = Product::with(['petani', 'kategori'])->findOrFail($id_produk);
-        // dd($products);
-        $petani = Petani::where('id_petani', '!=', $products->id_petani)->get(['id_petani', 'nama']);
-        $kategori = Kategori::where('id_kategori', '!=', $products->id_kategori)->get(['id_kategori', 'nama']);
-        return view('pengepul.product.product-edit', ['products' => $products, 'petani' => $petani, 'kategori' => $kategori]);
+        $petani = Petani::findOrFail($id_petani);
+        // dd($petani);
+        return view('pengepul.petani.petani-edit', ['petani' => $petani]);
     }
 
 
-    function update(Request $request, $id_produk)
+    function update(Request $request, $id_petani)
     {
-        $products = Product::findOrFail($id_produk);
-
+        $petani = Petani::findOrFail($id_petani);
 
         // Perbarui informasi produk lainnya
-        $products->update($request->except('foto_produk')); // Hindari menyertakan 'foto_produk' dalam proses update
+        $petani->update($request->except('foto')); // Hindari menyertakan 'foto_produk' dalam proses update
 
         // Periksa apakah ada file baru yang diunggah
-        if ($request->hasFile('foto_produk')) {
+        if ($request->hasFile('foto')) {
             // Hapus gambar lama jika ada
-            if ($products->foto_produk) {
-                Storage::delete('foto_produk/' . $products->foto_produk);
+            if ($petani->foto) {
+                Storage::delete('foto/' . $petani->foto);
             }
 
             // Simpan gambar baru dan perbarui nama file di basis data
-            $extension = $request->file('foto_produk')->getClientOriginalExtension();
-            $newName = $request->nama_produk . '-' . now()->timestamp . '.' . $extension;
-            $request->file('foto_produk')->storeAs('foto_produk', $newName);
-            $products->foto_produk = $newName;
+            $extension = $request->file('foto')->getClientOriginalExtension();
+            $newName = $request->nama . '-' . now()->timestamp . '.' . $extension;
+            $request->file('foto')->storeAs('foto', $newName);
+            $petani->foto = $newName;
         }
 
         // Simpan perubahan produk
-        $products->save();
+        $petani->save();
 
 
         session()->flash('status', 'success');
         session()->flash('message', 'edit data success!');
 
-        return redirect('/products');
+        return redirect('/petani');
     }
 
-    function destroy(Request $request, $id_produk)
+    function destroy(Request $request, $id_petani)
     {
-        $deletedProduct = Product::findOrFail($id_produk);
-        $deletedProduct->delete();
-        if ($deletedProduct) {
+        $deletedPetani = Product::findOrFail($id_petani);
+        $deletedPetani->delete();
+        if ($deletedPetani) {
             session()->flash('status', 'success');
-            session()->flash('message', 'delete ' . $deletedProduct->nama_produk . ' success!');
+            session()->flash('message', 'delete ' . $deletedPetani->nama . ' success!');
         }
-        return redirect('/products');
+        return redirect('/petani');
     }
 }

@@ -21,6 +21,10 @@ class Petani extends Model
         'grup_petani',
     ];
 
+    protected $attributes = [
+        'id_admin' => 1, // Memberikan nilai default 'active' pada kolom "status"
+    ];
+
     function products()
     {
         return $this->hasMany(Product::class, 'id_petani', 'id_petani');

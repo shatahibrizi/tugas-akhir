@@ -12,7 +12,7 @@
           <div class="card-header d-flex justify-content-between align-items-center pb-0">
             <h6>Tabel Petani</h6>
             <div class="col-auto">
-              <a href="product-add" class="btn btn-dark">Tambah Petani</a>
+              <a href="petani-add" class="btn btn-dark">Tambah Petani</a>
             </div>
           </div>
           @if (Session::has('status'))
@@ -31,17 +31,15 @@
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Nama</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                      Harga(KG)</th>
+                      Alamat</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                      Jumlah</th>
+                      No HP</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                      Grade</th>
+                      Lokasi lahan</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                      Kategori</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                      Petani</th>
+                      Kelompok petani</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                      Action
+                      Action</th>
                     </th>
                   </tr>
                 </thead>
@@ -55,12 +53,12 @@
                       <td>
                         <div class="d-flex px-2 py-1">
                           <div>
-                            @if ($item->foto_produk != '')
-                              <img src="{{ asset('storage/foto_produk/' . $item->foto_produk) }}"
-                                class="avatar avatar-lg me-3" alt="{{ $item->nama_produk }}">
+                            @if ($item->foto != '')
+                              <img src="{{ asset('storage/foto/' . $item->foto) }}" class="avatar avatar-lg me-3"
+                                alt="{{ $item->nama }}">
                             @else
                               <img src="{{ asset('storage/photo/default-product.jpg') }}" class="avatar avatar-lg me-3"
-                                alt="{{ $item->nama_produk }}">
+                                alt="{{ $item->nama }}">
                             @endif
 
                           </div>
@@ -70,12 +68,9 @@
                         </div>
                       </td>
                       <td>
-                        <p class="font-weight-bold mb-0 text-sm">Rp. {{ $item->alamat }}</p>
+                        <p class="font-weight-bold mb-0 text-sm">{{ $item->alamat }}</p>
                         {{-- <p class="text-secondary mb-0 text-sm">/Kg</p> --}}
                       </td>
-                      {{-- <td class="text-center align-middle text-sm">
-                        <span class="badge badge-sm bg-gradient-success">Online</span>
-                      </td> --}}
                       <td class="text-center align-middle">
                         <span class="text-secondary font-weight-bold text-sm">{{ $item->no_hp }}</span>
                       </td>
@@ -85,16 +80,10 @@
                       <td class="text-center align-middle">
                         <span class="text-secondary font-weight-bold text-sm">{{ $item->grup_petani }}</span>
                       </td>
-                      {{-- <td class="text-center align-middle">
-                        <span class="text-secondary font-weight-bold text-sm">{{ $item['kategori']['nama'] }}</span>
-                      </td>
-                      <td class="text-center align-middle">
-                        <span class="text-secondary font-weight-bold text-sm">{{ $item['petani']['nama'] }}</span>
-                      </td> --}}
                       <td class="pe-4 align-middle">
                         <div class="d-flex align-items-center">
                           <!-- Tombol Edit -->
-                          <a href="product-edit/{{ $item->id_petani }}" class="text-secondary font-weight-bold text-md"
+                          <a href="petani-edit/{{ $item->id_petani }}" class="text-secondary font-weight-bold text-md"
                             data-toggle="tooltip" data-original-title="Edit user">
                             <i class="fa fa-pencil-square-o text-success text-sm opacity-10" aria-hidden="true"></i>
                           </a>
@@ -104,7 +93,7 @@
                             <i class="fa fa-trash text-danger text-md opacity-10"></i>
                           </button>
                           <!-- Tombol Detail -->
-                          <a href="product-detail/{{ $item->id_petani }}"
+                          <a href="petani-detail/{{ $item->id_petani }}"
                             class="text-secondary font-weight-bold text-center" data-toggle="tooltip"
                             data-original-title="Edit user">
                             <i class="fa fa-info-circle text-dark text-sm opacity-10"></i>
@@ -120,12 +109,12 @@
                             @csrf
                             @method('DELETE')
                             <div class="modal-header">
-                              <h1 class="modal-title fs-5" id="exampleModalLabel">Hapus produk</h1>
+                              <h1 class="modal-title fs-5" id="exampleModalLabel">Hapus petani</h1>
                               <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                              <input type="hidden" name="product_delete_id" id="product_id">
+                              <input type="hidden" name="petani_delete_id" id="petani_id">
                               <p>Apakah anda yakin akan menghapus data?</p>
                             </div>
                             <div class="modal-footer">
@@ -137,7 +126,7 @@
                     </div>
                   @empty
                     <tr>
-                      <td colspan="8" class="text-center">Tidak ada produk tersedia.</td>
+                      <td colspan="8" class="text-center">Tidak ada petani tersedia.</td>
                     </tr>
                   @endforelse
                 </tbody>
@@ -159,8 +148,8 @@
       $('.deleteProductBtn').click(function(e) {
         e.preventDefault();
 
-        var product_id = $(this).val();
-        $('#product_id').val(product_id)
+        var petani_id = $(this).val();
+        $('#petani_id').val(petani_id)
         $('#deleteModal').modal('show')
       })
     })
