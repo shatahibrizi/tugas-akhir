@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Petani;
 use App\Models\Product;
 use App\Models\Kategori;
@@ -9,67 +10,62 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ProductController extends Controller
 {
     function index(Request $request)
     {
         // Mengambil id_pengepul dari user yang saat ini masuk
-        $id_pengepul = auth()->user()->id_pengepul;
-        // dd($id_pengepul);
-
-        // Mengambil parameter dari permintaan HTTP
-        $keyword = $request->keyword;
-        $filter = $request->filter;
-        $priceFilter = $request->price_filter;
-        $petani = $request->petani;
-        $kategori = $request->kategori;
+        $user = auth()->user();
 
         // Membangun kueri database untuk produk
         $productQuery = Product::query();
 
-        $productQuery = Product::whereExists(function ($query) use ($id_pengepul) {
-            $query->select(DB::raw(1))
-                ->from('users')
-                ->join('tambah_produk', 'users.id_pengepul', '=', 'tambah_produk.id_pengepul')
-                ->whereColumn('products.id_produk', 'tambah_produk.id_produk')
-                ->where('users.id_pengepul', $id_pengepul);
-        });
+        if ($user instanceof User) {
+            // Jika pengguna adalah pengepul, batasi akses hanya ke produk yang terkait dengan pengepul tersebut
+            $id_pengepul = $user->id_pengepul;
 
-
+            $productQuery->whereExists(function ($query) use ($id_pengepul) {
+                $query->select(DB::raw(1))
+                    ->from('tambah_produk')
+                    ->whereColumn('products.id_produk', 'tambah_produk.id_produk')
+                    ->where('tambah_produk.id_pengepul', $id_pengepul);
+            });
+        }
 
         // Filter berdasarkan kata kunci
-        if ($keyword) {
-            $productQuery->where('nama_produk', 'LIKE', '%' . $keyword . '%');
+        if ($request->keyword) {
+            $productQuery->where('nama_produk', 'LIKE', '%' . $request->keyword . '%');
         }
 
         // Filter berdasarkan grade
-        if ($filter) {
-            $productQuery->where('grade', $filter);
+        if ($request->filter) {
+            $productQuery->where('grade', $request->filter);
         }
 
         // Filter berdasarkan harga
-        if ($priceFilter) {
-            if ($priceFilter === 'Below 10000') {
+        if ($request->price_filter) {
+            if ($request->price_filter === 'Below 10000') {
                 $productQuery->where('harga', '<', 10000);
-            } elseif ($priceFilter === '10000 - 50000') {
+            } elseif ($request->price_filter === '10000 - 50000') {
                 $productQuery->whereBetween('harga', [10000, 50000]);
-            } elseif ($priceFilter === 'Above 50000') {
+            } elseif ($request->price_filter === 'Above 50000') {
                 $productQuery->where('harga', '>', 50000);
             }
         }
 
         // Filter berdasarkan kategori
-        if ($kategori) {
-            $productQuery->whereHas('kategori', function ($query) use ($kategori) {
-                $query->where('nama', $kategori);
+        if ($request->kategori) {
+            $productQuery->whereHas('kategori', function ($query) use ($request) {
+                $query->where('nama', $request->kategori);
             });
         }
 
         // Filter berdasarkan petani
-        if ($petani) {
-            $productQuery->whereHas('petani', function ($query) use ($petani) {
-                $query->where('nama', $petani);
+        if ($request->petani) {
+            $productQuery->whereHas('petani', function ($query) use ($request) {
+                $query->where('nama', $request->petani);
             });
         }
 
@@ -101,20 +97,18 @@ class ProductController extends Controller
         return view('pengepul.product.product-add', ['products' => $products, 'petani' => $petani, 'kategori' => $kategori]);
     }
 
-    function store(Request $request)
+    public function store(Request $request)
     {
         $newName = '';
 
-        if ($request->file('foto_produk')) {
+        // Simpan foto produk
+        if ($request->hasFile('foto_produk')) {
             $extension = $request->file('foto_produk')->getClientOriginalExtension();
             $newName = $request->nama_produk . '-' . now()->timestamp . '.' . $extension;
             $request->file('foto_produk')->storeAs('foto_produk', $newName);
         }
-        if (!empty($newName)) {
-            $request['foto_produk'] = $newName;
-        }
-        $request['foto_produk'] = $newName;
 
+        // Buat produk baru
         $product = Product::create([
             'nama_produk' => $request->nama_produk,
             'foto_produk' => $newName,
@@ -126,16 +120,33 @@ class ProductController extends Controller
             'id_petani' => $request->id_petani,
         ]);
 
+        // Attach data pengepul
         $date = now();
-
         if ($product) {
             $product->pengepul()->attach(auth()->user()->id_pengepul, [
                 'jumlah' => $request->jumlah,
                 'tanggal' => $date,
             ]);
+
+            // Buat data untuk QR code
+            $qrData = "Nama Produk: " . $product->nama_produk . "\n" .
+                "Grade: " . $product->grade . "\n" .
+                "Nama Petani: " . $product->petani->nama . "\n" . // Anda perlu mengganti 'nama' dengan kolom yang sesuai
+                "Created At: " . $product->created_at->toDateTimeString() . "\n" .
+                "Updated At: " . $product->updated_at->toDateTimeString();
+
+            // Generate QR code dan simpan sebagai file
+            $qrCodePath = 'qrcodes/' . $product->nama_produk . '-' . $product->petani->nama . '-' . now()->timestamp . '.png';
+            QrCode::format('png')->size(200)->generate($qrData, public_path($qrCodePath));
+
+            // Simpan path QR code ke produk
+            $product->update(['qr_code_path' => $qrCodePath]);
+
+            // Flash message
             session()->flash('status', 'success');
-            session()->flash('message', 'add data success!');
+            session()->flash('message', 'add data success, and QR-code has been generated!');
         }
+
         return redirect('/products');
     }
 

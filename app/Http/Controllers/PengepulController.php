@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Petani;
 use App\Models\User;
+use App\Models\Petani;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class PengepulController extends Controller
@@ -39,20 +41,21 @@ class PengepulController extends Controller
     {
         $newName = '';
 
-        if ($request->file('foto')) {
-            $extension = $request->file('foto')->getClientOriginalExtension();
+        if ($request->file('foto_profil')) {
+            $extension = $request->file('foto_profil')->getClientOriginalExtension();
             $newName = $request->nama . '-' . now()->timestamp . '.' . $extension;
-            $request->file('foto')->storeAs('foto', $newName);
+            $request->file('foto_profil')->storeAs('foto_profil', $newName);
         }
         if (!empty($newName)) {
-            $request['foto'] = $newName;
+            $request['foto_profil'] = $newName;
         }
-        $request['foto'] = $newName;
+        $request['foto_profil'] = $newName;
 
         $pengepul = User::create([
             'nama' => $request->nama,
-            'foto' => $newName,
+            'foto_profil' => $newName,
             'email' => $request->email,
+            'password' => $request->password,
             'username' => $request->username,
             'alamat' => $request->alamat,
             'no_hp' => $request->no_hp,
@@ -65,7 +68,7 @@ class PengepulController extends Controller
             session()->flash('status', 'success');
             session()->flash('message', 'add data success!');
         }
-        return redirect('/petani');
+        return redirect('/pengepul');
     }
 
     public function edit(Request $request, $id_pengepul)
@@ -76,37 +79,51 @@ class PengepulController extends Controller
     }
 
 
-    function update(Request $request, $id_pengepul)
+    public function update(Request $request, $id_pengepul)
     {
-        $pengepul = User::findOrFail($id_pengepul);
+        $attributes = $request->validate([
+            'nama' => ['required', 'max:64', 'min:2'],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($id_pengepul, 'id_pengepul'),
+            ],
+            'alamat' => ['max:100'],
+            'username' => ['max:20'],
+            'no_hp' => ['numeric'],
+            'no_rek' => ['numeric'],
+            'foto_profil' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+        ]);
 
-        // Perbarui informasi produk lainnya
-        $pengepul->update($request->except('foto')); // Hindari menyertakan 'foto_produk' dalam proses update
+        // Ambil pengguna berdasarkan ID pengepul
+        $pengepul = User::findOrFail($id_pengepul);
+        $pengepul->update($request->except('foto_profil')); // Hindari menyertakan 'foto_profil_produk' dalam proses update
 
         // Periksa apakah ada file baru yang diunggah
-        if ($request->hasFile('foto')) {
+        if ($request->hasFile('foto_profil')) {
             // Hapus gambar lama jika ada
-            if ($pengepul->foto) {
-                Storage::delete('foto/' . $pengepul->foto);
+            if ($pengepul->foto_profil) {
+                Storage::delete('foto_profil/' . $pengepul->foto_profil);
             }
 
             // Simpan gambar baru dan perbarui nama file di basis data
-            $extension = $request->file('foto')->getClientOriginalExtension();
+            $extension = $request->file('foto_profil')->getClientOriginalExtension();
             $newName = $request->nama . '-' . now()->timestamp . '.' . $extension;
-            $request->file('foto')->storeAs('foto', $newName);
-            $pengepul->foto = $newName;
+            $request->file('foto_profil')->storeAs('foto_profil', $newName);
+            $pengepul->foto_profil = $newName;
         }
 
-        // Simpan perubahan produk
+        // Isi atribut pengguna dan simpan
         $pengepul->save();
 
-
+        // Set flash message
         session()->flash('status', 'success');
-        session()->flash('message', 'edit data success!');
+        session()->flash('message', 'Edit data success!');
 
-        return redirect('/petani');
+        // Redirect ke halaman pengepul
+        return redirect('/pengepul');
     }
-
     function destroy(Request $request, $id_pengepul)
     {
         $deletedPengepul = User::findOrFail($id_pengepul);
@@ -115,6 +132,6 @@ class PengepulController extends Controller
             session()->flash('status', 'success');
             session()->flash('message', 'delete ' . $deletedPengepul->nama . ' success!');
         }
-        return redirect('/petani');
+        return redirect('/pengepul');
     }
 }

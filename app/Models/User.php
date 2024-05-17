@@ -17,12 +17,6 @@ class User extends Authenticatable
         'id_admin' => 1,
     ];
 
-
-
-    public function isUser()
-    {
-        return true;
-    }
     /**
      * The attributes that are mass assignable.
      *
@@ -79,4 +73,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Product::class, 'tambah_produk', 'id_pengepul', 'id_produk');
     }
+
+    // public function isAdmin()
+    // {
+    //     return false; // Atau logika lain yang menentukan apakah pengguna adalah admin
+    // }
 }

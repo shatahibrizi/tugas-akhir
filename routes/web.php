@@ -33,8 +33,6 @@ Route::get('/', function () {
 	return redirect('/dashboard');
 })->middleware('auth');
 
-
-
 // Admin
 Route::prefix('admin')->group(function () {
 	Route::get('/login', [AdminController::class, 'show'])->name('admin_login');
@@ -97,8 +95,8 @@ Route::group(['middleware' => 'auth:web,admin'], function () {
 		Route::get('/pengepul-edit/{id_pengepul}', [PengepulController::class, 'edit'])->name('pengepul.edit');
 		Route::put('/pengepul/{id_pengepul}', [PengepulController::class, 'update'])->name('pengepul.update');
 		Route::delete('/pengepul-delete/{id_pengepul}', [PengepulController::class, 'destroy'])->name('pengepul.delete');
-		Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	});
+
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });

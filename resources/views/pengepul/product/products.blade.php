@@ -153,8 +153,7 @@
                       aria-hidden="true">
                       <div class="modal-dialog">
                         <div class="modal-content">
-                          <form action="{{ route('product.delete', ['id_produk' => $item->id_produk]) }}"
-                            method="POST">
+                          <form id="deleteForm" method="POST">
                             @csrf
                             @method('DELETE')
                             <div class="modal-header">
@@ -163,10 +162,10 @@
                                 aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                              <input type="hidden" name="product_delete_id" id="product_id">
                               <p>Apakah anda yakin akan menghapus data?</p>
                             </div>
                             <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                               <button type="submit" class="btn btn-danger">Yes delete</button>
                             </div>
                           </form>
@@ -198,9 +197,12 @@
         e.preventDefault();
 
         var product_id = $(this).val();
-        $('#product_id').val(product_id)
-        $('#deleteModal').modal('show')
-      })
-    })
+        var deleteUrl = "{{ route('product.delete', ['id_produk' => ':id_produk']) }}";
+        deleteUrl = deleteUrl.replace(':id_produk', product_id);
+
+        $('#deleteForm').attr('action', deleteUrl);
+        $('#deleteModal').modal('show');
+      });
+    });
   </script>
 @endsection

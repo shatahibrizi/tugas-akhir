@@ -33,13 +33,13 @@
               </div>
               <div class="col-md-3">
                 <div class="form-group">
-                  <x-text-input label="Alamat" name="alamat" id="harga" value="{{ $petani->alamat }}" required
+                  <x-text-input label="Alamat" name="alamat" id="alamat" value="{{ $petani->alamat }}" required
                     readonly />
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="form-group">
-                  <x-text-input label="No HP" name="no_hp" id="no_hp" value="{{ $petani->grade }}" required
+                  <x-text-input label="No HP" name="no_hp" id="no_hp" value="{{ $petani->no_hp }}" required
                     readonly />
                 </div>
               </div>

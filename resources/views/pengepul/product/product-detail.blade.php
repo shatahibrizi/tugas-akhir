@@ -77,6 +77,19 @@
                   </div>
                 </div>
               </div>
+              <!-- QR Code -->
+              <div class="col-md-6">
+                <div class="d-flex flex-column align-items-start">
+                  <label for="example-text-input" class="form-label mb-4">QR Code</label>
+                  <div class="m-auto">
+                    @if ($products->qr_code_path)
+                      <img src="{{ asset($products->qr_code_path) }}" class="img-fluid" alt="QR Code">
+                    @else
+                      <p>No QR Code available.</p>
+                    @endif
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

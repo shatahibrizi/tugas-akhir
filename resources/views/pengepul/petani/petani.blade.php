@@ -88,7 +88,7 @@
                             <i class="fa fa-pencil-square-o text-success text-sm opacity-10" aria-hidden="true"></i>
                           </a>
                           <!-- Tombol Hapus -->
-                          <button type="button" class="btn btn-link deleteProductBtn pt-4"
+                          <button type="button" class="btn btn-link deletePetaniBtn pt-4"
                             value="{{ $item->id_petani }}">
                             <i class="fa fa-trash text-danger text-md opacity-10"></i>
                           </button>
@@ -101,11 +101,12 @@
                         </div>
                       </td>
                     </tr>
+                    <!-- Modal -->
                     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                       aria-hidden="true">
                       <div class="modal-dialog">
                         <div class="modal-content">
-                          <form action="{{ route('petani.delete', ['id_petani' => $item->id_petani]) }}" method="POST">
+                          <form id="deleteForm" method="POST">
                             @csrf
                             @method('DELETE')
                             <div class="modal-header">
@@ -114,11 +115,11 @@
                                 aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                              <input type="hidden" name="petani_delete_id" id="petani_id">
                               <p>Apakah anda yakin akan menghapus data?</p>
                             </div>
                             <div class="modal-footer">
-                              <button type="submit" class="btn btn-danger">Yes delete</button>
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                              <button type="submit" class="btn btn-danger">Yes, delete</button>
                             </div>
                           </form>
                         </div>
@@ -145,13 +146,16 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script>
     $(document).ready(function() {
-      $('.deleteProductBtn').click(function(e) {
+      $('.deletePetaniBtn').click(function(e) {
         e.preventDefault();
 
         var petani_id = $(this).val();
-        $('#petani_id').val(petani_id)
-        $('#deleteModal').modal('show')
-      })
-    })
+        var deleteUrl = "{{ route('petani.delete', ['id_petani' => ':id_petani']) }}";
+        deleteUrl = deleteUrl.replace(':id_petani', petani_id);
+
+        $('#deleteForm').attr('action', deleteUrl);
+        $('#deleteModal').modal('show');
+      });
+    });
   </script>
 @endsection

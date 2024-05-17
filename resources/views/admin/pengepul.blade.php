@@ -12,7 +12,7 @@
           <div class="card-header d-flex justify-content-between align-items-center pb-0">
             <h6>Tabel Pengepul</h6>
             <div class="col-auto">
-              <a href="petani-add" class="btn btn-dark">Tambah Pengepul</a>
+              <a href="pengepul-add" class="btn btn-dark">Tambah Pengepul</a>
             </div>
           </div>
           @if (Session::has('status'))
@@ -31,13 +31,13 @@
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Nama</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                      Email</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                      Username</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                       Alamat</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                       No HP</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                      Lokasi lahan</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                      Kelompok petani</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Action</th>
                     </th>
@@ -54,9 +54,9 @@
                       <td>
                         <div class="d-flex px-2 py-1">
                           <div>
-                            @if ($item->foto != '')
-                              <img src="{{ asset('storage/foto/' . $item->foto) }}" class="avatar avatar-lg me-3"
-                                alt="{{ $item->nama }}">
+                            @if ($item->foto_profil != '')
+                              <img src="{{ asset('storage/foto_profil/' . $item->foto_profil) }}"
+                                class="avatar avatar-lg me-3" alt="{{ $item->nama }}">
                             @else
                               <img src="{{ asset('storage/photo/default-product.jpg') }}" class="avatar avatar-lg me-3"
                                 alt="{{ $item->nama }}">
@@ -69,23 +69,24 @@
                         </div>
                       </td>
                       <td>
-                        <p class="font-weight-bold mb-0 text-sm">{{ $item->alamat }}</p>
+                        <p class="font-weight-bold mb-0 text-sm">{{ $item->email }}</p>
                         {{-- <p class="text-secondary mb-0 text-sm">/Kg</p> --}}
+                      </td>
+                      <td class="text-center align-middle">
+                        <span class="text-secondary font-weight-bold text-sm">{{ $item->username }}</span>
+                      </td>
+                      <td class="text-center align-middle">
+                        <span class="text-secondary font-weight-bold text-sm">{{ $item->alamat }}</span>
                       </td>
                       <td class="text-center align-middle">
                         <span class="text-secondary font-weight-bold text-sm">{{ $item->no_hp }}</span>
                       </td>
-                      <td class="text-center align-middle">
-                        <span class="text-secondary font-weight-bold text-sm">{{ $item->lokasi_lahan }}</span>
-                      </td>
-                      <td class="text-center align-middle">
-                        <span class="text-secondary font-weight-bold text-sm">{{ $item->grup_petani }}</span>
-                      </td>
                       <td class="pe-4 align-middle">
                         <div class="d-flex align-items-center">
                           <!-- Tombol Edit -->
-                          <a href="petani-edit/{{ $item->id_pengepul }}" class="text-secondary font-weight-bold text-md"
-                            data-toggle="tooltip" data-original-title="Edit user">
+                          <a href="pengepul-edit/{{ $item->id_pengepul }}"
+                            class="text-secondary font-weight-bold text-md" data-toggle="tooltip"
+                            data-original-title="Edit user">
                             <i class="fa fa-pencil-square-o text-success text-sm opacity-10" aria-hidden="true"></i>
                           </a>
                           <!-- Tombol Hapus -->
@@ -94,7 +95,7 @@
                             <i class="fa fa-trash text-danger text-md opacity-10"></i>
                           </button>
                           <!-- Tombol Detail -->
-                          <a href="petani-detail/{{ $item->id_pengepul }}"
+                          <a href="pengepul-detail/{{ $item->id_pengepul }}"
                             class="text-secondary font-weight-bold text-center" data-toggle="tooltip"
                             data-original-title="Edit user">
                             <i class="fa fa-info-circle text-dark text-sm opacity-10"></i>
@@ -106,21 +107,20 @@
                       aria-hidden="true">
                       <div class="modal-dialog">
                         <div class="modal-content">
-                          <form action="{{ route('pengepul.delete', ['id_pengepul' => $item->id_pengepul]) }}"
-                            method="POST">
+                          <form id="deleteForm" method="POST">
                             @csrf
                             @method('DELETE')
                             <div class="modal-header">
-                              <h1 class="modal-title fs-5" id="exampleModalLabel">Hapus petani</h1>
+                              <h1 class="modal-title fs-5" id="exampleModalLabel">Hapus pengepul</h1>
                               <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                              <input type="hidden" name="petani_delete_id" id="petani_id">
                               <p>Apakah anda yakin akan menghapus data?</p>
                             </div>
                             <div class="modal-footer">
-                              <button type="submit" class="btn btn-danger">Yes delete</button>
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                              <button type="submit" class="btn btn-danger">Yes, delete</button>
                             </div>
                           </form>
                         </div>
@@ -128,7 +128,7 @@
                     </div>
                   @empty
                     <tr>
-                      <td colspan="8" class="text-center">Tidak ada petani tersedia.</td>
+                      <td colspan="8" class="text-center">Tidak ada pengepul tersedia.</td>
                     </tr>
                   @endforelse
                 </tbody>
@@ -150,10 +150,13 @@
       $('.deleteProductBtn').click(function(e) {
         e.preventDefault();
 
-        var petani_id = $(this).val();
-        $('#petani_id').val(petani_id)
-        $('#deleteModal').modal('show')
-      })
-    })
+        var pengepul_id = $(this).val();
+        var deleteUrl = "{{ route('pengepul.delete', ['id_pengepul' => ':id_pengepul']) }}";
+        deleteUrl = deleteUrl.replace(':id_pengepul', pengepul_id);
+
+        $('#deleteForm').attr('action', deleteUrl);
+        $('#deleteModal').modal('show');
+      });
+    });
   </script>
 @endsection
