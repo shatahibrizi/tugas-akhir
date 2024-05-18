@@ -51,14 +51,14 @@
                   <div class="form-group">
                     <label for="grade">Grade</label>
                     <select name="grade" class="form-select" id="grade" required>
-                      <option selected value="{{ $products->grade }}">{{ $products->grade }}</option>
-                      {{ $uniqueGrades = $products->pluck('grade')->unique() }}
-                      @foreach ($uniqueGrades as $grade)
-                        <option value="{{ $grade }}">{{ $grade }}</option>
-                      @endforeach
+                      <option value="A" {{ $products->grade === 'A' ? 'selected' : '' }}>A</option>
+                      <option value="B" {{ $products->grade === 'B' ? 'selected' : '' }}>B</option>
+                      <option value="C" {{ $products->grade === 'C' ? 'selected' : '' }}>C</option>
                     </select>
                   </div>
                 </div>
+
+
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="kategori">Kategori</label>

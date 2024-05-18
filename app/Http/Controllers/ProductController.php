@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Petani;
 use App\Models\Product;
@@ -128,19 +129,35 @@ class ProductController extends Controller
                 'tanggal' => $date,
             ]);
 
+            // Konversi waktu ke WITA
+            $createdAtWITA = Carbon::parse($product->created_at)->timezone('Asia/Makassar');
+            $updatedAtWITA = Carbon::parse($product->updated_at)->timezone('Asia/Makassar');
+
+            $petani = $product->petani;
             // Buat data untuk QR code
-            $qrData = "Nama Produk: " . $product->nama_produk . "\n" .
-                "Grade: " . $product->grade . "\n" .
-                "Nama Petani: " . $product->petani->nama . "\n" . // Anda perlu mengganti 'nama' dengan kolom yang sesuai
-                "Created At: " . $product->created_at->toDateTimeString() . "\n" .
-                "Updated At: " . $product->updated_at->toDateTimeString();
+            $qrData = "Nama Produk: " . $product->nama_produk . "\n"
+                . "Grade: " . $product->grade . "\n"
+                . "Nama Petani: " . $petani->nama . "\n"
+                . "Tanggal masuk: " . $createdAtWITA->format('Y-m-d H:i:s') . "\n"
+                . "Terakhir diubah: " . $updatedAtWITA->format('Y-m-d H:i:s');
 
             // Generate QR code dan simpan sebagai file
-            $qrCodePath = 'qrcodes/' . $product->nama_produk . '-' . $product->petani->nama . '-' . now()->timestamp . '.png';
-            QrCode::format('png')->size(200)->generate($qrData, public_path($qrCodePath));
+            $qrCode = QrCode::format('png')
+                ->size(200)
+                ->generate($qrData);
+
+            // Pastikan direktori qrcodes ada
+            $qrCodePath = public_path('qrcodes');
+            if (!file_exists($qrCodePath)) {
+                mkdir($qrCodePath, 0777, true);
+            }
+
+            // Simpan QR code
+            $qrCodeFilePath = $qrCodePath . '/' . $product->nama_produk . '-' . $product->petani->nama . '-' . now()->timestamp .  '.png';
+            file_put_contents($qrCodeFilePath, $qrCode);
 
             // Simpan path QR code ke produk
-            $product->update(['qr_code_path' => $qrCodePath]);
+            $product->update(['qr_code_path' => 'qrcodes/' . $product->nama_produk . '-' . $product->petani->nama . '-' . now()->timestamp . '.png']);
 
             // Flash message
             session()->flash('status', 'success');
@@ -156,14 +173,18 @@ class ProductController extends Controller
         // dd($products);
         $petani = Petani::where('id_petani', '!=', $products->id_petani)->get(['id_petani', 'nama']);
         $kategori = Kategori::where('id_kategori', '!=', $products->id_kategori)->get(['id_kategori', 'nama']);
-        return view('pengepul.product.product-edit', ['products' => $products, 'petani' => $petani, 'kategori' => $kategori]);
+
+        return view('pengepul.product.product-edit', [
+            'products' => $products,
+            'petani' => $petani,
+            'kategori' => $kategori,
+        ]);
     }
 
 
     function update(Request $request, $id_produk)
     {
         $products = Product::findOrFail($id_produk);
-
 
         // Perbarui informasi produk lainnya
         $products->update($request->except('foto_produk')); // Hindari menyertakan 'foto_produk' dalam proses update
@@ -185,6 +206,35 @@ class ProductController extends Controller
         // Simpan perubahan produk
         $products->save();
 
+        $createdAtWITA = Carbon::parse($products->created_at)->timezone('Asia/Makassar');
+        $updatedAtWITA = Carbon::parse($products->updated_at)->timezone('Asia/Makassar');
+
+        // Buat data untuk QR code
+        $petani = $products->petani; // Asumsikan ada relasi petani di model Products
+        $qrData = "Nama Produk: " . $products->nama_produk . "\n"
+            . "Grade: " . $products->grade . "\n"
+            . "Nama Petani: " . $petani->nama . "\n"
+            . "Tanggal masuk: " . $createdAtWITA->format('Y-m-d H:i:s') . "\n"
+            . "Terakhir diubah: " . $updatedAtWITA->format('Y-m-d H:i:s');
+
+        $qrCode = QrCode::format('png')
+            ->size(200)
+            ->generate($qrData);
+
+        // Pastikan direktori qrcodes ada
+        $qrCodePath = public_path('qrcodes');
+        if (!file_exists($qrCodePath)) {
+            mkdir($qrCodePath, 0777, true);
+        }
+
+        // Simpan QR code
+        $qrCodeFilePath = $qrCodePath . '/' . $products->nama_produk . '-' . $products->petani->nama . '-' . now()->timestamp .  '.png';
+        file_put_contents($qrCodeFilePath, $qrCode);
+
+        // Simpan path QR code ke produk
+        $products->update(['qr_code_path' => 'qrcodes/' . $products->nama_produk . '-' . $products->petani->nama . '-' . now()->timestamp . '.png']);
+
+
 
         session()->flash('status', 'success');
         session()->flash('message', 'edit data success!');
@@ -201,5 +251,71 @@ class ProductController extends Controller
             session()->flash('message', 'delete ' . $deletedProduct->nama_produk . ' success!');
         }
         return redirect('/products');
+    }
+
+    function track(Request $request)
+    {
+        // Mengambil id_pengepul dari user yang saat ini masuk
+        $user = auth()->user();
+
+        // Membangun kueri database untuk produk
+        $productQuery = Product::query();
+
+        if ($user instanceof User) {
+            // Jika pengguna adalah pengepul, batasi akses hanya ke produk yang terkait dengan pengepul tersebut
+            $id_pengepul = $user->id_pengepul;
+
+            $productQuery->whereExists(function ($query) use ($id_pengepul) {
+                $query->select(DB::raw(1))
+                    ->from('tambah_produk')
+                    ->whereColumn('products.id_produk', 'tambah_produk.id_produk')
+                    ->where('tambah_produk.id_pengepul', $id_pengepul);
+            });
+        }
+
+        // Filter berdasarkan kata kunci
+        if ($request->keyword) {
+            $productQuery->where('nama_produk', 'LIKE', '%' . $request->keyword . '%');
+        }
+
+        // Filter berdasarkan grade
+        if ($request->filter) {
+            $productQuery->where('grade', $request->filter);
+        }
+
+        // Filter berdasarkan harga
+        if ($request->price_filter) {
+            if ($request->price_filter === 'Below 10000') {
+                $productQuery->where('harga', '<', 10000);
+            } elseif ($request->price_filter === '10000 - 50000') {
+                $productQuery->whereBetween('harga', [10000, 50000]);
+            } elseif ($request->price_filter === 'Above 50000') {
+                $productQuery->where('harga', '>', 50000);
+            }
+        }
+
+        // Filter berdasarkan kategori
+        if ($request->kategori) {
+            $productQuery->whereHas('kategori', function ($query) use ($request) {
+                $query->where('nama', $request->kategori);
+            });
+        }
+
+        // Filter berdasarkan petani
+        if ($request->petani) {
+            $productQuery->whereHas('petani', function ($query) use ($request) {
+                $query->where('nama', $request->petani);
+            });
+        }
+
+        // Lakukan query dan ambil hasil
+        $products = $productQuery->paginate(10);
+
+        // Ambil semua nama petani
+        $allPetani = Petani::pluck('nama');
+        $allKategori = Kategori::pluck('nama');
+
+        // Kirim data ke view
+        return view('pengepul.product.product-lacak', ['products' => $products, 'petani' => $allPetani, 'kategori' => $allKategori]);
     }
 }

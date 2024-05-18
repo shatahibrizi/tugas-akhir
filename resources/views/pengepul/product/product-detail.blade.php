@@ -64,6 +64,10 @@
                 </div>
               </div>
               <div class="col-md-6">
+                <div class="form-group">
+                </div>
+              </div>
+              <div class="col-md-6">
                 <div class="d-flex flex-column align-items-start">
                   <label for="example-text-input" class="form-label mb-4">Foto produk</label>
                   <div class="m-auto">

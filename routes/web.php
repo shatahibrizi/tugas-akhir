@@ -76,6 +76,7 @@ Route::group(['middleware' => 'auth:web,admin'], function () {
 	Route::get('/product-edit/{id_produk}', [ProductController::class, 'edit'])->name('product.edit');
 	Route::put('/product/{id_produk}', [ProductController::class, 'update'])->name('product.update');
 	Route::delete('/product-delete/{id_produk}', [ProductController::class, 'destroy'])->name('product.delete');
+	Route::get('/product-lacak', [ProductController::class, 'track'])->name('product.lacak');
 
 	// Petani CRUD routes
 	Route::get('/petani', [PetaniController::class, 'index'])->name('petani');
