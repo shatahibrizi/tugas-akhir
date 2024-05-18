@@ -11,9 +11,6 @@
         <div class="card mb-4">
           <div class="card-header d-flex justify-content-between align-items-center pb-0">
             <h6>Tabel Produk</h6>
-            <div class="col-auto">
-              <a href="product-add" class="btn btn-dark">Tambah Produk</a>
-            </div>
           </div>
           @if (Session::has('status'))
             <div class="alert alert-success mx-4 my-2" role="alert">
@@ -135,8 +132,8 @@
                             </div>
                             <div class="modal-footer">
                               <button type="button" class="btn btn-secondary close" data-dismiss="modal">Close</button>
-                              <a href="{{ asset($item->qr_code_path) }}"
-                                download="qr_code_{{ $item->nama_produk }}.png" class="btn btn-primary">Download</a>
+                              <a href="{{ asset($item->qr_code_path) }}" download="qr_code_{{ $item->nama_produk }}.png"
+                                class="btn btn-primary">Download</a>
                             </div>
                           </div>
                         </div>
