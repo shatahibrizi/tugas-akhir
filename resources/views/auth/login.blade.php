@@ -49,13 +49,13 @@
                 <div class="card-footer px-lg-2 px-1 pt-0 text-center">
                   <p class="mx-auto mb-1 text-sm">
                     Forgot you password? Reset your password
-                    <a href="{{ route('reset-password') }}" class="text-primary text-gradient font-weight-bold">here</a>
+                    <a href="{{ route('reset-password') }}" class="text-dark text-gradient font-weight-bold">here</a>
                   </p>
                 </div>
                 <div class="card-footer px-lg-2 px-1 pt-0 text-center">
                   <p class="mx-auto mb-4 text-sm">
                     Don't have an account?
-                    <a href="{{ route('register') }}" class="text-primary text-gradient font-weight-bold">Sign up</a>
+                    <a href="{{ route('register') }}" class="text-dark text-gradient font-weight-bold">Sign up</a>
                   </p>
                 </div>
               </div>
@@ -64,12 +64,12 @@
               class="col-6 d-lg-flex d-none h-100 position-absolute justify-content-center flex-column end-0 top-0 my-auto pe-0 text-center">
               <div
                 class="position-relative bg-gradient-primary h-100 border-radius-lg d-flex flex-column justify-content-center m-3 overflow-hidden px-7"
-                style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg');
+                style="background-image: url('{{ asset('img/sembalun-potrait-2.jpg') }}');
                 background-size: cover;">
-                <span class="mask bg-gradient-primary opacity-6"></span>
-                <h4 class="font-weight-bolder position-relative mt-5 text-white">"Attention is the new currency"</h4>
-                <p class="position-relative text-white">The more effortless the writing looks, the more effort the writer
-                  actually put into the process.</p>
+                <span class="mask bg-gradient-dark opacity-6"></span>
+                <h4 class="font-weight-bolder position-relative mt-5 text-white">"Simplify selling amplify success"</h4>
+                <p class="position-relative text-white">Manage your inventory effortlessly and expand your reach with our
+                  user-friendly platform.</p>
               </div>
             </div>
           </div>

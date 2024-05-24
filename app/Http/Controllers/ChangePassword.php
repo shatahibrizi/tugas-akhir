@@ -15,7 +15,7 @@ class ChangePassword extends Controller
     {
         Auth::logout();
 
-        $id = intval(request()->id);
+        $id = intval(request()->id_pengepul);
         $this->user = User::find($id);
     }
 

@@ -28,7 +28,7 @@
     --bs-gray-700: #495057;
     --bs-gray-800: #343a40;
     --bs-gray-900: #212529;
-    --bs-primary: #fb6340;
+    --bs-primary: #097969;
     --bs-secondary: #8392ab;
     --bs-success: #2dce89;
     --bs-info: #11cdef;
@@ -3596,19 +3596,19 @@ fieldset:disabled .btn {
 
 .btn-primary {
     color: #000;
-    background-color: #fb6340;
-    border-color: #fb6340;
+    background-color: #097969;
+    border-color: #097969;
 }
 .btn-primary:hover {
     color: #000;
-    background-color: #fc7a5d;
-    border-color: #fb7353;
+    background-color: #086658;
+    border-color: #086658;
 }
 .btn-check:focus + .btn-primary,
 .btn-primary:focus {
     color: #000;
-    background-color: #fc7a5d;
-    border-color: #fb7353;
+    background-color: #086658;
+    border-color: #086658;
     box-shadow: 0 0 0 0.2rem rgba(213, 84, 54, 0.5);
 }
 .btn-check:checked + .btn-primary,
@@ -3617,8 +3617,8 @@ fieldset:disabled .btn {
 .btn-primary.active,
 .show > .btn-primary.dropdown-toggle {
     color: #000;
-    background-color: #fc8266;
-    border-color: #fb7353;
+    background-color: #086658;
+    border-color: #086658;
 }
 .btn-check:checked + .btn-primary:focus,
 .btn-check:active + .btn-primary:focus,
@@ -3955,13 +3955,13 @@ fieldset:disabled .btn {
 }
 
 .btn-outline-primary {
-    color: #fb6340;
-    border-color: #fb6340;
+    color: #086658;
+    border-color: #086658;
 }
 .btn-outline-primary:hover {
     color: #000;
-    background-color: #fb6340;
-    border-color: #fb6340;
+    background-color: #086658;
+    border-color: #086658;
 }
 .btn-check:focus + .btn-outline-primary,
 .btn-outline-primary:focus {
@@ -3973,8 +3973,8 @@ fieldset:disabled .btn {
 .btn-outline-primary.active,
 .btn-outline-primary.dropdown-toggle.show {
     color: #000;
-    background-color: #fb6340;
-    border-color: #fb6340;
+    background-color: #086658;
+    border-color: #086658;
 }
 .btn-check:checked + .btn-outline-primary:focus,
 .btn-check:active + .btn-outline-primary:focus,
@@ -3985,7 +3985,7 @@ fieldset:disabled .btn {
 }
 .btn-outline-primary:disabled,
 .btn-outline-primary.disabled {
-    color: #fb6340;
+    color: #086658;
     background-color: transparent;
 }
 
@@ -19659,8 +19659,8 @@ fieldset:disabled .btn {
 
 .btn-primary:hover,
 .btn.bg-gradient-primary:hover {
-    background-color: #fb6340;
-    border-color: #fb6340;
+    background-color: #097968;
+    border-color: #097969;
 }
 .btn-primary .btn.bg-outline-primary,
 .btn.bg-gradient-primary .btn.bg-outline-primary {

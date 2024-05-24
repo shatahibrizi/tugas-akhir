@@ -5,7 +5,7 @@
       aria-hidden="true" id="iconSidenav"></i>
     <a class="navbar-brand m-0" href="{{ route('home') }}" target="_blank">
       <img src="{{ asset('img/logo-ct-dark.png') }}" class="navbar-brand-img h-100" alt="main_logo">
-      <span class="font-weight-bold fs-6 ms-3">Agri Bumbung</span>
+      <span class="font-weight-bold fs-6 ms-3">Sembalun Agro</span>
     </a>
   </div>
   <hr class="horizontal dark mt-0">
@@ -24,7 +24,9 @@
         <h6 class="text-uppercase font-weight-bolder opacity-6 ms-2 ps-4 text-xs">Master Penjualan</h6>
       </li>
       <li class="nav-item">
-        <a class="nav-link {{ Route::currentRouteName() == 'profile' ? 'active' : '' }}" href="{{ route('profile') }}">
+        <a class="nav-link {{ str_contains(request()->url(), 'pengepul') == true ? 'active' : '' }}"
+          href="{{ route('page', ['page' => 'pengepul']) }}">
+
           <div
             class="icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center">
             <i class="fa fa-bar-chart text-dark text-sm opacity-10"></i>
@@ -36,7 +38,9 @@
         <h6 class="text-uppercase font-weight-bolder opacity-6 ms-2 ps-4 text-xs">Master Stock</h6>
       </li>
       <li class="nav-item">
-        <a class="nav-link {{ Route::currentRouteName() == 'profile' ? 'active' : '' }}" href="{{ route('profile') }}">
+        <a class="nav-link {{ str_contains(request()->url(), 'pengepul') == true ? 'active' : '' }}"
+          href="{{ route('page', ['page' => 'pengepul']) }}">
+
           <div
             class="icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center">
             <i class="ni ni-delivery-fast text-dark text-sm opacity-10"></i>
@@ -81,8 +85,13 @@
         <h6 class="text-uppercase font-weight-bolder opacity-6 ms-2 ps-4 text-xs">Master akun</h6>
       </li>
       <li class="nav-item">
-        <a class="nav-link {{ Route::currentRouteName() == 'profile-static' ? 'active' : '' }}"
-          href="{{ route('profile-static') }}">
+        @php
+          $isAdmin = auth()->guard('admin')->check();
+          $user = auth()->user();
+        @endphp
+
+        <a class="nav-link {{ $isAdmin ? (Route::currentRouteName() == 'admin.profile' ? 'active' : '') : (Route::currentRouteName() == 'profile' ? 'active' : '') }}"
+          href="{{ $isAdmin ? route('admin.profile', $user ? $user->id_admin : '') : route('profile', $user ? $user->id_pengepul : '') }}">
           <div
             class="icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center">
             <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
@@ -90,6 +99,7 @@
           <span class="nav-link-text ms-1">Profile</span>
         </a>
       </li>
+
       @if (auth()->guard('admin')->check())
         <li class="nav-item">
         @else

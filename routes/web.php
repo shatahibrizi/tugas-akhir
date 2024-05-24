@@ -15,6 +15,7 @@
 
 use App\Models\Petani;
 use App\Http\Middleware\Admin;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResetPassword;
 use App\Http\Controllers\ChangePassword;
@@ -33,7 +34,29 @@ Route::get('/', function () {
 	return redirect('/dashboard');
 })->middleware('auth');
 
+Route::get('/send-test-email', function () {
+	Mail::raw('This is a test email', function ($message) {
+		$message->to('your_email@gmail.com')
+			->subject('Test Email');
+	});
+	return 'Test email sent';
+});
+
+
 // Admin
+
+Route::get('/register', [RegisterController::class, 'create'])->middleware('guest')->name('register');
+Route::post('/register', [RegisterController::class, 'store'])->middleware('guest')->name('register.perform');
+
+Route::get('/login', [LoginController::class, 'show'])->middleware('guest')->name('login');
+Route::post('/login', [LoginController::class, 'login'])->middleware('guest')->name('login.perform');
+
+Route::get('/reset-password', [ResetPassword::class, 'show'])->middleware('guest')->name('reset-password');
+Route::post('/reset-password', [ResetPassword::class, 'send'])->middleware('guest')->name('reset.perform');
+
+Route::get('/change-password', [ChangePassword::class, 'show'])->middleware('guest')->name('change-password');
+Route::post('/change-password', [ChangePassword::class, 'update'])->middleware('guest')->name('change.perform');
+
 Route::prefix('admin')->group(function () {
 	Route::get('/login', [AdminController::class, 'show'])->name('admin_login');
 	Route::post('/login-submit', [AdminController::class, 'login_submit'])->name('admin_login_submit');
@@ -45,25 +68,12 @@ Route::prefix('admin')->group(function () {
 	});
 });
 
-Route::get('/register', [RegisterController::class, 'create'])->middleware('guest')->name('register');
-Route::post('/register', [RegisterController::class, 'store'])->middleware('guest')->name('register.perform');
-
-Route::get('/login', [LoginController::class, 'show'])->middleware('guest')->name('login');
-Route::post('/login', [LoginController::class, 'login'])->middleware('guest')->name('login.perform');
-
-Route::get('/reset-password', [ResetPassword::class, 'show'])->middleware('auth')->name('reset-password');
-Route::post('/reset-password', [ResetPassword::class, 'send'])->middleware('auth')->name('reset.perform');
-
-Route::get('/change-password', [ChangePassword::class, 'show'])->middleware('auth')->name('change-password');
-Route::post('/change-password', [ChangePassword::class, 'update'])->middleware('auth')->name('change.perform');
-
-Route::get('/dashboard', [HomeController::class, 'index'])->name('home')->middleware(['auth']);
-
 Route::group(['middleware' => 'auth:web,admin'], function () {
+	Route::get('/dashboard', [HomeController::class, 'index'])->name('home');
 	Route::get('/virtual-reality', [PageController::class, 'vr'])->name('virtual-reality');
 	Route::get('/rtl', [PageController::class, 'rtl'])->name('rtl');
-	Route::get('/profile', [UserProfileController::class, 'show'])->name('profile');
-	Route::post('/profile', [UserProfileController::class, 'update'])->name('profile.update');
+	Route::get('/profile/{id_pengepul}', [UserProfileController::class, 'show'])->name('profile');
+	Route::put('/profile/{id_pengepul}', [UserProfileController::class, 'update'])->name('profile.update');
 	Route::get('/profile-static', [PageController::class, 'profile'])->name('profile-static');
 	Route::get('/sign-in-static', [PageController::class, 'signin'])->name('sign-in-static');
 	Route::get('/sign-up-static', [PageController::class, 'signup'])->name('sign-up-static');
@@ -96,6 +106,8 @@ Route::group(['middleware' => 'auth:web,admin'], function () {
 		Route::get('/pengepul-edit/{id_pengepul}', [PengepulController::class, 'edit'])->name('pengepul.edit');
 		Route::put('/pengepul/{id_pengepul}', [PengepulController::class, 'update'])->name('pengepul.update');
 		Route::delete('/pengepul-delete/{id_pengepul}', [PengepulController::class, 'destroy'])->name('pengepul.delete');
+		Route::get('admin/profile/{id_admin}', [AdminController::class, 'edit'])->name('admin.profile');
+		Route::put('admin/profile/{id_admin}', [AdminController::class, 'update'])->name('admin.profile.update');
 	});
 
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');

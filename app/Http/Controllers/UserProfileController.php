@@ -11,34 +11,57 @@ use Illuminate\Support\Facades\Storage;
 
 class UserProfileController extends Controller
 {
-    public function show()
+    public function show($id_pengepul)
     {
-        return view('pengepul.user-profile');
+        $pengepul = User::findOrFail($id_pengepul);
+        return view('pengepul.user-profile', ['pengepul' => $pengepul]);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id_pengepul)
     {
         $attributes = $request->validate([
             'nama' => ['required', 'max:64', 'min:2'],
-            'email' => ['required', 'email', 'max:255',  Rule::unique('users')->ignore(auth()->user()->id_pengepul),],
-            'alamat' => ['max:100'],
-            'username' => ['max:20'],
-            'no_hp' => ['max:11', 'numeric'],
-            'no_rek' => ['max:11', 'numeric'],
-            'foto_profil' => ['required|image|mimes:jpeg,png,jpg,gif|max:2048'],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($id_pengepul, 'id_pengepul'),
+            ],
+            'alamat' => ['nullable', 'max:100'],
+            'username' => ['nullable', 'max:20'],
+            'no_hp' => ['nullable', 'max:15'],
+            'no_rek' => ['nullable', 'numeric'],
+            'foto_profil' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
 
-        dd($attributes);
+        $pengepul = User::findOrFail($id_pengepul);
 
-        auth()->user()->update([
-            'nama' => $request->get('nama'),
-            'email' => $request->get('email'),
-            'alamat' => $request->get('alamat'),
-            'username' => $request->get('username'),
-            'no_hp' => $request->get('no_hp'),
-            'no_rek' => $request->get('no_rek'),
-            'foto_profil' => $request->get('country'),
-        ]);
-        return back()->with('succes', 'Profile succesfully updated');
+        // Log before update
+        Log::info('Updating user:', ['attributes' => $attributes]);
+
+        // Update pengepul data except foto_profil
+        $pengepul->update($request->except('foto_profil'));
+
+        // Handle file upload
+        if ($request->hasFile('foto_profil')) {
+            if ($pengepul->foto_profil) {
+                Storage::delete('foto_profil/' . $pengepul->foto_profil);
+            }
+
+            $extension = $request->file('foto_profil')->getClientOriginalExtension();
+            $newName = $request->nama . '-' . now()->timestamp . '.' . $extension;
+            $request->file('foto_profil')->storeAs('foto_profil', $newName);
+            $pengepul->foto_profil = $newName;
+        }
+
+        // Save changes
+        $pengepul->save();
+
+        // Log after update
+        Log::info('Updated user:', ['pengepul' => $pengepul->toArray()]);
+
+        session()->flash('status', 'success');
+        session()->flash('message', 'Edit data success!');
+        return back()->with('success', 'Profile successfully updated');
     }
 }

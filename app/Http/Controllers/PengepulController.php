@@ -91,7 +91,7 @@ class PengepulController extends Controller
             ],
             'alamat' => ['max:100'],
             'username' => ['max:20'],
-            'no_hp' => ['numeric'],
+            'no_hp' => ['nullable'],
             'no_rek' => ['numeric'],
             'foto_profil' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
