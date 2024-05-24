@@ -24,6 +24,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MarketController;
 use App\Http\Controllers\PetaniController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PengepulController;
@@ -34,19 +35,13 @@ Route::get('/', function () {
 	return redirect('/dashboard');
 })->middleware('auth');
 
-Route::get('/send-test-email', function () {
-	Mail::raw('This is a test email', function ($message) {
-		$message->to('your_email@gmail.com')
-			->subject('Test Email');
-	});
-	return 'Test email sent';
-});
-
-
 // Admin
 
 Route::get('/register', [RegisterController::class, 'create'])->middleware('guest')->name('register');
 Route::post('/register', [RegisterController::class, 'store'])->middleware('guest')->name('register.perform');
+Route::get('/market', [MarketController::class, 'index'])->name('market');
+Route::get('/market/products', [MarketController::class, 'products'])->name('products.shop');
+Route::get('/market/product-detail', [MarketController::class, 'productDetail'])->name('product.shop.detail');
 
 Route::get('/login', [LoginController::class, 'show'])->middleware('guest')->name('login');
 Route::post('/login', [LoginController::class, 'login'])->middleware('guest')->name('login.perform');
