@@ -18,9 +18,9 @@
           class="nav-link {{ Route::currentRouteName() == 'market' ? 'active' : '' }}">Home</a>
         <a href="{{ route('products.shop') }}"
           class="nav-item nav-link {{ Route::currentRouteName() == 'products.shop' ? 'active' : '' }}">Shop</a>
-        <a href="{{ route('product.shop.detail') }}"
+        {{-- <a href="{{ route('product.shop.detail') }}"
           class="nav-item nav-link {{ Route::currentRouteName() == 'product.shop.detail' ? 'active' : '' }}">Shop
-          Detail</a>
+          Detail</a> --}}
         <div class="nav-item dropdown">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
           <div class="dropdown-menu bg-secondary rounded-0 m-0">

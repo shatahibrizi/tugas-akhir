@@ -13,7 +13,7 @@
             <input class="form-control border-secondary w-75 border-1 rounded-1 px-4 py-3" type="number"
               placeholder="Search" />
             <button type="submit"
-              class="btn btn-primary border-secondary position-absolute h-100 rounded-end border-2 px-4 py-3 text-white"
+              class="btn btn-primary border-secondary border-start-0 position-absolute h-100 rounded-end px-4 py-3 text-white"
               style="top: 0; right: 25%">
               Submit Now
             </button>
@@ -112,30 +112,19 @@
           <div class="col-lg-8 text-end">
             <ul class="nav nav-pills d-inline-flex mb-5 text-center">
               <li class="nav-item">
-                <a class="d-flex bg-light rounded-pill active m-2 py-2" data-bs-toggle="pill" href="#tab-1">
+                <a class="d-flex bg-light rounded-pill {{ Request::get('kategori') == null ? 'active' : '' }} m-2 py-2"
+                  data-bs-toggle="pill" href="{{ route('market') }}">
                   <span class="text-dark" style="width: 130px">All Products</span>
                 </a>
               </li>
-              <li class="nav-item">
-                <a class="d-flex bg-light rounded-pill m-2 py-2" data-bs-toggle="pill" href="#tab-2">
-                  <span class="text-dark" style="width: 130px">Vegetables</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="d-flex bg-light rounded-pill m-2 py-2" data-bs-toggle="pill" href="#tab-3">
-                  <span class="text-dark" style="width: 130px">Fruits</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="d-flex bg-light rounded-pill m-2 py-2" data-bs-toggle="pill" href="#tab-4">
-                  <span class="text-dark" style="width: 130px">Bread</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="d-flex bg-light rounded-pill m-2 py-2" data-bs-toggle="pill" href="#tab-5">
-                  <span class="text-dark" style="width: 130px">Meat</span>
-                </a>
-              </li>
+              @foreach ($kategori as $category)
+                <li class="nav-item">
+                  <a class="d-flex bg-light rounded-pill {{ Request::get('kategori') == $category ? 'active' : '' }} m-2 py-2"
+                    href="{{ route('market', ['kategori' => $category]) }}">
+                    <span class="text-dark" style="width: 130px">{{ $category }}</span>
+                  </a>
+                </li>
+              @endforeach
             </ul>
           </div>
         </div>
@@ -144,446 +133,44 @@
             <div class="row g-4">
               <div class="col-lg-12">
                 <div class="row g-4">
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-5.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Grapes</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
+                  @foreach ($products as $item)
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                      <a href="product-detail/{{ $item->id_produk }}" class="text-decoration-none">
+                        <div
+                          class="position-relative fruite-item d-flex flex-column h-100 border-secondary rounded border">
+                          <div class="fruite-img" style="max-height: 180px; overflow: hidden;">
+                            <!-- Mengatur max-height dan overflow -->
+                            @if ($item->foto_produk != '')
+                              <img src="{{ asset('storage/foto_produk/' . $item->foto_produk) }}"
+                                class="img-fluid w-100 rounded-top" style="object-fit: cover;"
+                                alt="{{ $item->nama_produk }}"> <!-- Penambahan object-fit -->
+                            @else
+                              <img src="{{ asset('storage/photo/default-product.jpg') }}"
+                                class="img-fluid w-100 rounded-top" style="object-fit: cover;"
+                                alt="{{ $item->nama_produk }}"> <!-- Penambahan object-fit -->
+                            @endif
+                          </div>
+                          <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
+                            style="top: 10px; left: 10px;">
+                            {{ $item['kategori']['nama'] }}
+                          </div>
+                          <div class="rounded-bottom d-flex flex-column flex-grow-1 p-4">
+                            <h4>{{ $item->nama_produk }}</h4>
+                            <p class="flex-grow-1">
+                              {{ $item->deskripsi }}
+                            </p>
+                            <div class="d-flex flex-column align-items-center">
+                              <p class="text-dark fs-5 fw-bold mb-2">Rp.{{ $item->harga }} / kg</p>
+                              <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"
+                                style="margin-top: 10px;">
+                                <i class="fa fa-shopping-bag text-primary me-2"></i> Add to cart
+                              </a>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      </a>
                     </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-5.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Grapes</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-2.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Raspberries</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-4.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Apricots</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-3.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Banana</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-1.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Oranges</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-2.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Raspberries</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-5.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Grapes</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div id="tab-2" class="tab-pane fade show p-0">
-            <div class="row g-4">
-              <div class="col-lg-12">
-                <div class="row g-4">
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-5.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Grapes</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-2.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Raspberries</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div id="tab-3" class="tab-pane fade show p-0">
-            <div class="row g-4">
-              <div class="col-lg-12">
-                <div class="row g-4">
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-1.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Oranges</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-6.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Apple</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div id="tab-4" class="tab-pane fade show p-0">
-            <div class="row g-4">
-              <div class="col-lg-12">
-                <div class="row g-4">
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-5.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Grapes</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-4.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Apricots</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div id="tab-5" class="tab-pane fade show p-0">
-            <div class="row g-4">
-              <div class="col-lg-12">
-                <div class="row g-4">
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-3.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Banana</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-2.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Raspberries</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="position-relative fruite-item rounded">
-                      <div class="fruite-img">
-                        <img src="{{ asset('markets/img/fruite-item-1.jpg') }} " class="img-fluid w-100 rounded-top"
-                          alt="" />
-                      </div>
-                      <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                        style="top: 10px; left: 10px">
-                        Fruits
-                      </div>
-                      <div class="border-secondary border-top-0 rounded-bottom border p-4">
-                        <h4>Oranges</h4>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod
-                          te incididunt
-                        </p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                          <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                              class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  @endforeach
                 </div>
               </div>
             </div>
@@ -592,6 +179,7 @@
       </div>
     </div>
   </div>
+
   <!-- Fruits Shop End-->
 
   <!-- Vesitable Shop Start-->
@@ -599,166 +187,35 @@
     <div class="container py-5">
       <h1 class="mb-0">Fresh Organic Vegetables</h1>
       <div class="owl-carousel vegetable-carousel justify-content-center">
-        <div class="border-primary position-relative vesitable-item rounded border">
-          <div class="vesitable-img">
-            <img src="{{ asset('markets/img/vegetable-item-6.jpg') }} " class="img-fluid w-100 rounded-top"
-              alt="" />
-          </div>
-          <div class="bg-primary position-absolute rounded px-3 py-1 text-white" style="top: 10px; right: 10px">
-            Vegetable
-          </div>
-          <div class="rounded-bottom p-4">
-            <h4>Parsely</h4>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt
-            </p>
-            <div class="d-flex justify-content-between flex-lg-wrap">
-              <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-              <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                  class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
+        @foreach ($vegetables as $item)
+          <div class="border-primary position-relative vesitable-item h-100 d-flex flex-column rounded border">
+            <div class="vesitable-img">
+              @if ($item->foto_produk != '')
+                <img src="{{ asset('storage/foto_produk/' . $item->foto_produk) }}" class="img-fluid w-100 rounded-top"
+                  alt="{{ $item->nama_produk }}">
+              @else
+                <img src="{{ asset('storage/photo/default-product.jpg') }}" class="img-fluid w-100 rounded-top"
+                  alt="{{ $item->nama_produk }}">
+              @endif
+            </div>
+            <div class="bg-primary position-absolute rounded px-3 py-1 text-white" style="top: 10px; right: 10px">
+              Vegetable
+            </div>
+            <div class="rounded-bottom d-flex flex-column flex-grow-1 p-4">
+              <h4>{{ $item->nama_produk }}</h4>
+              <p class="flex-grow-1">
+                {{ $item->deskripsi }}
+              </p>
+              <div class="d-flex flex-column align-items-center">
+                <p class="text-dark fs-5 fw-bold mb-2">${{ $item->harga }} / kg</p>
+                <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"
+                  style="margin-top: 10px;">
+                  <i class="fa fa-shopping-bag text-primary me-2"></i> Add to cart
+                </a>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="border-primary position-relative vesitable-item rounded border">
-          <div class="vesitable-img">
-            <img src="{{ asset('markets/img/vegetable-item-1.jpg') }} " class="img-fluid w-100 rounded-top"
-              alt="" />
-          </div>
-          <div class="bg-primary position-absolute rounded px-3 py-1 text-white" style="top: 10px; right: 10px">
-            Vegetable
-          </div>
-          <div class="rounded-bottom p-4">
-            <h4>Parsely</h4>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt
-            </p>
-            <div class="d-flex justify-content-between flex-lg-wrap">
-              <p class="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-              <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                  class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="border-primary position-relative vesitable-item rounded border">
-          <div class="vesitable-img">
-            <img src="{{ asset('markets/img/vegetable-item-3.png') }} " class="img-fluid w-100 rounded-top bg-light"
-              alt="" />
-          </div>
-          <div class="bg-primary position-absolute rounded px-3 py-1 text-white" style="top: 10px; right: 10px">
-            Vegetable
-          </div>
-          <div class="rounded-bottom p-4">
-            <h4>Banana</h4>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt
-            </p>
-            <div class="d-flex justify-content-between flex-lg-wrap">
-              <p class="text-dark fs-5 fw-bold mb-0">$7.99 / kg</p>
-              <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                  class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="border-primary position-relative vesitable-item rounded border">
-          <div class="vesitable-img">
-            <img src="{{ asset('markets/img/vegetable-item-4.jpg') }} " class="img-fluid w-100 rounded-top"
-              alt="" />
-          </div>
-          <div class="bg-primary position-absolute rounded px-3 py-1 text-white" style="top: 10px; right: 10px">
-            Vegetable
-          </div>
-          <div class="rounded-bottom p-4">
-            <h4>Bell Papper</h4>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt
-            </p>
-            <div class="d-flex justify-content-between flex-lg-wrap">
-              <p class="text-dark fs-5 fw-bold mb-0">$7.99 / kg</p>
-              <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                  class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="border-primary position-relative vesitable-item rounded border">
-          <div class="vesitable-img">
-            <img src="{{ asset('markets/img/vegetable-item-5.jpg') }} " class="img-fluid w-100 rounded-top"
-              alt="" />
-          </div>
-          <div class="bg-primary position-absolute rounded px-3 py-1 text-white" style="top: 10px; right: 10px">
-            Vegetable
-          </div>
-          <div class="rounded-bottom p-4">
-            <h4>Potatoes</h4>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt
-            </p>
-            <div class="d-flex justify-content-between flex-lg-wrap">
-              <p class="text-dark fs-5 fw-bold mb-0">$7.99 / kg</p>
-              <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                  class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="border-primary position-relative vesitable-item rounded border">
-          <div class="vesitable-img">
-            <img src="{{ asset('markets/img/vegetable-item-6.jpg') }} " class="img-fluid w-100 rounded-top"
-              alt="" />
-          </div>
-          <div class="bg-primary position-absolute rounded px-3 py-1 text-white" style="top: 10px; right: 10px">
-            Vegetable
-          </div>
-          <div class="rounded-bottom p-4">
-            <h4>Parsely</h4>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt
-            </p>
-            <div class="d-flex justify-content-between flex-lg-wrap">
-              <p class="text-dark fs-5 fw-bold mb-0">$7.99 / kg</p>
-              <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                  class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="border-primary position-relative vesitable-item rounded border">
-          <div class="vesitable-img">
-            <img src="{{ asset('markets/img/vegetable-item-5.jpg') }} " class="img-fluid w-100 rounded-top"
-              alt="" />
-          </div>
-          <div class="bg-primary position-absolute rounded px-3 py-1 text-white" style="top: 10px; right: 10px">
-            Vegetable
-          </div>
-          <div class="rounded-bottom p-4">
-            <h4>Potatoes</h4>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt
-            </p>
-            <div class="d-flex justify-content-between flex-lg-wrap">
-              <p class="text-dark fs-5 fw-bold mb-0">$7.99 / kg</p>
-              <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                  class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-            </div>
-          </div>
-        </div>
-        <div class="border-primary position-relative vesitable-item rounded border">
-          <div class="vesitable-img">
-            <img src="{{ asset('markets/img/vegetable-item-6.jpg') }} " class="img-fluid w-100 rounded-top"
-              alt="" />
-          </div>
-          <div class="bg-primary position-absolute rounded px-3 py-1 text-white" style="top: 10px; right: 10px">
-            Vegetable
-          </div>
-          <div class="rounded-bottom p-4">
-            <h4>Parsely</h4>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt
-            </p>
-            <div class="d-flex justify-content-between flex-lg-wrap">
-              <p class="text-dark fs-5 fw-bold mb-0">$7.99 / kg</p>
-              <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"><i
-                  class="fa fa-shopping-bag text-primary me-2"></i> Add to cart</a>
-            </div>
-          </div>
-        </div>
+        @endforeach
       </div>
     </div>
   </div>
@@ -1159,4 +616,35 @@
   </div>
   <!-- Tastimonial End -->
   @include('layouts.footers.market.footer')
+@endsection
+
+@section('scripts')
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Menangkap klik pada tautan kategori
+      $('.category-filter').click(function(event) {
+        event.preventDefault(); // Mencegah perilaku default dari tautan
+
+        var category = $(this).data('category'); // Mendapatkan kategori dari data-category
+
+        // Melakukan permintaan AJAX
+        $.ajax({
+          url: "{{ route('market') }}", // Menggunakan route 'market' yang sesuai
+          method: 'GET',
+          data: {
+            kategori: category
+          }, // Mengirim kategori yang dipilih ke controller
+          success: function(response) {
+            // Memperbarui bagian tampilan produk dengan daftar produk yang diperoleh
+            $('#product-container').html(response);
+          },
+          error: function(xhr, status, error) {
+            // Handle error jika ada
+            console.error(error);
+          }
+        });
+      });
+    });
+  </script>
 @endsection

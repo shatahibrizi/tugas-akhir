@@ -45,4 +45,8 @@
 
   <!-- Template Javascript -->
   <script src="{{ asset('markets/js/main.js') }}"></script>
+  @stack('js');
+  @yield('scripts')
 </body>
+
+</html>

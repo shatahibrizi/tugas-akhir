@@ -128,18 +128,43 @@
     });
 
     // Product Quantity
-    $(".quantity button").on("click", function () {
-        var button = $(this);
-        var oldValue = button.parent().parent().find("input").val();
-        if (button.hasClass("btn-plus")) {
-            var newVal = parseFloat(oldValue) + 1;
-        } else {
-            if (oldValue > 0) {
-                var newVal = parseFloat(oldValue) - 1;
-            } else {
-                newVal = 0;
-            }
+    document.addEventListener("DOMContentLoaded", function () {
+        const quantityInput = document.getElementById("quantity-input");
+        const totalPriceElement = document.getElementById("total-price");
+        const pricePerUnit = parseFloat(totalPriceElement.dataset.pricePerUnit);
+
+        function updateTotalPrice() {
+            const quantity = parseInt(quantityInput.value, 10);
+            const totalPrice = pricePerUnit * quantity;
+            totalPriceElement.textContent = totalPrice.toLocaleString("id-ID");
         }
-        button.parent().parent().find("input").val(newVal);
+
+        $(".quantity button").on("click", function () {
+            var button = $(this);
+            var oldValue = button.parent().parent().find("input").val();
+            var newVal;
+
+            if (button.hasClass("btn-plus")) {
+                newVal = parseInt(oldValue, 10) + 1;
+            } else {
+                if (parseInt(oldValue, 10) > 1) {
+                    newVal = parseInt(oldValue, 10) - 1;
+                } else {
+                    newVal = 1; // Tetap 1 karena minimal jumlah adalah 1
+                }
+            }
+
+            button.parent().parent().find("input").val(newVal);
+            updateTotalPrice(); // Panggil fungsi untuk memperbarui total harga
+        });
+
+        quantityInput.addEventListener("input", function () {
+            updateTotalPrice();
+        });
+    });
+
+    $("#nav-tab a").on("click", function (e) {
+        e.preventDefault();
+        $(this).tab("show");
     });
 })(jQuery);

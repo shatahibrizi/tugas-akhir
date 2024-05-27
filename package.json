@@ -4,12 +4,15 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "format": "prettier --write resources/**/*.blade.php"
+        "format": "prettier --write resources/**/*.blade.php",
+        "build-css": "node-sass --output-style compressed public/markets/scss/bootstrap.scss public/markets/css/bootstrap.min.css",
+        "watch-css": "node-sass --output-style compressed --watch public/markets/scss/bootstrap.scss public/markets/css/bootstrap.min.css"
     },
     "devDependencies": {
         "@shufo/prettier-plugin-blade": "^1.14.1",
         "axios": "^1.6.4",
         "laravel-vite-plugin": "^1.0.0",
+        "node-sass": "^9.0.0",
         "prettier": "^3.2.5",
         "vite": "^5.0.0"
     }

@@ -71,7 +71,7 @@ class ProductController extends Controller
         }
 
         // Lakukan query dan ambil hasil
-        $products = $productQuery->paginate(10);
+        $products = $productQuery->paginate(5);
 
         // Ambil semua nama petani
         $allPetani = Petani::pluck('nama');

@@ -41,7 +41,7 @@ Route::get('/register', [RegisterController::class, 'create'])->middleware('gues
 Route::post('/register', [RegisterController::class, 'store'])->middleware('guest')->name('register.perform');
 Route::get('/market', [MarketController::class, 'index'])->name('market');
 Route::get('/market/products', [MarketController::class, 'products'])->name('products.shop');
-Route::get('/market/product-detail', [MarketController::class, 'productDetail'])->name('product.shop.detail');
+Route::get('/market/product-detail/{id_produk}', [MarketController::class, 'productDetail'])->name('product.shop.detail');
 
 Route::get('/login', [LoginController::class, 'show'])->middleware('guest')->name('login');
 Route::post('/login', [LoginController::class, 'login'])->middleware('guest')->name('login.perform');
