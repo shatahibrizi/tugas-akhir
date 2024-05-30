@@ -112,15 +112,6 @@ class MarketController extends Controller
         return view('market.products', ['products' => $products, 'petani' => $allPetani, 'kategori' => $allKategori, 'vegetables' => $vegetables]);
     }
 
-    function show($id_produk)
-    {
-        $products = Product::with(
-            ['petani', 'kategori']
-        )->findOrFail($id_produk);
-        return view('pengepul.product.product-detail', ['products' => $products]);
-    }
-
-
     public function productDetail($id_produk)
     {
         $product = Product::with(

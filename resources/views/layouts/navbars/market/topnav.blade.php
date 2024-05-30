@@ -18,9 +18,6 @@
           class="nav-link {{ Route::currentRouteName() == 'market' ? 'active' : '' }}">Home</a>
         <a href="{{ route('products.shop') }}"
           class="nav-item nav-link {{ Route::currentRouteName() == 'products.shop' ? 'active' : '' }}">Shop</a>
-        {{-- <a href="{{ route('product.shop.detail') }}"
-          class="nav-item nav-link {{ Route::currentRouteName() == 'product.shop.detail' ? 'active' : '' }}">Shop
-          Detail</a> --}}
         <div class="nav-item dropdown">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
           <div class="dropdown-menu bg-secondary rounded-0 m-0">
@@ -43,13 +40,23 @@
             class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"
             style="top: -5px; left: 15px; height: 20px; min-width: 20px">3</span>
         </a>
-        <a href="#" class="my-auto">
-          <i class="fas fa-user fa-2x"></i>
+        @if (auth()->guard('pembeli')->check())
+          <a href="{{ route('pembeli.profile', ['id_pembeli' => auth()->guard('pembeli')->id()]) }}"
+            class="position-relative my-auto me-4">
+          @else
+            <a href="{{ route('pembeli.login') }}" class="position-relative my-auto me-4">
+        @endif
+        <i class="fas fa-user fa-2x"></i>
         </a>
+        <!-- Logout Button Start -->
+        <form method="POST" action="{{ route('pembeli.logout') }}">
+          @csrf
+          <button type="submit" class="btn btn-link p-0">
+            <i class="fas fa-sign-out-alt fa-2x text-primary"></i>
+          </button>
+        </form>
+        <!-- Logout Button End -->
       </div>
     </div>
   </nav>
 </div>
-<!-- Navbar End -->
-
-<!-- Modal Search End -->

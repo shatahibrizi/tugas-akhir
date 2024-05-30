@@ -44,6 +44,10 @@ return [
             'driver' => 'session',
             'provider' => 'admins',
         ],
+        'pembeli' => [
+            'driver' => 'session',
+            'provider' => 'pembelis',
+        ],
     ],
 
     /*
@@ -72,6 +76,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
         ],
+        'pembelis' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Pembeli::class,
+        ]
 
         // 'users' => [
         //     'driver' => 'database',
@@ -106,6 +114,12 @@ return [
         ],
         'admins' => [
             'provider' => 'admins',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'pembelis' => [
+            'provider' => 'pembelis',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class UserProfileController extends Controller
 {
-    public function show($id_pengepul)
+    public function edit($id_pengepul)
     {
         $pengepul = User::findOrFail($id_pengepul);
         return view('pengepul.user-profile', ['pengepul' => $pengepul]);

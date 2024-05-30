@@ -115,7 +115,7 @@
       </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ route('sign-up-static') }}">
+        <a class="nav-link" href="{{ route('page', ['page' => 'pengepul'])  }}">
           <div
             class="icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center">
             <i class="fa fa-users text-info text-sm opacity-10"></i>

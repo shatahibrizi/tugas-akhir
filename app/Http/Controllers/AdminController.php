@@ -46,8 +46,6 @@ class AdminController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-
-
         if (auth()->guard('admin')->attempt($credentials)) {
             // Autentikasi berhasil
 

@@ -17,7 +17,9 @@ class Admin extends Authenticatable
 
     protected $fillable = [
         'email',
-        'password'
+        'password',
+        'username',
+        'nama'
     ];
 
     function pengepul()
