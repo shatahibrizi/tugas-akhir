@@ -48,6 +48,10 @@ Route::group(['middleware' => 'pembeli'], function () {
 	Route::get('/profile/{id_pembeli}', [PembeliController::class, 'edit'])->name('pembeli.profile');
 	Route::put('/profile/{id_pembeli}', [PembeliController::class, 'update'])->name('pembeli.profile.update');
 	Route::post('/logout', [PembeliController::class, 'logout'])->name('pembeli.logout');
+	Route::get('/cart', [MarketController::class, 'cart'])->name('cart');
+	Route::get('/product/{id_produk}', [MarketController::class, 'addProducttoCart'])->name('addProduct.to.cart');
+	Route::put('/update-shopping-cart', [MarketController::class, 'updateCart'])->name('update.sopping.cart');
+	Route::delete('/delete-cart-product', [MarketController::class, 'deleteProduct'])->name('delete.cart.product');
 });
 
 // Admin

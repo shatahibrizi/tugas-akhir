@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Petani;
+use App\Models\Pembeli;
 use App\Models\Product;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
@@ -120,5 +121,56 @@ class MarketController extends Controller
 
         $products = Product::with(['petani', 'kategori'])->get();
         return view('market.product-detail', ['product' => $product, 'products' => $products]);
+    }
+
+    public function cart()
+    {
+        $pembeli = Pembeli::find(auth()->guard('pembeli')->user()->id_pembeli); // Asumsi pembeli terautentikasi
+
+        // Mengambil alamat pembeli
+        $alamat = $pembeli ? $pembeli->alamat : null;
+
+        // Mengembalikan view 'market.cart' dengan data alamat
+        return view('market.cart', compact('alamat'));
+    }
+
+    public function addProducttoCart($id_produk)
+    {
+        $product = Product::findOrFail($id_produk);
+        $cart = session()->get('cart', []);
+        if (isset($cart[$id_produk])) {
+            $cart[$id_produk]['quantity']++;
+        } else {
+            $cart[$id_produk] = [
+                "nama_produk" => $product->nama_produk,
+                "quantity" => 1,
+                "harga" => $product->harga,
+                "foto_produk" => $product->foto_produk
+            ];
+        }
+        session()->put('cart', $cart);
+        return redirect()->back()->with('success', 'Product has been added to cart!');
+    }
+
+    public function updateCart(Request $request)
+    {
+        if ($request->id_produk && $request->quantity) {
+            $cart = session()->get('cart');
+            $cart[$request->id_produkj]["quantity"] = $request->quantity;
+            session()->put('cart', $cart);
+            session()->flash('success', 'Product added to cart.');
+        }
+    }
+
+    public function deleteProduct(Request $request)
+    {
+        if ($request->id) {
+            $cart = session()->get('cart');
+            if (isset($cart[$request->id])) {
+                unset($cart[$request->id]);
+                session()->put('cart', $cart);
+            }
+            session()->flash('success', 'Product successfully deleted.');
+        }
     }
 }

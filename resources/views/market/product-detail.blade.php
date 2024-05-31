@@ -166,7 +166,8 @@
                   <h6>Total harga: </h6>
                   <h5 id="total-price" data-price-per-unit="{{ $product->harga }}">Rp.{{ $product->harga }}</h5>
                 </div>
-                <a href="#" class="btn border-secondary rounded-pill text-primary w-100 mb-4 border py-2">
+                <a href="{{ route('addProduct.to.cart', $product->id_produk) }}"
+                  class="btn border-secondary rounded-pill text-primary w-100 mb-4 border py-2">
                   <i class="fa fa-shopping-bag text-primary me-2"></i> Add to cart
                 </a> <!-- Penutup tag <a> -->
               </div>

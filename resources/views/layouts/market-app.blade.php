@@ -17,6 +17,12 @@
   <!-- Icon Font Stylesheet -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
+  <!-- Nucleo Icons -->
+  <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
+  <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
 
   <!-- Libraries Stylesheet -->
   <link href="{{ asset('markets/lib/lightbox/css/lightbox.min.css') }}" rel="stylesheet" />

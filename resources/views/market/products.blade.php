@@ -131,7 +131,8 @@
                               <p class="flex-grow-1">{{ $item->deskripsi }}</p>
                               <div class="d-flex flex-column align-items-center">
                                 <p class="text-dark fs-5 fw-bold mb-2">Rp.{{ $item->harga }} / kg</p>
-                                <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"
+                                <a href="{{ route('addProduct.to.cart', $item->id_produk) }}"
+                                  class="btn border-secondary rounded-pill text-primary border px-3"
                                   style="margin-top: 10px;">
                                   <i class="fa fa-shopping-bag text-primary me-2"></i> Add to cart
                                 </a>

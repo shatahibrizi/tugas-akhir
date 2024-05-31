@@ -34,11 +34,11 @@
           <input type="text" class="form-control" placeholder="Type here...">
           <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
         </div>
-        <a href="#" class="position-relative my-auto me-4">
+        <a href="{{ route('cart') }}" class="position-relative my-auto me-4">
           <i class="fa fa-shopping-bag fa-2x"></i>
           <span
             class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"
-            style="top: -5px; left: 15px; height: 20px; min-width: 20px">3</span>
+            style="top: -5px; left: 15px; height: 20px; min-width: 20px">{{ count((array) session('cart')) }}</span>
         </a>
         @if (auth()->guard('pembeli')->check())
           <a href="{{ route('pembeli.profile', ['id_pembeli' => auth()->guard('pembeli')->id()]) }}"
