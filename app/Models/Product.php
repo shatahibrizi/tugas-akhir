@@ -32,7 +32,8 @@ class Product extends Model
 
     public function pembeli()
     {
-        return $this->belongsToMany(Pembeli::class, 'pesanan', 'id_produk', 'id_pembeli');
+        return $this->belongsToMany(Pembeli::class, 'pesanan', 'id_produk', 'id_pembeli')->withPivot('jumlah', 'status', 'tanggal_pesanan', 'metode_pembayaran', 'total_harga')
+            ->withTimestamps();;
     }
 
     public function petani()

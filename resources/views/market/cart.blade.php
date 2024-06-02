@@ -113,8 +113,10 @@
               <h5 class="mb-0 me-4 ps-4">Total</h5>
               <p class="total mb-0 pe-4">Rp.{{ number_format($total + 30000, 0, ',', '.') }}</p>
             </div>
-            <button class="btn border-secondary rounded-pill text-primary text-uppercase mb-4 ms-4 px-4 py-3"
-              type="button">Proceed Checkout</button>
+            <a href="{{ route('checkout') }}"
+              class="btn border-secondary rounded-pill text-primary text-uppercase mb-4 ms-4 px-4 py-3">
+              Proceed Checkout
+            </a>
           </div>
         </div>
       </div>
@@ -128,7 +130,6 @@
 @section('scripts')
   <script type="text/javascript">
     $(document).ready(function() {
-      // Update quantity
       $(".quantity-input").change(function(e) {
         updateQuantity($(this));
       });
@@ -150,36 +151,17 @@
         updateQuantity(input);
       });
 
-      // Delete product
-      $(".delete-product").click(function(e) {
-        e.preventDefault();
-        var ele = $(this);
-        if (confirm("Do you really want to delete?")) {
-          $.ajax({
-            url: '{{ route('delete.cart.product') }}',
-            method: "DELETE",
-            data: {
-              _token: '{{ csrf_token() }}',
-              id: ele.parents("tr").attr("rowId")
-            },
-            success: function(response) {
-              window.location.reload();
-            }
-          });
-        }
-      });
-
       function updateQuantity(ele) {
         var id = ele.data("id");
         var price = ele.data("price");
         var quantity = ele.val();
 
         $.ajax({
-          url: '{{ route('update.sopping.cart') }}',
-          method: "put",
+          url: '{{ route('update.cart') }}',
+          method: "PUT",
           data: {
             _token: '{{ csrf_token() }}',
-            id: id,
+            id_produk: id,
             quantity: quantity
           },
           success: function(response) {

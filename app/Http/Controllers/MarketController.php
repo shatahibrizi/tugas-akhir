@@ -156,9 +156,9 @@ class MarketController extends Controller
     {
         if ($request->id_produk && $request->quantity) {
             $cart = session()->get('cart');
-            $cart[$request->id_produkj]["quantity"] = $request->quantity;
+            $cart[$request->id_produk]["quantity"] = $request->quantity;
             session()->put('cart', $cart);
-            session()->flash('success', 'Product added to cart.');
+            session()->flash('success', 'Product quantity updated.');
         }
     }
 
@@ -172,5 +172,62 @@ class MarketController extends Controller
             }
             session()->flash('success', 'Product successfully deleted.');
         }
+    }
+
+    public function checkout()
+    {
+        $cart = session()->get('cart', []);
+        $pembeli = Pembeli::find(auth()->guard('pembeli')->user()->id_pembeli); // Asumsi pembeli terautentikasi
+
+        // Mengambil alamat pembeli
+        $alamat = $pembeli ? $pembeli->alamat : null;
+
+        // Calculate total price
+        $totalPrice = array_reduce($cart, function ($carry, $item) {
+            return $carry + ($item['harga'] * $item['quantity']);
+        }, 0);
+
+        // Calculate total price with shipping
+        $totalPriceWithShipping = $totalPrice + 30000; // Assuming a flat rate shipping cost of Rp. 30,000
+
+        return view('market.checkout', compact('cart', 'totalPrice', 'totalPriceWithShipping', 'alamat'));
+    }
+
+    public function placeOrder(Request $request)
+    {
+        $cart = session()->get('cart', []);
+        $user = auth()->guard('pembeli')->user(); // Assuming the user is authenticated as a buyer (pembeli)
+
+        if (empty($cart)) {
+            return redirect()->route('cart')->with('error', 'Your cart is empty!');
+        }
+
+        // Validate the request
+        $request->validate([
+            'metode_pembayaran' => 'required|in:COD,Transfer',
+        ]);
+
+        // Calculate total price
+        $totalPrice = array_reduce($cart, function ($carry, $item) {
+            return $carry + ($item['harga'] * $item['quantity']);
+        }, 0);
+
+        $totalPriceWithShipping = $totalPrice + 30000; // Assuming a flat rate shipping cost of Rp. 30,000
+
+        // Attach products to the order in the pivot table
+        foreach ($cart as $id_produk => $details) {
+            $user->product()->attach($id_produk, [
+                'jumlah' => $details['quantity'],
+                'status' => 'Diproses', // Initial status
+                'tanggal_pesanan' => now(),
+                'metode_pembayaran' => $request->metode_pembayaran,
+                'total_harga' => $totalPriceWithShipping,
+            ]);
+        }
+
+        // Clear the cart
+        session()->forget('cart');
+
+        return redirect()->route('market.landing-page')->with('success', 'Order placed successfully!');
     }
 }
