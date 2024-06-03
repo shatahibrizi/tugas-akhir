@@ -80,7 +80,7 @@
                       <h4>Farmer</h4>
                       <select name="petani" class="form-select w-100">
                         <option value="">All</option>
-                        @foreach ($petani as $petaniName)
+                        @foreach ($allPetani as $petaniName)
                           <option value="{{ $petaniName }}">{{ $petaniName }}</option>
                         @endforeach
                       </select>

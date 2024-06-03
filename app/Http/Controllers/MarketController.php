@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Petani;
 use App\Models\Pembeli;
+use App\Models\Pesanan;
 use App\Models\Product;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
@@ -12,132 +14,53 @@ class MarketController extends Controller
 {
     public function index(Request $request)
     {
-        $productQuery = Product::query();
-        if ($request->keyword) {
-            $productQuery->where('nama_produk', 'LIKE', '%' . $request->keyword . '%');
-        }
-
-        // Filter berdasarkan grade
-        if ($request->filter) {
-            $productQuery->where('grade', $request->filter);
-        }
-
-        // Filter berdasarkan harga
-        if ($request->price_filter) {
-            if ($request->price_filter === 'Below 10000') {
-                $productQuery->where('harga', '<', 10000);
-            } elseif ($request->price_filter === '10000 - 50000') {
-                $productQuery->whereBetween('harga', [10000, 50000]);
-            } elseif ($request->price_filter === 'Above 50000') {
-                $productQuery->where('harga', '>', 50000);
-            }
-        }
-
-        // Filter berdasarkan kategori
-        if ($request->kategori) {
-            $productQuery->whereHas('kategori', function ($query) use ($request) {
-                $query->where('nama', $request->kategori);
-            });
-        }
-
-        // Filter berdasarkan petani
-        if ($request->petani) {
-            $productQuery->whereHas('petani', function ($query) use ($request) {
-                $query->where('nama', $request->petani);
-            });
-        }
-
-        // Lakukan query dan ambil hasil
-        $products = $productQuery->paginate(15);
+        $products = $this->filterProducts($request)->paginate(15);
 
         $vegetables = Product::whereHas('kategori', function ($query) {
             $query->where('nama', 'sayur');
         })->get();
-        // Ambil semua nama petani
+
         $allPetani = Petani::pluck('nama');
         $allKategori = Kategori::pluck('nama');
 
-        // Kirim data ke view
-        return view('market.landing-page', ['products' => $products, 'petani' => $allPetani, 'kategori' => $allKategori, 'vegetables' => $vegetables]);
+        return view('market.landing-page', compact('products', 'allPetani', 'allKategori', 'vegetables'));
     }
 
     public function products(Request $request)
     {
-        $productQuery = Product::query();
-        if ($request->keyword) {
-            $productQuery->where('nama_produk', 'LIKE', '%' . $request->keyword . '%');
-        }
-
-        // Filter berdasarkan grade
-        if ($request->filter) {
-            $productQuery->where('grade', $request->filter);
-        }
-
-        // Filter berdasarkan harga
-        if ($request->filled('min_price') && $request->filled('max_price')) {
-            $productQuery->whereBetween('harga', [$request->min_price, $request->max_price]);
-        } elseif ($request->filled('min_price')) {
-            $productQuery->where('harga', '>=', $request->min_price);
-        } elseif ($request->filled('max_price')) {
-            $productQuery->where('harga', '<=', $request->max_price);
-        }
-
-        session()->flash('min_price', $request->min_price);
-        session()->flash('max_price', $request->max_price);
-
-        // Filter berdasarkan kategori
-        if ($request->kategori) {
-            $productQuery->whereHas('kategori', function ($query) use ($request) {
-                $query->where('nama', $request->kategori);
-            });
-        }
-
-        // Filter berdasarkan petani
-        if ($request->petani) {
-            $productQuery->whereHas('petani', function ($query) use ($request) {
-                $query->where('nama', $request->petani);
-            });
-        }
-
-        // Lakukan query dan ambil hasil
-        $products = $productQuery->paginate(9);
+        $products = $this->filterProducts($request)->paginate(9);
 
         $vegetables = Product::whereHas('kategori', function ($query) {
             $query->where('nama', 'sayur');
         })->get();
-        // Ambil semua nama petani
+
         $allPetani = Petani::pluck('nama');
         $allKategori = Kategori::pluck('nama');
 
-        // Kirim data ke view
-        return view('market.products', ['products' => $products, 'petani' => $allPetani, 'kategori' => $allKategori, 'vegetables' => $vegetables]);
+        return view('market.products', compact('products', 'allPetani', 'allKategori', 'vegetables'));
     }
 
     public function productDetail($id_produk)
     {
-        $product = Product::with(
-            ['petani', 'kategori']
-        )->findOrFail($id_produk);
-
+        $product = Product::with(['petani', 'kategori'])->findOrFail($id_produk);
         $products = Product::with(['petani', 'kategori'])->get();
-        return view('market.product-detail', ['product' => $product, 'products' => $products]);
+
+        return view('market.product-detail', compact('product', 'products'));
     }
 
     public function cart()
     {
-        $pembeli = Pembeli::find(auth()->guard('pembeli')->user()->id_pembeli); // Asumsi pembeli terautentikasi
-
-        // Mengambil alamat pembeli
+        $pembeli = $this->getAuthenticatedPembeli();
         $alamat = $pembeli ? $pembeli->alamat : null;
 
-        // Mengembalikan view 'market.cart' dengan data alamat
         return view('market.cart', compact('alamat'));
     }
 
-    public function addProducttoCart($id_produk)
+    public function addProductToCart($id_produk)
     {
         $product = Product::findOrFail($id_produk);
         $cart = session()->get('cart', []);
+
         if (isset($cart[$id_produk])) {
             $cart[$id_produk]['quantity']++;
         } else {
@@ -148,6 +71,7 @@ class MarketController extends Controller
                 "foto_produk" => $product->foto_produk
             ];
         }
+
         session()->put('cart', $cart);
         return redirect()->back()->with('success', 'Product has been added to cart!');
     }
@@ -177,18 +101,11 @@ class MarketController extends Controller
     public function checkout()
     {
         $cart = session()->get('cart', []);
-        $pembeli = Pembeli::find(auth()->guard('pembeli')->user()->id_pembeli); // Asumsi pembeli terautentikasi
-
-        // Mengambil alamat pembeli
+        $pembeli = $this->getAuthenticatedPembeli();
         $alamat = $pembeli ? $pembeli->alamat : null;
 
-        // Calculate total price
-        $totalPrice = array_reduce($cart, function ($carry, $item) {
-            return $carry + ($item['harga'] * $item['quantity']);
-        }, 0);
-
-        // Calculate total price with shipping
-        $totalPriceWithShipping = $totalPrice + 30000; // Assuming a flat rate shipping cost of Rp. 30,000
+        $totalPrice = $this->calculateTotalPrice($cart);
+        $totalPriceWithShipping = $totalPrice + 30000; // Flat rate shipping
 
         return view('market.checkout', compact('cart', 'totalPrice', 'totalPriceWithShipping', 'alamat'));
     }
@@ -196,7 +113,7 @@ class MarketController extends Controller
     public function placeOrder(Request $request)
     {
         $cart = session()->get('cart', []);
-        $user = auth()->guard('pembeli')->user(); // Assuming the user is authenticated as a buyer (pembeli)
+        $user = auth()->guard('pembeli')->user();
 
         if (empty($cart)) {
             return redirect()->route('cart')->with('error', 'Your cart is empty!');
@@ -208,26 +125,112 @@ class MarketController extends Controller
         ]);
 
         // Calculate total price
-        $totalPrice = array_reduce($cart, function ($carry, $item) {
-            return $carry + ($item['harga'] * $item['quantity']);
-        }, 0);
+        $totalPrice = $this->calculateTotalPrice($cart);
+        $totalPriceWithShipping = $totalPrice + 30000; // Flat rate shipping cost
 
-        $totalPriceWithShipping = $totalPrice + 30000; // Assuming a flat rate shipping cost of Rp. 30,000
+        // Create an order with the application's timezone
+        $order = Pesanan::create([
+            'id_pembeli' => $user->id_pembeli,
+            'status' => 'Diproses', // Initial status
+            'metode_pembayaran' => $request->metode_pembayaran,
+            'total_harga' => $totalPriceWithShipping,
+            'tanggal_pesanan' => now(), // Use now() to get the current time in the app's timezone
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
 
-        // Attach products to the order in the pivot table
+        // Process each product in the cart
         foreach ($cart as $id_produk => $details) {
-            $user->product()->attach($id_produk, [
+            // Fetch the product
+            $product = Product::findOrFail($id_produk);
+
+            // Check if stock is sufficient
+            if ($product->jumlah < $details['quantity']) {
+                return redirect()->route('cart')->with('error', 'Stock is insufficient for product: ' . $product->nama_produk);
+            }
+
+            // Reduce the stock
+            $product->jumlah -= $details['quantity'];
+            $product->save();
+
+            // Attach product to the order
+            $order->products()->attach($id_produk, [
                 'jumlah' => $details['quantity'],
-                'status' => 'Diproses', // Initial status
-                'tanggal_pesanan' => now(),
-                'metode_pembayaran' => $request->metode_pembayaran,
-                'total_harga' => $totalPriceWithShipping,
+                'created_at' => now(),
+                'updated_at' => now()
             ]);
         }
 
         // Clear the cart
         session()->forget('cart');
 
-        return redirect()->route('market.landing-page')->with('success', 'Order placed successfully!');
+        return redirect()->route('market')->with('success', 'Order placed successfully!');
+    }
+
+
+    public function showOrders()
+    {
+        $user = auth()->guard('pembeli')->user();
+        $orders = Pesanan::where('id_pembeli', $user->id_pembeli)
+            ->with('products')
+            ->get();
+
+        return view('market.orders', compact('orders'));
+    }
+
+
+
+
+    private function filterProducts(Request $request)
+    {
+        $productQuery = Product::query();
+
+        if ($request->keyword) {
+            $productQuery->where('nama_produk', 'LIKE', '%' . $request->keyword . '%');
+        }
+
+        if ($request->filter) {
+            $productQuery->where('grade', $request->filter);
+        }
+
+        if ($request->price_filter) {
+            switch ($request->price_filter) {
+                case 'Below 10000':
+                    $productQuery->where('harga', '<', 10000);
+                    break;
+                case '10000 - 50000':
+                    $productQuery->whereBetween('harga', [10000, 50000]);
+                    break;
+                case 'Above 50000':
+                    $productQuery->where('harga', '>', 50000);
+                    break;
+            }
+        }
+
+        if ($request->kategori) {
+            $productQuery->whereHas('kategori', function ($query) use ($request) {
+                $query->where('nama', $request->kategori);
+            });
+        }
+
+        if ($request->petani) {
+            $productQuery->whereHas('petani', function ($query) use ($request) {
+                $query->where('nama', $request->petani);
+            });
+        }
+
+        return $productQuery;
+    }
+
+    private function calculateTotalPrice($cart)
+    {
+        return array_reduce($cart, function ($carry, $item) {
+            return $carry + ($item['harga'] * $item['quantity']);
+        }, 0);
+    }
+
+    private function getAuthenticatedPembeli()
+    {
+        return Pembeli::find(auth()->guard('pembeli')->user()->id_pembeli);
     }
 }

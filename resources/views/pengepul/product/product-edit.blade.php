@@ -8,7 +8,7 @@
         <div class="card">
           <div class="card-header pb-0">
             <div class="d-flex align-items-center">
-              <p class="mb-0">Edit Profile</p>
+              <p class="mb-0">Edit Data Produk</p>
             </div>
           </div>
           @if (Session::has('status'))
@@ -16,7 +16,7 @@
               {{ Session::get('message') }}
             </div>
           @endif
-          <form method="post" action="{{ route('product.update', ['id_produk' => $products->id_produk]) }}"
+          <form method="post" action="{{ route('product.update', ['id_produk' => $product->id_produk]) }}"
             enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -33,27 +33,27 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <x-text-input label="Nama" name="nama_produk" id="nama" value="{{ $products->nama_produk }}"
+                    <x-text-input label="Nama" name="nama_produk" id="nama" value="{{ $product->nama_produk }}"
                       required />
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
-                    <x-text-input label="Harga" name="harga" id="harga" value="{{ $products->harga }}" required />
+                    <x-text-input label="Harga" name="harga" id="harga" value="{{ $product->harga }}" required />
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
-                    <x-text-input label="Jumlah" name="jumlah" id="jumlah" value="{{ $products->jumlah }}" required />
+                    <x-text-input label="Jumlah" name="jumlah" id="jumlah" value="{{ $product->jumlah }}" required />
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="grade">Grade</label>
                     <select name="grade" class="form-select" id="grade" required>
-                      <option value="A" {{ $products->grade === 'A' ? 'selected' : '' }}>A</option>
-                      <option value="B" {{ $products->grade === 'B' ? 'selected' : '' }}>B</option>
-                      <option value="C" {{ $products->grade === 'C' ? 'selected' : '' }}>C</option>
+                      <option value="A" {{ $product->grade === 'A' ? 'selected' : '' }}>A</option>
+                      <option value="B" {{ $product->grade === 'B' ? 'selected' : '' }}>B</option>
+                      <option value="C" {{ $product->grade === 'C' ? 'selected' : '' }}>C</option>
                     </select>
                   </div>
                 </div>
@@ -63,7 +63,7 @@
                   <div class="form-group">
                     <label for="kategori">Kategori</label>
                     <select name="id_kategori" class="form-select" id="kategori" required>
-                      <option selected value="{{ $products->kategori->id_kategori }}">{{ $products->kategori->nama }}
+                      <option selected value="{{ $product->kategori->id_kategori }}">{{ $product->kategori->nama }}
                       </option>
                       @foreach ($kategori as $item)
                         <option value="{{ $item->id_kategori }}">{{ $item->nama }}</option>
@@ -75,7 +75,7 @@
                   <div class="form-group">
                     <label for="petani">Petani</label>
                     <select name="id_petani" class="form-select" id="petani" required>
-                      <option selected value="{{ $products->petani->id_petani }}">{{ $products->petani->nama }}
+                      <option selected value="{{ $product->petani->id_petani }}">{{ $product->petani->nama }}
                       </option>
                       @foreach ($petani as $item)
                         <option value="{{ $item->id_petani }}">{{ $item->nama }}</option>
@@ -86,16 +86,16 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <x-text-input label="Estimasi busuk" name="estimasi_busuk" id="estimasi_busuk"
-                      value="{{ $products->estimasi_busuk }}" required />
+                      value="{{ $product->estimasi_busuk }}" required />
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <x-large-text-input label="Deskripsi Produk" name="deskripsi" id="deskripsi"
-                      value="{{ $products->deskripsi }}" />
+                      value="{{ $product->deskripsi }}" />
                   </div>
                 </div>
-                {{-- {{ dd($products->deskripsi) }} --}}
+                {{-- {{ dd($product->deskripsi) }} --}}
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="foto_produk">Foto produk</label>

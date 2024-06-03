@@ -29,9 +29,8 @@ class Pembeli extends Authenticatable
     ];
 
 
-    public function product()
+    public function pesanan()
     {
-        return $this->belongsToMany(Product::class, 'pesanan', 'id_pembeli', 'id_produk')->withPivot('jumlah', 'status', 'tanggal_pesanan', 'metode_pembayaran', 'total_harga')
-            ->withTimestamps();;
+        return $this->hasMany(Pesanan::class, 'id_pembeli', 'id_pembeli');
     }
 }

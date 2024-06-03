@@ -34,7 +34,7 @@
                   <select name="kategori" class="form-select" id="kategori" style="width: 10%;">
                     <!-- Menyesuaikan lebar select -->
                     <option value="" selected disabled hidden>Kategori</option>
-                    @foreach ($kategori as $item)
+                    @foreach ($allKategori as $item)
                       <option value="{{ $item }}">{{ $item }}</option>
                     @endforeach
                   </select>
@@ -48,7 +48,7 @@
                   <select name="petani" class="form-select" id="petani" style="width: 10%;">
                     <!-- Menyesuaikan lebar select -->
                     <option value="" selected disabled hidden>Petani</option>
-                    @foreach ($petani as $item)
+                    @foreach ($allPetani as $item)
                       <option value="{{ $item }}">{{ $item }}</option>
                     @endforeach
                   </select>

@@ -82,8 +82,8 @@
                   </div>
                 </div>
                 <div class="border-top border-bottom d-flex justify-content-between mb-4 py-4">
-                  <h5 class="mb-0 me-4 ps-4">Total</h5>
-                  <p class="total mb-0 pe-4">Rp.{{ number_format($totalPriceWithShipping, 0, ',', '.') }}</p>
+                  <h5 class="mb-0 me-4">Total</h5>
+                  <p class="total mb-0">Rp.{{ number_format($totalPriceWithShipping, 0, ',', '.') }}</p>
                 </div>
               </div>
             </div>

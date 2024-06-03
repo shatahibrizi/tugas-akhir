@@ -24,15 +24,13 @@
         <h6 class="text-uppercase font-weight-bolder opacity-6 ms-2 ps-4 text-xs">Master Penjualan</h6>
       </li>
       <li class="nav-item">
-        <a class="nav-link {{ str_contains(request()->url(), 'pengepul') == true ? 'active' : '' }}"
-          href="{{ route('page', ['page' => 'pengepul']) }}">
-
+        <<a class="nav-link {{ request()->routeIs('stok.orders') ? 'active' : '' }}" href="{{ route('stok.orders') }}">
           <div
             class="icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center">
             <i class="fa fa-bar-chart text-dark text-sm opacity-10"></i>
           </div>
           <span class="nav-link-text ms-1">Pesanan</span>
-        </a>
+          </a>
       </li>
       <li class="nav-item mt-3">
         <h6 class="text-uppercase font-weight-bolder opacity-6 ms-2 ps-4 text-xs">Master Stock</h6>
@@ -115,7 +113,7 @@
       </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ route('page', ['page' => 'pengepul'])  }}">
+        <a class="nav-link" href="{{ route('page', ['page' => 'pengepul']) }}">
           <div
             class="icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center">
             <i class="fa fa-users text-info text-sm opacity-10"></i>

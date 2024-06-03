@@ -117,7 +117,7 @@
                   <span class="text-dark" style="width: 130px">All Products</span>
                 </a>
               </li>
-              @foreach ($kategori as $category)
+              @foreach ($allKategori as $category)
                 <li class="nav-item">
                   <a class="d-flex bg-light rounded-pill {{ Request::get('kategori') == $category ? 'active' : '' }} m-2 py-2"
                     href="{{ route('market', ['kategori' => $category]) }}">
@@ -161,7 +161,8 @@
                             </p>
                             <div class="d-flex flex-column align-items-center">
                               <p class="text-dark fs-5 fw-bold mb-2">Rp.{{ $item->harga }} / kg</p>
-                              <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"
+                              <a href="{{ route('addProduct.to.cart', $item->id_produk) }}"
+                                class="btn border-secondary rounded-pill text-primary border px-3"
                                 style="margin-top: 10px;">
                                 <i class="fa fa-shopping-bag text-primary me-2"></i> Add to cart
                               </a>

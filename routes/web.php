@@ -54,6 +54,7 @@ Route::group(['middleware' => 'pembeli'], function () {
 	Route::delete('/delete-cart-product', [MarketController::class, 'deleteProduct'])->name('delete.cart.product');
 	Route::get('/checkout', [MarketController::class, 'checkout'])->name('checkout');
 	Route::post('/place-order', [MarketController::class, 'placeOrder'])->name('place.order');
+	Route::get('/orders', [MarketController::class, 'showOrders'])->name('orders');
 });
 
 // Admin
@@ -108,6 +109,8 @@ Route::prefix('stok')->group(function () {
 		Route::get('/petani-edit/{id_petani}', [PetaniController::class, 'edit'])->name('petani.edit');
 		Route::put('/petani/{id_petani}', [PetaniController::class, 'update'])->name('petani.update');
 		Route::delete('/petani-delete/{id_petani}', [PetaniController::class, 'destroy'])->name('petani.delete');
+
+		Route::get('/orders', [ProductController::class, 'orders'])->name('stok.orders');
 
 		// Pengepul CRUD routes
 		Route::group(['middleware' => 'admin'], function () {

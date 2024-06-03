@@ -231,6 +231,59 @@ pre {
     overflow: auto;
     font-size: 0.875em;
 }
+.badge {
+    display: inline-block;
+    padding: 0.55em 0.9em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.45rem;
+}
+
+.badge.bg-primary {
+    background: #fb6340;
+}
+
+.badge.bg-secondary {
+    background: #8392ab;
+}
+
+.badge.bg-success {
+    background: #2dce89;
+}
+
+.badge.bg-info {
+    background: #11cdef;
+}
+
+.badge.bg-warning {
+    background: #fb6340;
+}
+
+.badge.bg-danger {
+    background: #f5365c;
+}
+
+.badge.bg-light {
+    background: #e9ecef;
+}
+
+.badge.bg-dark {
+    background: #344767;
+}
+
+.badge.bg-white {
+    background: #fff;
+}
+
+.badge {
+    text-transform: uppercase;
+}
+
 pre code {
     font-size: inherit;
     color: inherit;
