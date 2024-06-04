@@ -29,6 +29,9 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
+            // Menyimpan id_pengepul di session
+            $pengepul = Auth::user(); // Pastikan guard yang digunakan adalah pengepul
+            session(['id_pengepul' => $pengepul->id_pengepul]);
 
             return redirect()->intended('dashboard');
         }

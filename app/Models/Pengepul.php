@@ -10,6 +10,7 @@ class Pengepul extends Model
     use HasFactory;
 
     protected $table = 'users';
+    protected $primaryKey = 'id_pengepul';
     protected $fillable = [
         'nama',
         'email',

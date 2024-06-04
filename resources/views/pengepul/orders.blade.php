@@ -1,9 +1,7 @@
 @extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-  @include('layouts.navbars.auth.topnav', ['title' => 'Product Table'])
-
-  {{-- Modal --}}
+  @include('layouts.navbars.auth.topnav', ['title' => 'Order Table'])
 
   <div class="container-fluid py-4">
     <div class="row">
@@ -34,6 +32,7 @@
                       </th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Produk</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Detail Produk</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -41,7 +40,7 @@
                       <tr>
                         <td>
                           <p class="font-weight-bold mb-0 ms-3 text-xs">
-                            {{ $loop->iteration + $orders->firstItem() - 1 }}</p>
+                            {{ $loop->iteration }}</p>
                         </td>
                         <td class="text-center align-middle">
                           <span class="text-secondary font-weight-bold text-sm">{{ $order->id_pesanan }}</span>
@@ -69,7 +68,7 @@
                         </td>
                         <td class="text-center align-middle">
                           <span
-                            class="text-secondary font-weight-bold text-sm">{{ $order->products->pluck('petani.nama')->unique()->join(', ') }}</span>
+                            class="text-secondary font-weight-bold text-sm">{{ $order->products->pluck('nama_produk')->unique()->join(', ') }}</span>
                         </td>
                         <td>
                           <ul class="list-unstyled">
@@ -87,7 +86,6 @@
           </div>
         </div>
       </div>
+      @include('layouts.footers.auth.footer')
     </div>
-    @include('layouts.footers.auth.footer')
-  </div>
-@endsection
+  @endsection

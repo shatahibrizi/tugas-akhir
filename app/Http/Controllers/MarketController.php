@@ -175,10 +175,18 @@ class MarketController extends Controller
             ->with('products')
             ->get();
 
+        error_log("Jumlah pesanan: " . $orders->count());
+
+        foreach ($orders as $order) {
+            error_log("Pesanan ID: " . $order->id_pesanan);
+            error_log("Jumlah produk dalam pesanan: " . $order->products->count());
+            foreach ($order->products as $product) {
+                error_log("Produk: " . $product->nama_produk . ", Jumlah: " . $product->pivot->jumlah);
+            }
+        }
+
         return view('market.orders', compact('orders'));
     }
-
-
 
 
     private function filterProducts(Request $request)

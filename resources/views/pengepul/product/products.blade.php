@@ -37,7 +37,7 @@
                   <select name="kategori" class="form-select" id="kategori" style="width: 10%;">
                     <!-- Menyesuaikan lebar select -->
                     <option value="" selected disabled hidden>Kategori</option>
-                    @foreach ($kategori as $item)
+                    @foreach ($allKategori as $item)
                       <option value="{{ $item }}">{{ $item }}</option>
                     @endforeach
                   </select>

@@ -34,7 +34,7 @@
             <tbody class="text-center">
               @foreach ($orders as $order)
                 <tr>
-                  <td>{{ $order->id }}</td>
+                  <td>{{ $order->id_pesanan }}</td>
                   <td>{{ \Carbon\Carbon::parse($order->created_at)->format('d-m-Y') }}</td>
                   <td>
                     @php

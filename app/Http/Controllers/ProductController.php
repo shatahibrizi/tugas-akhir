@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Petani;
+use App\Models\Pesanan;
 use App\Models\Product;
 use App\Models\Kategori;
-use App\Models\Pesanan;
+use App\Models\Pengepul;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -258,12 +259,31 @@ class ProductController extends Controller
         }
     }
 
-    public function orders()
+    public function showOrders($pengepulId)
     {
-        // Fetch all orders with their associated products
-        $orders = Pesanan::with('products', 'pembeli')->get();
+        // Mengambil pengepul berdasarkan ID
+        $pengepul = Pengepul::findOrFail($pengepulId);
 
-        // Return the view with the fetched orders
-        return view('pengepul.orders', compact('orders'));
+        // Mengambil produk yang dimiliki oleh pengepul melalui tabel pivot tambah_produk
+        $products = Product::whereHas('pengepul', function ($query) use ($pengepulId) {
+            $query->where('users.id_pengepul', $pengepulId);
+        })->get();
+
+        // Debug: Periksa apakah produk diambil dengan benar
+        error_log("Jumlah produk: " . $products->count());
+
+        // Mengambil semua pesanan yang berkaitan dengan produk-produk tersebut
+        $orders = collect();
+        foreach ($products as $product) {
+            $orders = $orders->merge($product->pesanan);
+        }
+
+        // Debug: Periksa apakah pesanan diambil dengan benar
+        error_log("Jumlah pesanan: " . $orders->count());
+
+        // Menghilangkan duplikat pesanan
+        $orders = $orders->unique('id_pesanan');
+
+        return view('pengepul.orders', compact('pengepul', 'orders'));
     }
 }

@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\Pengepul;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
@@ -25,16 +24,16 @@ class Product extends Model
         'qr_code_path',
     ];
 
-    public function pengepul()
-    {
-        return $this->belongsToMany(Pengepul::class, 'tambah_produk', 'id_produk', 'id_pengepul');
-    }
-
     public function pesanan()
     {
         return $this->belongsToMany(Pesanan::class, 'item_pesanan', 'id_produk', 'id_pesanan')
             ->withPivot('jumlah')
             ->withTimestamps();
+    }
+
+    public function pengepul()
+    {
+        return $this->belongsToMany(Pengepul::class, 'tambah_produk', 'id_produk', 'id_pengepul');
     }
 
     public function petani()

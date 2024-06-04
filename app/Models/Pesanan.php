@@ -10,6 +10,7 @@ class Pesanan extends Model
     use HasFactory;
 
     protected $table = 'pesanan';
+    protected $primaryKey = 'id_pesanan';
     protected $fillable = ['id_pembeli', 'status', 'metode_pembayaran', 'total_harga', 'tanggal_pesanan'];
 
     public function products()
