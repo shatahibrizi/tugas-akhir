@@ -1,17 +1,16 @@
-@extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
+@extends('layouts.admin-app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-  @include('layouts.navbars.auth.topnav', ['title' => 'Order Table'])
+  @include('layouts.navbars.auth.topnav', ['title' => 'All Orders'])
 
   <div class="container-fluid py-4">
     <div class="row">
       <div class="col-12">
         <div class="card mb-4">
           <div class="card-header d-flex justify-content-between align-items-center pb-0">
-            <h6>Tabel Pesanan</h6>
-            <a href="{{ route('stok.export.orders', $pengepul->id_pengepul) }}" class="btn btn-success">Ekspor ke
-              Excel</a>
+            <h6>All Orders</h6>
           </div>
+
           @if (Session::has('status'))
             <div class="alert alert-success mx-4 my-2" role="alert">
               {{ Session::get('message') }}
@@ -21,33 +20,29 @@
           <div class="card-body px-0 pb-2 pt-0">
             <div class="table-responsive p-0">
               @if ($orders->isEmpty())
-                <p class="text-center">You have no orders.</p>
+                <p class="text-center">No orders available.</p>
               @else
                 <table class="align-items-center mb-0 table">
                   <thead>
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Id Pesanan</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Tanggal
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Order ID</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Date
                       </th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Status
                       </th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Total
-                      </th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Produk
-                      </th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Nama
-                        Pembeli</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Alamat
-                        Pembeli</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Products</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Buyer Name</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Buyer Address</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Collector Name</th>
                     </tr>
                   </thead>
                   <tbody>
                     @foreach ($orders as $order)
                       <tr>
                         <td>
-                          <p class="font-weight-bold mb-0 ms-3 text-xs">
-                            {{ $loop->iteration }}</p>
+                          <p class="font-weight-bold mb-0 ms-3 text-xs">{{ $loop->iteration }}</p>
                         </td>
                         <td class="text-center align-middle">
                           <span class="text-secondary font-weight-bold text-sm">{{ $order->id_pesanan }}</span>
@@ -87,6 +82,15 @@
                         <td class="text-center align-middle">
                           <span class="text-secondary font-weight-bold text-sm">{{ $order->pembeli->alamat }}</span>
                         </td>
+                        <td class="text-center align-middle">
+                          <ul class="list-unstyled">
+                            @foreach ($order->products as $product)
+                              @foreach ($product->pengepul as $pengepul)
+                                <li class="text-secondary font-weight-bold text-sm">{{ $pengepul->nama }}</li>
+                              @endforeach
+                            @endforeach
+                          </ul>
+                        </td>
                       </tr>
                     @endforeach
                   </tbody>
@@ -96,6 +100,7 @@
           </div>
         </div>
       </div>
-      @include('layouts.footers.auth.footer')
     </div>
-  @endsection
+    @include('layouts.footers.auth.footer')
+  </div>
+@endsection

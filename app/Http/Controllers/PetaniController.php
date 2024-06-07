@@ -64,7 +64,7 @@ class PetaniController extends Controller
             session()->flash('status', 'success');
             session()->flash('message', 'add data success!');
         }
-        return redirect('/petani');
+        return redirect('/stok/petani');
     }
 
     public function edit(Request $request, $id_petani)
@@ -103,7 +103,7 @@ class PetaniController extends Controller
         session()->flash('status', 'success');
         session()->flash('message', 'edit data success!');
 
-        return redirect('/petani');
+        return redirect('/stok/petani');
     }
 
     function destroy(Request $request, $id_petani)
@@ -114,6 +114,6 @@ class PetaniController extends Controller
             session()->flash('status', 'success');
             session()->flash('message', 'delete ' . $deletedPetani->nama . ' success!');
         }
-        return redirect('/petani');
+        return redirect('/stok/petani');
     }
 }

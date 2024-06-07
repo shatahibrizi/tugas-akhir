@@ -68,6 +68,7 @@ Route::prefix('admin')->group(function () {
 		Route::post('/logout', [AdminController::class, 'logout'])->name('admin_logout');
 		Route::get('admin/profile/{id_admin}', [AdminController::class, 'edit'])->name('admin.profile');
 		Route::put('admin/profile/{id_admin}', [AdminController::class, 'update'])->name('admin.profile.update');
+		Route::get('/admin/orders', [AdminController::class, 'viewAllOrders'])->name('admin.viewAllOrders');
 	});
 });
 
@@ -111,7 +112,10 @@ Route::prefix('stok')->group(function () {
 		Route::put('/petani/{id_petani}', [PetaniController::class, 'update'])->name('petani.update');
 		Route::delete('/petani-delete/{id_petani}', [PetaniController::class, 'destroy'])->name('petani.delete');
 
+		Route::get('/pembeli', [PembeliController::class, 'daftarPembeli'])->name('pembeli.list');
 		Route::get('/{id_pengepul}/orders', [ProductController::class, 'showOrders'])->name('stok.orders');
+		Route::get('/{id_pengepul}/orders/exports', [ProductController::class, 'exportOrders'])->name('stok.export.orders');
+		Route::get('/{id_pengepul}/produk_masuk', [ProductController::class, 'produkMasuk'])->name('stok.produk.masuk');
 
 		// Pengepul CRUD routes
 		Route::group(['middleware' => 'admin'], function () {
@@ -123,6 +127,7 @@ Route::prefix('stok')->group(function () {
 			Route::put('/pengepul/{id_pengepul}', [PengepulController::class, 'update'])->name('pengepul.update');
 			Route::delete('/pengepul-delete/{id_pengepul}', [PengepulController::class, 'destroy'])->name('pengepul.delete');
 		});
+
 
 		Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	});

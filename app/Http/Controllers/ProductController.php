@@ -10,8 +10,10 @@ use App\Models\Product;
 use App\Models\Kategori;
 use App\Models\Pengepul;
 use Illuminate\Http\Request;
+use App\Exports\OrdersExport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -259,31 +261,64 @@ class ProductController extends Controller
         }
     }
 
-    public function showOrders($pengepulId)
+    public function showOrders($id_pengepul)
     {
         // Mengambil pengepul berdasarkan ID
-        $pengepul = Pengepul::findOrFail($pengepulId);
+        $pengepul = Pengepul::findOrFail($id_pengepul);
 
         // Mengambil produk yang dimiliki oleh pengepul melalui tabel pivot tambah_produk
-        $products = Product::whereHas('pengepul', function ($query) use ($pengepulId) {
-            $query->where('users.id_pengepul', $pengepulId);
-        })->get();
-
-        // Debug: Periksa apakah produk diambil dengan benar
-        error_log("Jumlah produk: " . $products->count());
+        $products = Product::whereHas('pengepul', function ($query) use ($id_pengepul) {
+            $query->where('users.id_pengepul', $id_pengepul);
+        })->with(['pengepul' => function ($query) use ($id_pengepul) {
+            $query->where('users.id_pengepul', $id_pengepul);
+        }, 'pesanan' => function ($query) {
+            $query->withPivot('jumlah');
+        }])->get();
 
         // Mengambil semua pesanan yang berkaitan dengan produk-produk tersebut
         $orders = collect();
         foreach ($products as $product) {
-            $orders = $orders->merge($product->pesanan);
-        }
+            $productOrders = $product->pesanan()->with('pembeli')->get();
+            foreach ($productOrders as $order) {
+                $order->product_name = $product->nama_produk;
 
-        // Debug: Periksa apakah pesanan diambil dengan benar
-        error_log("Jumlah pesanan: " . $orders->count());
+                // Cari jumlah produk dari pivot table tambah_produk
+                $pivotData = $product->pengepul->firstWhere('id_pengepul', $id_pengepul)->pivot ?? null;
+                $order->jumlah = $pivotData ? $pivotData->jumlah : 'N/A';
+
+                $orders->push($order);
+            }
+        }
 
         // Menghilangkan duplikat pesanan
         $orders = $orders->unique('id_pesanan');
 
         return view('pengepul.orders', compact('pengepul', 'orders'));
+    }
+
+    public function exportOrders($id_pengepul)
+    {
+        return Excel::download(new OrdersExport($id_pengepul), 'orders.xlsx');
+    }
+
+    public function produkMasuk($id_pengepul)
+    {
+        // Mengambil pengepul berdasarkan ID
+        $pengepul = Pengepul::findOrFail($id_pengepul);
+
+        // Mengambil data dari tabel tambah_produk untuk pengepul ini
+        $tambahProduk = DB::table('tambah_produk')
+            ->join('products', 'tambah_produk.id_produk', '=', 'products.id_produk')
+            ->where('tambah_produk.id_pengepul', $id_pengepul)
+            ->select('tambah_produk.*', 'products.nama_produk', 'products.foto_produk')
+            ->get()
+            ->map(function ($item) {
+                // Ensure all properties are accessible
+                $item->foto_produk = $item->foto_produk;
+                $item->nama_produk = $item->nama_produk;
+                return $item;
+            });
+
+        return view('pengepul.product-masuk', compact('pengepul', 'tambahProduk'));
     }
 }

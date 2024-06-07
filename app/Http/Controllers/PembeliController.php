@@ -124,4 +124,12 @@ class PembeliController extends Controller
         session()->flash('message', 'Edit data success!');
         return back()->with('success', 'Profile successfully updated');
     }
+
+    public function daftarPembeli()
+    {
+        // Mengambil data dari tabel pembeli
+        $pembeli = Pembeli::all();
+
+        return view('pengepul.daftar-pembeli', compact('pembeli'));
+    }
 }

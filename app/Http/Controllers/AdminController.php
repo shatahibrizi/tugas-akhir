@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Log;
 use App\Models\Admin;
+use App\Models\Pesanan;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
@@ -119,5 +120,20 @@ class AdminController extends Controller
         session()->flash('status', 'success');
         session()->flash('message', 'Edit data success!');
         return back()->with('success', 'Profile successfully updated');
+    }
+
+    public function viewAllOrders()
+    {
+        // Mengambil semua data pesanan dari database
+        $orders = Pesanan::with(['products', 'pembeli', 'products.pengepul'])->get();
+
+        // Debugging
+        if ($orders->isEmpty()) {
+            \Log::info('No orders found');
+        } else {
+            \Log::info('Orders found: ' . $orders->count());
+        }
+
+        return view('admin.orders', compact('orders'));
     }
 }
