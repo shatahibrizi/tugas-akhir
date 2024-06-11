@@ -56,6 +56,8 @@
                             $badgeClass = 'bg-secondary';
                             if ($status == 'Diproses') {
                                 $badgeClass = 'bg-warning';
+                            } elseif ($status == 'Pending') {
+                                $badgeClass = 'bg-secondary';
                             } elseif ($status == 'Selesai') {
                                 $badgeClass = 'bg-success';
                             } elseif ($status == 'Gagal') {

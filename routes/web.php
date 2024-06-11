@@ -55,6 +55,7 @@ Route::group(['middleware' => 'pembeli'], function () {
 	Route::get('/checkout', [MarketController::class, 'checkout'])->name('checkout');
 	Route::post('/place-order', [MarketController::class, 'placeOrder'])->name('place.order');
 	Route::get('/orders', [MarketController::class, 'showOrders'])->name('orders');
+	Route::put('/orders/update-status/{order}/{status}', [MarketController::class, 'updateStatus'])->name('buyer.orders.update.status');
 });
 
 // Admin
@@ -68,7 +69,7 @@ Route::prefix('admin')->group(function () {
 		Route::post('/logout', [AdminController::class, 'logout'])->name('admin_logout');
 		Route::get('admin/profile/{id_admin}', [AdminController::class, 'edit'])->name('admin.profile');
 		Route::put('admin/profile/{id_admin}', [AdminController::class, 'update'])->name('admin.profile.update');
-		Route::get('/admin/orders', [AdminController::class, 'viewAllOrders'])->name('admin.viewAllOrders');
+		Route::get('/orders', [AdminController::class, 'viewAllOrders'])->name('admin.viewAllOrders');
 	});
 });
 
@@ -116,6 +117,8 @@ Route::prefix('stok')->group(function () {
 		Route::get('/{id_pengepul}/orders', [ProductController::class, 'showOrders'])->name('stok.orders');
 		Route::get('/{id_pengepul}/orders/exports', [ProductController::class, 'exportOrders'])->name('stok.export.orders');
 		Route::get('/{id_pengepul}/produk_masuk', [ProductController::class, 'produkMasuk'])->name('stok.produk.masuk');
+		Route::get('/orders/update-status/{order}/{status}', [ProductController::class, 'updateStatus'])->name('orders.update.status');
+
 
 		// Pengepul CRUD routes
 		Route::group(['middleware' => 'admin'], function () {

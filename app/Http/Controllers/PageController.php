@@ -33,29 +33,4 @@ class PageController extends Controller
 
         return abort(404);
     }
-
-    public function vr()
-    {
-        return view("pengepul.virtual-reality");
-    }
-
-    public function rtl()
-    {
-        return view("pengepul.rtl");
-    }
-
-    public function profile()
-    {
-        return view("pengepul.profile-static");
-    }
-
-    public function signin()
-    {
-        return view("pengepul.sign-in-static");
-    }
-
-    public function signup()
-    {
-        return view("pengepul.sign-up-static");
-    }
 }

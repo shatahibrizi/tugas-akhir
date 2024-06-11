@@ -131,7 +131,7 @@ class MarketController extends Controller
         // Create an order with the application's timezone
         $order = Pesanan::create([
             'id_pembeli' => $user->id_pembeli,
-            'status' => 'Diproses', // Initial status
+            'status' => 'Pending', // Initial status
             'metode_pembayaran' => $request->metode_pembayaran,
             'total_harga' => $totalPriceWithShipping,
             'tanggal_pesanan' => now(), // Use now() to get the current time in the app's timezone
@@ -187,6 +187,21 @@ class MarketController extends Controller
 
         return view('market.orders', compact('orders'));
     }
+
+    public function updateStatus(Request $request, $id_pesanan, $status)
+    {
+        $order = Pesanan::find($id_pesanan);
+
+        if ($order) {
+            $order->status = $status;
+            $order->save();
+
+            return redirect()->back()->with('status', 'Status pesanan berhasil diperbarui.');
+        }
+
+        return redirect()->back()->with('status', 'Pesanan tidak ditemukan.');
+    }
+
 
 
     private function filterProducts(Request $request)

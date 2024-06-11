@@ -29,6 +29,7 @@
                 <th scope="col" class="text-center">Status</th>
                 <th scope="col" class="text-center">Total</th>
                 <th scope="col" class="text-center">Products</th>
+                <th scope="col" class="text-center">Action</th>
               </tr>
             </thead>
             <tbody class="text-center">
@@ -42,6 +43,8 @@
                       $badgeClass = 'bg-secondary';
                       if ($status == 'Diproses') {
                           $badgeClass = 'bg-warning';
+                      } elseif ($status == 'Pending') {
+                          $badgeClass = 'bg-secondary';
                       } elseif ($status == 'Selesai') {
                           $badgeClass = 'bg-success';
                       } elseif ($status == 'Gagal') {
@@ -58,6 +61,12 @@
                       @endforeach
                     </ul>
                   </td>
+                  <td>
+                    @if ($order->status != 'Selesai' && $order->status != 'Gagal')
+                      <button class="btn btn-success btn-sm btn-confirm" data-order-id="{{ $order->id_pesanan }}">Pesanan
+                        Selesai</button>
+                    @endif
+                  </td>
                 </tr>
               @endforeach
             </tbody>
@@ -69,4 +78,45 @@
   <!-- Orders Page End -->
 
   @include('layouts.footers.market.footer')
+
+@endsection
+
+@section('scripts')
+  <script>
+    $(document).ready(function() {
+      $('.btn-confirm').click(function(e) {
+        e.preventDefault();
+
+        var orderId = $(this).data('order-id');
+        var actionUrl =
+          "{{ route('buyer.orders.update.status', ['order' => ':orderId', 'status' => 'Selesai']) }}";
+        actionUrl = actionUrl.replace(':orderId', orderId);
+
+        Swal.fire({
+          title: 'Konfirmasi Pesanan Selesai',
+          text: "Apakah Anda yakin pesanan ini telah selesai?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya, konfirmasi!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $('<form>', {
+              'method': 'POST',
+              'action': actionUrl
+            }).append($('<input>', {
+              'name': '_token',
+              'value': '{{ csrf_token() }}',
+              'type': 'hidden'
+            })).append($('<input>', {
+              'name': '_method',
+              'value': 'PUT',
+              'type': 'hidden'
+            })).appendTo('body').submit();
+          }
+        });
+      });
+    });
+  </script>
 @endsection

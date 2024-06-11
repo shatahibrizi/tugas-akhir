@@ -33,7 +33,7 @@ class LoginController extends Controller
             $pengepul = Auth::user(); // Pastikan guard yang digunakan adalah pengepul
             session(['id_pengepul' => $pengepul->id_pengepul]);
 
-            return redirect()->intended('dashboard');
+            return redirect()->intended('stok/dashboard');
         }
 
         return back()->withErrors([
@@ -48,6 +48,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect('/stok/login');
     }
 }

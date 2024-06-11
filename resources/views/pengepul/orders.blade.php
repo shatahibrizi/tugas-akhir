@@ -9,8 +9,7 @@
         <div class="card mb-4">
           <div class="card-header d-flex justify-content-between align-items-center pb-0">
             <h6>Tabel Pesanan</h6>
-            <a href="{{ route('stok.export.orders', $pengepul->id_pengepul) }}" class="btn btn-success">Ekspor ke
-              Excel</a>
+            <a href="{{ route('stok.export.orders', $pengepul->id_pengepul) }}" class="btn btn-success">Ekspor ke Excel</a>
           </div>
           @if (Session::has('status'))
             <div class="alert alert-success mx-4 my-2" role="alert">
@@ -40,14 +39,15 @@
                         Pembeli</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Alamat
                         Pembeli</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Aksi
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     @foreach ($orders as $order)
                       <tr>
                         <td>
-                          <p class="font-weight-bold mb-0 ms-3 text-xs">
-                            {{ $loop->iteration }}</p>
+                          <p class="font-weight-bold mb-0 ms-3 text-xs">{{ $loop->iteration }}</p>
                         </td>
                         <td class="text-center align-middle">
                           <span class="text-secondary font-weight-bold text-sm">{{ $order->id_pesanan }}</span>
@@ -61,6 +61,8 @@
                             $badgeClass = 'bg-secondary';
                             if ($status == 'Diproses') {
                                 $badgeClass = 'bg-warning';
+                            } elseif ($status == 'Pending') {
+                                $badgeClass = 'bg-secondary';
                             } elseif ($status == 'Selesai') {
                                 $badgeClass = 'bg-success';
                             } elseif ($status == 'Gagal') {
@@ -87,6 +89,14 @@
                         <td class="text-center align-middle">
                           <span class="text-secondary font-weight-bold text-sm">{{ $order->pembeli->alamat }}</span>
                         </td>
+                        <td class="text-center align-middle">
+                          @if ($order->status != 'Selesai')
+                            <a href="{{ route('orders.update.status', ['order' => $order->id_pesanan, 'status' => 'Diproses']) }}"
+                              class="btn btn-success btn-xs mt-3"><i class="fas fa-check"></i></a>
+                            <a href="{{ route('orders.update.status', ['order' => $order->id_pesanan, 'status' => 'Gagal']) }}"
+                              class="btn btn-danger btn-xs mt-3"><i class="fas fa-times"></i></a>
+                          @endif
+                        </td>
                       </tr>
                     @endforeach
                   </tbody>
@@ -98,4 +108,5 @@
       </div>
       @include('layouts.footers.auth.footer')
     </div>
-  @endsection
+  </div>
+@endsection

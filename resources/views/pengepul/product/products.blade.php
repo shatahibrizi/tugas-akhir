@@ -196,9 +196,9 @@
       $('.deleteProductBtn').click(function(e) {
         e.preventDefault();
 
-        var product_id = $(this).val();
+        var id_produk = $(this).val();
         var deleteUrl = "{{ route('product.delete', ['id_produk' => ':id_produk']) }}";
-        deleteUrl = deleteUrl.replace(':id_produk', product_id);
+        deleteUrl = deleteUrl.replace(':id_produk', id_produk);
 
         $('#deleteForm').attr('action', deleteUrl);
         $('#deleteModal').modal('show');

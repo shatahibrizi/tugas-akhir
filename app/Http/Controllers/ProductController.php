@@ -321,4 +321,18 @@ class ProductController extends Controller
 
         return view('pengepul.product-masuk', compact('pengepul', 'tambahProduk'));
     }
+
+    public function updateStatus($id_pesanan, $status)
+    {
+        $order = Pesanan::find($id_pesanan);
+
+        if ($order) {
+            $order->status = $status;
+            $order->save();
+
+            return redirect()->back()->with('status', 'Status pesanan berhasil diperbarui.');
+        }
+
+        return redirect()->back()->with('status', 'Pesanan tidak ditemukan.');
+    }
 }
