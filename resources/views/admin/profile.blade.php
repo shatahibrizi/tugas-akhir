@@ -92,6 +92,16 @@
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
+                    <label for="no_rek" class="form-control-label">No Rekening</label>
+                    <input class="form-control" type="text" name="no_rek"
+                      value="{{ old('no_rek', auth()->guard('admin')->user()->no_rek) }}">
+                    @error('no_rek')
+                      <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
                     <label for="foto_profil" class="form-control-label">Foto Profil</label>
                     <input class="form-control" type="file" name="foto_profil">
                     @error('foto_profil')

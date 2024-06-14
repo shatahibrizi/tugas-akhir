@@ -13,6 +13,16 @@
   </div>
   <!-- Single Page Header End -->
 
+  @if (session('status'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('status') }}
+    </div>
+  @elseif (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('success') }}
+    </div>
+  @endif
+
   <!-- Checkout Page Start -->
   <div class="container-fluid py-5">
     <div class="container py-5">
@@ -65,6 +75,11 @@
                 <option value="Transfer">Bank Transfer</option>
               </select>
             </div>
+            <div class="form-group mb-4" id="bankDetails" style="display: none;">
+              <label for="no_rek" class="form-label">Nomor Rekening Admin</label>
+              <input type="text" class="form-control" id="no_rek" name="no_rek" value="{{ $admin->no_rek ?? '' }}"
+                readonly>
+            </div>
           </div>
 
           <div class="col-lg-6">
@@ -102,4 +117,21 @@
   </div>
   <!-- Checkout Page End -->
   @include('layouts.footers.market.footer')
+@endsection
+
+@section('scripts')
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const paymentMethodSelect = document.getElementById('paymentMethod');
+      const bankDetails = document.getElementById('bankDetails');
+
+      paymentMethodSelect.addEventListener('change', function() {
+        if (this.value === 'Transfer') {
+          bankDetails.style.display = 'block';
+        } else {
+          bankDetails.style.display = 'none';
+        }
+      });
+    });
+  </script>
 @endsection

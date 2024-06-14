@@ -33,4 +33,9 @@ class Pembeli extends Authenticatable
     {
         return $this->hasMany(Pesanan::class, 'id_pembeli', 'id_pembeli');
     }
+
+    public function favoriteProducts()
+    {
+        return $this->belongsToMany(Product::class, 'favorit', 'id_pembeli', 'id_produk');
+    }
 }

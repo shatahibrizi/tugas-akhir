@@ -45,4 +45,9 @@ class Product extends Model
     {
         return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
     }
+
+    public function favoritedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'favorit', 'id_produk', 'id_pembeli');
+    }
 }

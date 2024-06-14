@@ -19,18 +19,16 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResetPassword;
 use App\Http\Controllers\ChangePassword;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MarketController;
-use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\PetaniController;
+use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PengepulController;
 use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
 	return redirect('/');
@@ -51,11 +49,14 @@ Route::group(['middleware' => 'pembeli'], function () {
 	Route::get('/cart', [MarketController::class, 'cart'])->name('cart');
 	Route::get('/product/{id_produk}', [MarketController::class, 'addProducttoCart'])->name('addProduct.to.cart');
 	Route::put('/update-shopping-cart', [MarketController::class, 'updateCart'])->name('update.cart');
-	Route::delete('/delete-cart-product', [MarketController::class, 'deleteProduct'])->name('delete.cart.product');
+	Route::post('/delete-cart-product', [MarketController::class, 'deleteProduct'])->name('delete.cart.product');
 	Route::get('/checkout', [MarketController::class, 'checkout'])->name('checkout');
 	Route::post('/place-order', [MarketController::class, 'placeOrder'])->name('place.order');
 	Route::get('/orders', [MarketController::class, 'showOrders'])->name('orders');
 	Route::put('/orders/update-status/{order}/{status}', [MarketController::class, 'updateStatus'])->name('buyer.orders.update.status');
+	Route::get('favorite/{id_produk}', [MarketController::class, 'addToFavorite'])->name('addProduct.to.favorite');
+	Route::get('favorites', [MarketController::class, 'showFavorites'])->name('show.favorites');
+	Route::get('remove-favorite/{id_produk}', [MarketController::class, 'removeFromFavorite'])->name('removeProduct.from.favorite');
 });
 
 // Admin
@@ -65,11 +66,11 @@ Route::prefix('admin')->group(function () {
 
 	Route::group(['middleware' => 'admin'], function () {
 		Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin_dashboard');
-		Route::get('/{page}', [PageController::class, 'admin'])->name('admin.page');
 		Route::post('/logout', [AdminController::class, 'logout'])->name('admin_logout');
-		Route::get('admin/profile/{id_admin}', [AdminController::class, 'edit'])->name('admin.profile');
-		Route::put('admin/profile/{id_admin}', [AdminController::class, 'update'])->name('admin.profile.update');
+		Route::get('/profile/{id_admin}', [AdminController::class, 'edit'])->name('admin.profile');
+		Route::put('/profile/{id_admin}', [AdminController::class, 'update'])->name('admin.profile.update');
 		Route::get('/orders', [AdminController::class, 'viewAllOrders'])->name('admin.viewAllOrders');
+		Route::get('/{page}', [PageController::class, 'admin'])->name('admin.page'); // Updated route
 	});
 });
 
@@ -89,9 +90,9 @@ Route::prefix('stok')->group(function () {
 	});
 
 	Route::group(['middleware' => 'auth:web,admin'], function () {
-		Route::get('/dashboard', [HomeController::class, 'index'])->name('home');
-		Route::get('/profile/{id_pengepul}', [UserProfileController::class, 'edit'])->name('profile');
-		Route::put('/profile/{id_pengepul}', [UserProfileController::class, 'update'])->name('profile.update');
+		Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+		Route::get('/profile/{id_pengepul}', [PengepulController::class, 'editProfile'])->name('profile');
+		Route::put('/profile/{id_pengepul}', [PengepulController::class, 'updateProfile'])->name('profile.update');
 		Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 		// Product CRUD routes
@@ -118,7 +119,7 @@ Route::prefix('stok')->group(function () {
 		Route::get('/{id_pengepul}/orders/exports', [ProductController::class, 'exportOrders'])->name('stok.export.orders');
 		Route::get('/{id_pengepul}/produk_masuk', [ProductController::class, 'produkMasuk'])->name('stok.produk.masuk');
 		Route::get('/orders/update-status/{order}/{status}', [ProductController::class, 'updateStatus'])->name('orders.update.status');
-
+		Route::post('/mark-as-read', [PengepulController::class, 'markAsRead'])->name('markAsRead');
 
 		// Pengepul CRUD routes
 		Route::group(['middleware' => 'admin'], function () {

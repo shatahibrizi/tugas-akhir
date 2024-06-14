@@ -19,7 +19,8 @@ class Admin extends Authenticatable
         'email',
         'password',
         'username',
-        'nama'
+        'nama',
+        'no_rek'
     ];
 
     function pengepul()

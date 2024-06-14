@@ -111,11 +111,7 @@
                       </td>
                       <td>
                         <p class="font-weight-bold mb-0 text-sm">Rp. {{ $item->harga }}</p>
-                        {{-- <p class="text-secondary mb-0 text-sm">/Kg</p> --}}
                       </td>
-                      {{-- <td class="text-center align-middle text-sm">
-                        <span class="badge badge-sm bg-gradient-success">Online</span>
-                      </td> --}}
                       <td class="text-center align-middle">
                         <span class="text-secondary font-weight-bold text-sm">{{ $item->jumlah }}</span>
                       </td>

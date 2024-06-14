@@ -3,7 +3,7 @@
   <div class="sidenav-header">
     <i class="fas fa-times text-secondary position-absolute d-none d-xl-none end-0 top-0 cursor-pointer p-3 opacity-5"
       aria-hidden="true" id="iconSidenav"></i>
-    <a class="navbar-brand m-0" href="{{ route('home') }}" target="_blank">
+    <a class="navbar-brand m-0" href="{{ route('dashboard') }}" target="_blank">
       <img src="{{ asset('img/logo-ct-dark.png') }}" class="navbar-brand-img h-100" alt="main_logo">
       <span class="font-weight-bold fs-6 ms-3">Sembalun Agro</span>
     </a>
@@ -12,7 +12,7 @@
   <div class="navbar-collapse collapse h-auto w-auto" id="sidenav-collapse-main">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link {{ Route::currentRouteName() == 'home' ? 'active' : '' }}" href="{{ route('home') }}">
+        <a class="nav-link {{ Route::currentRouteName() == 'dashboard' ? 'active' : '' }}" href="{{ route('dashboard') }}">
           <div
             class="icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center">
             <i class="fa fa-tachometer text-dark text-sm opacity-10"></i>

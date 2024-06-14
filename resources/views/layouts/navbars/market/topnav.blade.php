@@ -20,16 +20,8 @@
           class="nav-item nav-link {{ Route::currentRouteName() == 'products.shop' ? 'active' : '' }}">Shop</a>
         <a href="{{ route('orders') }}"
           class="nav-item nav-link {{ Route::currentRouteName() == 'orders' ? 'active' : '' }}">Pesanan</a>
-        <div class="nav-item dropdown">
-          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-          <div class="dropdown-menu bg-secondary rounded-0 m-0">
-            <a href="cart.html" class="dropdown-item">Cart</a>
-            <a href="chackout.html" class="dropdown-item">Chackout</a>
-            <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-            <a href="404.html" class="dropdown-item">404 Page</a>
-          </div>
-        </div>
-        <a href="contact.html" class="nav-item nav-link">Contact</a>
+        <a href="{{ route('show.favorites') }}"
+          class="nav-item nav-link {{ Route::currentRouteName() == 'show.favorites' ? 'active' : '' }}">Favorit</a>
       </div>
       <div class="d-flex align-items-center">
         <div class="input-group me-4">

@@ -13,6 +13,16 @@
   </div>
   <!-- Single Page Header End -->
 
+  @if (session('status'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('status') }}
+    </div>
+  @elseif (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('success') }}
+    </div>
+  @endif
+
   <!-- Orders Page Start -->
   <div class="container-fluid py-5">
     <div class="container py-5">

@@ -12,7 +12,16 @@
     </ol>
   </div>
   <!-- Single Page Header End -->
-
+  <!-- Pesan Status -->
+  @if (session('status'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('status') }}
+    </div>
+  @elseif (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('success') }}
+    </div>
+  @endif
   <!-- Fruits Shop Start -->
   <div class="container-fluid fruite flex-grow-1 py-5">
     <div class="container py-5">
@@ -122,15 +131,31 @@
                                   alt="{{ $item->nama_produk }}">
                               @endif
                             </div>
-                            <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
-                              style="top: 10px; left: 10px;">
-                              {{ $item['kategori']['nama'] }}
+                            <div class="d-flex justify-content-between w-100">
+                              <div class="bg-secondary position-absolute rounded px-3 py-1 text-white"
+                                style="top: 10px; left: 10px;">
+                                {{ $item->kategori->nama }}
+                              </div>
+                              <div class="position-absolute rounded bg-white px-3 py-1 text-white"
+                                style="top: 10px; right: 10px;">
+                                <a href="{{ route('addProduct.to.favorite', $item->id_produk) }}" class="text-white">
+                                  <i class="fa fa-heart text-danger text-xl"></i>
+                                </a>
+                              </div>
                             </div>
-                            <div class="rounded-bottom d-flex flex-column flex-grow-1 p-4">
+                            <div class="rounded-bottom d-flex flex-column flex-grow-1 p-4 text-center">
                               <h4>{{ $item->nama_produk }}</h4>
                               <p class="flex-grow-1">{{ $item->deskripsi }}</p>
                               <div class="d-flex flex-column align-items-center">
-                                <p class="text-dark fs-5 fw-bold mb-2">Rp.{{ $item->harga }} / kg</p>
+                                <p class="text-dark fs-5 fw-bold mb-2">Rp.{{ number_format($item->harga, 0, ',', '.') }}
+                                  / kg</p>
+                                <p class="text-dark fs-6 fw-bold mb-2">Pengepul:
+                                  @foreach ($item->pengepul as $pengepul)
+                                    {{ $pengepul->nama }}@if (!$loop->last)
+                                      ,
+                                    @endif
+                                  @endforeach
+                                </p>
                                 <a href="{{ route('addProduct.to.cart', $item->id_produk) }}"
                                   class="btn border-secondary rounded-pill text-primary border px-3"
                                   style="margin-top: 10px;">
@@ -145,6 +170,7 @@
                   @endif
                 </div>
               </div>
+
             </div>
             <div class="col-12">
               <div class="pagination d-flex justify-content-center mt-5">

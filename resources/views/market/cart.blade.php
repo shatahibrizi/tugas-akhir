@@ -14,6 +14,16 @@
   </div>
   <!-- Single Page Header End -->
 
+  @if (session('status'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('status') }}
+    </div>
+  @elseif (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('success') }}
+    </div>
+  @endif
+
   <!-- Cart Page Start -->
   <div class="container-fluid py-5">
     <div class="container py-5">
@@ -68,8 +78,10 @@
                       Rp.{{ number_format($details['harga'] * $details['quantity'], 0, ',', '.') }}</p>
                   </td>
                   <td class="text-center">
-                    <a class="btn btn-outline-danger btn-sm delete-product"
-                      style="font-size: 1rem; padding: .5rem 1rem;"><i class="fa fa-trash-o"></i></a>
+                    <button class="btn btn-outline-danger btn-sm delete-product" data-id="{{ $id_produk }}"
+                      style="font-size: 1rem; padding: .5rem 1rem;">
+                      <i class="fa fa-trash-o"></i>
+                    </button>
                   </td>
                 </tr>
               @endforeach
@@ -183,6 +195,26 @@
       }
 
       updateCartTotal();
+
+      $('.delete-product').click(function(e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+
+        $.ajax({
+          url: '{{ route('delete.cart.product') }}',
+          method: 'POST',
+          data: {
+            _token: '{{ csrf_token() }}',
+            id: id
+          },
+          success: function(response) {
+            window.location.reload();
+          },
+          error: function(xhr) {
+            console.log(xhr.responseText); // Untuk debugging
+          }
+        });
+      });
     });
   </script>
 @endsection

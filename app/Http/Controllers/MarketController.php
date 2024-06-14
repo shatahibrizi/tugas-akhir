@@ -2,19 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Admin;
 use App\Models\Petani;
+use App\Models\Favorit;
 use App\Models\Pembeli;
 use App\Models\Pesanan;
 use App\Models\Product;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use App\Notifications\NewOrderNotification;
 
 class MarketController extends Controller
 {
     public function index(Request $request)
     {
-        $products = $this->filterProducts($request)->paginate(15);
+        $products = $this->filterProducts($request)->with('pengepul', 'kategori')->paginate(15);
 
         $vegetables = Product::whereHas('kategori', function ($query) {
             $query->where('nama', 'sayur');
@@ -28,7 +33,7 @@ class MarketController extends Controller
 
     public function products(Request $request)
     {
-        $products = $this->filterProducts($request)->paginate(9);
+        $products = $this->filterProducts($request)->with('pengepul', 'kategori')->paginate(9);
 
         $vegetables = Product::whereHas('kategori', function ($query) {
             $query->where('nama', 'sayur');
@@ -39,6 +44,7 @@ class MarketController extends Controller
 
         return view('market.products', compact('products', 'allPetani', 'allKategori', 'vegetables'));
     }
+
 
     public function productDetail($id_produk)
     {
@@ -105,9 +111,11 @@ class MarketController extends Controller
         $alamat = $pembeli ? $pembeli->alamat : null;
 
         $totalPrice = $this->calculateTotalPrice($cart);
-        $totalPriceWithShipping = $totalPrice + 30000; // Flat rate shipping
+        $totalPriceWithShipping = $totalPrice + 15000; // Flat rate shipping
 
-        return view('market.checkout', compact('cart', 'totalPrice', 'totalPriceWithShipping', 'alamat'));
+        $admin = Admin::select('no_rek')->first();
+
+        return view('market.checkout', compact('cart', 'totalPrice', 'totalPriceWithShipping', 'alamat', 'admin'));
     }
 
     public function placeOrder(Request $request)
@@ -139,6 +147,8 @@ class MarketController extends Controller
             'updated_at' => now()
         ]);
 
+        $pengepulsNotified = []; // Array to keep track of notified pengepuls
+
         // Process each product in the cart
         foreach ($cart as $id_produk => $details) {
             // Fetch the product
@@ -159,6 +169,18 @@ class MarketController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
+            // Get the sellers (pengepul) for the product from the pivot table
+            $pengepulIds = DB::table('tambah_produk')->where('id_produk', $id_produk)->pluck('id_pengepul');
+            $pengepulUsers = User::whereIn('id_pengepul', $pengepulIds)->get();
+
+            foreach ($pengepulUsers as $pengepulUser) {
+                if (!in_array($pengepulUser->id_pengepul, $pengepulsNotified)) {
+                    // Send notification to each seller only once
+                    $pengepulUser->notify(new NewOrderNotification($order));
+                    $pengepulsNotified[] = $pengepulUser->id_pengepul; // Mark pengepul as notified
+                }
+            }
         }
 
         // Clear the cart
@@ -166,7 +188,6 @@ class MarketController extends Controller
 
         return redirect()->route('market')->with('success', 'Order placed successfully!');
     }
-
 
     public function showOrders()
     {
@@ -188,6 +209,42 @@ class MarketController extends Controller
         return view('market.orders', compact('orders'));
     }
 
+    public function addToFavorite($id_produk)
+    {
+        $user = auth()->guard('pembeli')->user();
+        $product = Product::find($id_produk);
+
+        if ($product && $user) {
+            // Cek jika produk sudah ada di daftar favorit
+            if (!$user->favoriteProducts->contains($id_produk)) {
+                $user->favoriteProducts()->attach($id_produk);
+
+                return redirect()->back()->with('status', 'Produk berhasil ditambahkan ke favorit!');
+            } else {
+                return redirect()->back()->with('status', 'Produk sudah ada di daftar favorit!');
+            }
+        }
+
+        return redirect()->back()->with('error', 'Terjadi kesalahan, produk tidak ditemukan.');
+    }
+
+    public function showFavorites()
+    {
+        $user = auth()->guard('pembeli')->user();
+        $favorites = $user->favoriteProducts; // Mengambil produk favorit
+
+        return view('market.product-favorit', compact('favorites'));
+    }
+
+    public function removeFromFavorite($id_produk)
+    {
+        $user = auth()->guard('pembeli')->user();
+        $user->favoriteProducts()->detach($id_produk);
+
+        return redirect()->back()->with('status', 'Produk berhasil dihapus dari favorit!');
+    }
+
+
     public function updateStatus(Request $request, $id_pesanan, $status)
     {
         $order = Pesanan::find($id_pesanan);
@@ -201,8 +258,6 @@ class MarketController extends Controller
 
         return redirect()->back()->with('status', 'Pesanan tidak ditemukan.');
     }
-
-
 
     private function filterProducts(Request $request)
     {
