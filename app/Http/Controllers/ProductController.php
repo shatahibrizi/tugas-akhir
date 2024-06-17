@@ -301,12 +301,13 @@ class ProductController extends Controller
         return Excel::download(new OrdersExport($id_pengepul), 'orders.xlsx');
     }
 
-    public function produkMasuk($id_pengepul)
+    public function productEntriesp($id_pengepul)
     {
         // Mengambil pengepul berdasarkan ID
+        $user = auth()->user();
         $pengepul = Pengepul::findOrFail($id_pengepul);
+        $id_pengepul = $user->id_pengepul;
 
-        // Mengambil data dari tabel tambah_produk untuk pengepul ini
         $tambahProduk = DB::table('tambah_produk')
             ->join('products', 'tambah_produk.id_produk', '=', 'products.id_produk')
             ->where('tambah_produk.id_pengepul', $id_pengepul)
@@ -318,7 +319,6 @@ class ProductController extends Controller
                 $item->nama_produk = $item->nama_produk;
                 return $item;
             });
-
         return view('pengepul.product-masuk', compact('pengepul', 'tambahProduk'));
     }
 

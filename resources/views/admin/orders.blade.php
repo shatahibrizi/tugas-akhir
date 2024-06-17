@@ -27,15 +27,18 @@
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Order ID</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Date
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Tanggal
                       </th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Status
                       </th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Produk</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Products</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Buyer Name</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Buyer Address</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Collector Name</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Metode Pembayaran
+                      </th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Bukti Bayar</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama Pembeli </th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Alamat Pembeli </th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama Penjual</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -67,16 +70,29 @@
                           <span class="badge {{ $badgeClass }}">{{ $status }}</span>
                         </td>
                         <td class="text-center align-middle">
-                          <span class="text-secondary font-weight-bold text-sm">Rp.
-                            {{ number_format($order->total_harga, 0, ',', '.') }}</span>
-                        </td>
-                        <td class="text-center align-middle">
                           <ul class="list-unstyled">
                             @foreach ($order->products as $product)
                               <li class="text-secondary font-weight-bold text-sm">{{ $product->nama_produk }} -
                                 {{ $product->pivot->jumlah }} pcs</li>
                             @endforeach
                           </ul>
+                        </td>
+                        <td class="text-center align-middle">
+                          <span class="text-secondary font-weight-bold text-sm">Rp.
+                            {{ number_format($order->total_harga, 0, ',', '.') }}</span>
+                        </td>
+                        <td class="text-center align-middle">
+                          <span class="text-secondary font-weight-bold text-sm">{{ $order->metode_pembayaran }}</span>
+                        </td>
+                        <td class="text-center align-middle">
+                          @if ($order->bukti_bayar)
+                            <a href="javascript:void(0);" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                              data-bs-target="#paymentProofModal-{{ $order->id_pesanan }}">
+                              Lihat Bukti
+                            </a>
+                          @else
+                            <span class="text-secondary font-weight-bold text-sm">Tidak ada bukti</span>
+                          @endif
                         </td>
                         <td class="text-center align-middle">
                           <span class="text-secondary font-weight-bold text-sm">{{ $order->pembeli->nama }}</span>
@@ -97,6 +113,25 @@
                     @endforeach
                   </tbody>
                 </table>
+                <!-- Modal -->
+                <div class="modal fade" id="paymentProofModal-{{ $order->id_pesanan }}" tabindex="-1"
+                  aria-labelledby="paymentProofModalLabel-{{ $order->id_pesanan }}" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="paymentProofModalLabel-{{ $order->id_pesanan }}">Bukti Pembayaran
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body text-center">
+                        <img src="{{ asset('storage/bukti_bayar/' . $order->bukti_bayar) }}" class="img-fluid">
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               @endif
             </div>
           </div>
@@ -105,4 +140,16 @@
     </div>
     @include('layouts.footers.auth.footer')
   </div>
+@endsection
+
+@section('scripts')
+  <script>
+    $(document).ready(function() {
+      // Script to handle modal functionality
+      $('.btn-primary').on('click', function() {
+        var targetModal = $(this).data('bs-target');
+        $(targetModal).modal('show');
+      });
+    });
+  </script>
 @endsection

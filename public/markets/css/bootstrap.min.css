@@ -10221,3 +10221,16 @@ fieldset:disabled .btn {
         display: none !important;
     }
 }
+
+ .card-equal-height {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .card-body-equal-height {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+  }

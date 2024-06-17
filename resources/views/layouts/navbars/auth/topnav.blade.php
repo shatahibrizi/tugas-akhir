@@ -53,7 +53,7 @@
             <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
           </a>
         </li>
-        @if (auth()->check())
+        @if (auth()->guard('web')->check())
           <li class="nav-item dropdown d-flex align-items-center pe-2">
             <a href="javascript:;" class="nav-link p-0 text-white" id="dropdownMenuButton" data-bs-toggle="dropdown"
               aria-expanded="false" onclick="markAsRead()">

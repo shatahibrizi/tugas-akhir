@@ -130,11 +130,15 @@ class MarketController extends Controller
         // Validate the request
         $request->validate([
             'metode_pembayaran' => 'required|in:COD,Transfer',
+            'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         // Calculate total price
         $totalPrice = $this->calculateTotalPrice($cart);
         $totalPriceWithShipping = $totalPrice + 30000; // Flat rate shipping cost
+
+        // Handle file upload using the new function
+        $buktiBayarPath = $this->storePaymentProofImage($request);
 
         // Create an order with the application's timezone
         $order = Pesanan::create([
@@ -144,10 +148,9 @@ class MarketController extends Controller
             'total_harga' => $totalPriceWithShipping,
             'tanggal_pesanan' => now(), // Use now() to get the current time in the app's timezone
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
+            'bukti_bayar' => $buktiBayarPath
         ]);
-
-        $pengepulsNotified = []; // Array to keep track of notified pengepuls
 
         // Process each product in the cart
         foreach ($cart as $id_produk => $details) {
@@ -169,18 +172,6 @@ class MarketController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
-
-            // Get the sellers (pengepul) for the product from the pivot table
-            $pengepulIds = DB::table('tambah_produk')->where('id_produk', $id_produk)->pluck('id_pengepul');
-            $pengepulUsers = User::whereIn('id_pengepul', $pengepulIds)->get();
-
-            foreach ($pengepulUsers as $pengepulUser) {
-                if (!in_array($pengepulUser->id_pengepul, $pengepulsNotified)) {
-                    // Send notification to each seller only once
-                    $pengepulUser->notify(new NewOrderNotification($order));
-                    $pengepulsNotified[] = $pengepulUser->id_pengepul; // Mark pengepul as notified
-                }
-            }
         }
 
         // Clear the cart
@@ -188,6 +179,8 @@ class MarketController extends Controller
 
         return redirect()->route('market')->with('success', 'Order placed successfully!');
     }
+
+
 
     public function showOrders()
     {
@@ -310,5 +303,16 @@ class MarketController extends Controller
     private function getAuthenticatedPembeli()
     {
         return Pembeli::find(auth()->guard('pembeli')->user()->id_pembeli);
+    }
+
+    private function storePaymentProofImage($request)
+    {
+        if ($request->hasFile('bukti_bayar')) {
+            $extension = $request->file('bukti_bayar')->getClientOriginalExtension();
+            $newName = 'bukti-bayar-' . now()->timestamp . '.' . $extension;
+            $request->file('bukti_bayar')->storeAs('bukti_bayar', $newName, 'public');
+            return $newName;
+        }
+        return null;
     }
 }

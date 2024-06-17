@@ -24,7 +24,9 @@ class Pengepul extends Model
 
     public function product()
     {
-        return $this->belongsToMany(Product::class, 'tambah_produk', 'id_pengepul', 'id_produk');
+        return $this->belongsToMany(Product::class, 'tambah_produk', 'id_pengepul', 'id_produk')
+            ->withPivot('jumlah', 'tanggal')
+            ->withTimestamps();
     }
 
     public function admin()

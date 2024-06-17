@@ -39,6 +39,10 @@
                         Pembeli</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Alamat
                         Pembeli</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                        Metode Pembayaran</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Bukti
+                        Bayar</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Aksi
                       </th>
                     </tr>
@@ -90,6 +94,19 @@
                           <span class="text-secondary font-weight-bold text-sm">{{ $order->pembeli->alamat }}</span>
                         </td>
                         <td class="text-center align-middle">
+                          <span class="text-secondary font-weight-bold text-sm">{{ $order->metode_pembayaran }}</span>
+                        </td>
+                        <td class="text-center align-middle">
+                          @if ($order->bukti_bayar)
+                            <a href="javascript:void(0);" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                              data-bs-target="#paymentProofModal-{{ $order->id_pesanan }}">
+                              Lihat Bukti
+                            </a>
+                          @else
+                            <span class="text-secondary font-weight-bold text-sm">Tidak ada bukti</span>
+                          @endif
+                        </td>
+                        <td class="text-center align-middle">
                           @if ($order->status != 'Selesai')
                             <a href="{{ route('orders.update.status', ['order' => $order->id_pesanan, 'status' => 'Diproses']) }}"
                               class="btn btn-success btn-xs mt-3"><i class="fas fa-check"></i></a>
@@ -101,6 +118,25 @@
                     @endforeach
                   </tbody>
                 </table>
+                <!-- Modal -->
+                <div class="modal fade" id="paymentProofModal-{{ $order->id_pesanan }}" tabindex="-1"
+                  aria-labelledby="paymentProofModalLabel-{{ $order->id_pesanan }}" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="paymentProofModalLabel-{{ $order->id_pesanan }}">Bukti Pembayaran
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body text-center">
+                        <img src="{{ asset('storage/bukti_bayar/' . $order->bukti_bayar) }}" class="img-fluid">
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               @endif
             </div>
           </div>
@@ -109,4 +145,16 @@
       @include('layouts.footers.auth.footer')
     </div>
   </div>
+@endsection
+
+@section('scripts')
+  <script>
+    $(document).ready(function() {
+      // Script to handle modal functionality
+      $('.btn-primary').on('click', function() {
+        var targetModal = $(this).data('bs-target');
+        $(targetModal).modal('show');
+      });
+    });
+  </script>
 @endsection

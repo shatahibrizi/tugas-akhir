@@ -33,7 +33,9 @@ class Product extends Model
 
     public function pengepul()
     {
-        return $this->belongsToMany(Pengepul::class, 'tambah_produk', 'id_produk', 'id_pengepul');
+        return $this->belongsToMany(Pengepul::class, 'tambah_produk', 'id_produk', 'id_pengepul')
+            ->withPivot('jumlah', 'tanggal')
+            ->withTimestamps();;
     }
 
     public function petani()

@@ -7,7 +7,10 @@ use App\Models\Admin;
 use App\Models\Pesanan;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use App\Exports\ProductEntryExport;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
@@ -135,5 +138,22 @@ class AdminController extends Controller
         }
 
         return view('admin.orders', compact('orders'));
+    }
+    public function viewAllProductEntries()
+    {
+        // Mengambil semua data dari tabel tambah_produk
+        $tambahProduk = DB::table('tambah_produk')
+            ->join('products', 'tambah_produk.id_produk', '=', 'products.id_produk')
+            ->join('users', 'tambah_produk.id_pengepul', '=', 'users.id_pengepul')
+            ->select('tambah_produk.*', 'products.nama_produk', 'products.foto_produk', 'users.nama as pengepul_nama')
+            ->orderBy('tambah_produk.created_at', 'desc')
+            ->get();
+
+        return view('admin.product-masuk', compact('tambahProduk'));
+    }
+
+    public function exportProductEntries()
+    {
+        return Excel::download(new ProductEntryExport, 'produk_masuk.xlsx');
     }
 }

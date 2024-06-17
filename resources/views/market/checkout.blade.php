@@ -27,7 +27,7 @@
   <div class="container-fluid py-5">
     <div class="container py-5">
       <h1 class="mb-4">Billing details</h1>
-      <form action="{{ route('place.order') }}" method="POST">
+      <form action="{{ route('place.order') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="row">
           <div class="col-lg-12">
@@ -79,6 +79,8 @@
               <label for="no_rek" class="form-label">Nomor Rekening Admin</label>
               <input type="text" class="form-control" id="no_rek" name="no_rek" value="{{ $admin->no_rek ?? '' }}"
                 readonly>
+              <label for="buktiBayar" class="form-label mt-3">Upload Bukti Bayar</label>
+              <input type="file" class="form-control" id="buktiBayar" name="bukti_bayar" accept="image/*">
             </div>
           </div>
 

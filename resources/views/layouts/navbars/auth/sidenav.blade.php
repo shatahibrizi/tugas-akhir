@@ -12,7 +12,8 @@
   <div class="navbar-collapse collapse h-auto w-auto" id="sidenav-collapse-main">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link {{ Route::currentRouteName() == 'dashboard' ? 'active' : '' }}" href="{{ route('dashboard') }}">
+        <a class="nav-link {{ Route::currentRouteName() == 'dashboard' ? 'active' : '' }}"
+          href="{{ route('dashboard') }}">
           <div
             class="icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center">
             <i class="fa fa-tachometer text-dark text-sm opacity-10"></i>
@@ -43,9 +44,8 @@
         <h6 class="text-uppercase font-weight-bolder opacity-6 ms-2 ps-4 text-xs">Master Stock</h6>
       </li>
       <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('stok.produk.masuk') ? 'active' : '' }}"
-          href="{{ $isPengepul && $idPengepul ? route('stok.produk.masuk', ['id_pengepul' => $idPengepul]) : '#' }}">
-
+        <a class="nav-link {{ request()->routeIs('stok.produkMasuk') || request()->routeIs('admin.produkMasuk') ? 'active' : '' }}"
+          href="{{ auth()->guard('admin')->check() ? route('admin.produkMasuk') : (auth()->guard('web')->check() && $idPengepul ? route('stok.produkMasuk', ['id_pengepul' => $idPengepul]) : '#') }}">
           <div
             class="icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center">
             <i class="ni ni-delivery-fast text-dark text-sm opacity-10"></i>
