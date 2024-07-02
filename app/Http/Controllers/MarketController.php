@@ -135,7 +135,6 @@ class MarketController extends Controller
 
         // Calculate total price
         $totalPrice = $this->calculateTotalPrice($cart);
-        $totalPriceWithShipping = $totalPrice + 30000; // Flat rate shipping cost
 
         // Handle file upload using the new function
         $buktiBayarPath = $this->storePaymentProofImage($request);
@@ -145,7 +144,7 @@ class MarketController extends Controller
             'id_pembeli' => $user->id_pembeli,
             'status' => 'Pending', // Initial status
             'metode_pembayaran' => $request->metode_pembayaran,
-            'total_harga' => $totalPriceWithShipping,
+            'total_harga' => $totalPrice, // Only the total product price
             'tanggal_pesanan' => now(), // Use now() to get the current time in the app's timezone
             'created_at' => now(),
             'updated_at' => now(),
@@ -179,8 +178,6 @@ class MarketController extends Controller
 
         return redirect()->route('market')->with('success', 'Order placed successfully!');
     }
-
-
 
     public function showOrders()
     {
@@ -251,6 +248,32 @@ class MarketController extends Controller
 
         return redirect()->back()->with('status', 'Pesanan tidak ditemukan.');
     }
+
+    public function destroy($id_pesanan)
+    {
+        $order = Pesanan::findOrFail($id_pesanan);
+        $order->delete();
+
+        return redirect()->route('admin.viewAllOrders')->with('status', 'Pesanan berhasil dihapus!');
+    }
+
+    public function updateShippingCost(Request $request, $id_pesanan)
+    {
+        $request->validate([
+            'biaya_pengiriman' => 'required|numeric',
+        ]);
+
+        $order = Pesanan::findOrFail($id_pesanan);
+        $order->biaya_pengiriman = $request->biaya_pengiriman;
+        $order->status = 'Diproses';
+        $order->tanggal_diproses = now();
+        $order->save();
+        session()->flash('status', 'success');
+        session()->flash('message', 'Biaya pengiriman berhasil ditambahkan dan status pesanan diubah menjadi Diproses.');
+        return redirect()->back();
+    }
+
+
 
     private function filterProducts(Request $request)
     {

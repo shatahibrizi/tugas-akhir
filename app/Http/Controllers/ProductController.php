@@ -22,46 +22,15 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-
         $productQuery = Product::query();
 
         if ($user instanceof User) {
-            $id_pengepul = $user->id_pengepul;
-
-            $productQuery->whereExists(function ($query) use ($id_pengepul) {
-                $query->select(DB::raw(1))
-                    ->from('tambah_produk')
-                    ->whereColumn('products.id_produk', 'tambah_produk.id_produk')
-                    ->where('tambah_produk.id_pengepul', $id_pengepul);
-            });
+            $this->filterByPengepul($productQuery, $user->id_pengepul);
         }
 
-        if ($request->keyword) {
-            $productQuery->where('nama_produk', 'LIKE', '%' . $request->keyword . '%');
-        }
-
-        if ($request->filter) {
-            $productQuery->where('grade', $request->filter);
-        }
-
-        if ($request->price_filter) {
-            $this->applyPriceFilter($productQuery, $request->price_filter);
-        }
-
-        if ($request->kategori) {
-            $productQuery->whereHas('kategori', function ($query) use ($request) {
-                $query->where('nama', $request->kategori);
-            });
-        }
-
-        if ($request->petani) {
-            $productQuery->whereHas('petani', function ($query) use ($request) {
-                $query->where('nama', $request->petani);
-            });
-        }
+        $this->applyFilters($productQuery, $request);
 
         $products = $productQuery->paginate(5);
-
         $allPetani = Petani::pluck('nama');
         $allKategori = Kategori::pluck('nama');
 
@@ -85,26 +54,18 @@ class ProductController extends Controller
     {
         $newName = $this->storeProductImage($request);
 
-        $product = Product::create([
-            'nama_produk' => $request->nama_produk,
-            'foto_produk' => $newName,
-            'deskripsi' => $request->deskripsi,
-            'harga' => $request->harga,
-            'jumlah' => $request->jumlah,
-            'grade' => $request->grade,
-            'id_kategori' => $request->id_kategori,
-            'id_petani' => $request->id_petani,
-        ]);
+        $product = Product::create($request->only([
+            'nama_produk', 'deskripsi', 'harga', 'jumlah', 'grade', 'id_kategori', 'id_petani'
+        ]) + ['foto_produk' => $newName]);
 
         if ($product) {
             $this->attachPengepulData($product, $request->jumlah);
             $this->generateAndStoreQrCode($product);
-
             session()->flash('status', 'success');
             session()->flash('message', 'Add data success, and QR-code has been generated!');
         }
 
-        return redirect('/products');
+        return redirect()->route('product');
     }
 
     public function edit($id_produk)
@@ -119,21 +80,17 @@ class ProductController extends Controller
     public function update(Request $request, $id_produk)
     {
         $product = Product::findOrFail($id_produk);
-
         $product->update($request->except('foto_produk'));
 
         if ($request->hasFile('foto_produk')) {
             $this->updateProductImage($product, $request);
         }
 
-        $product->save();
-
         $this->generateAndStoreQrCode($product);
-
         session()->flash('status', 'success');
         session()->flash('message', 'Edit data success!');
 
-        return redirect('/products');
+        return redirect()->route('product');
     }
 
     public function destroy($id_produk)
@@ -143,7 +100,7 @@ class ProductController extends Controller
 
         session()->flash('status', 'success');
         session()->flash('message', 'Delete ' . $product->nama_produk . ' success!');
-        return redirect('/products');
+        return redirect()->route('product');
     }
 
     public function track(Request $request)
@@ -152,42 +109,12 @@ class ProductController extends Controller
         $productQuery = Product::query();
 
         if ($user instanceof User) {
-            $id_pengepul = $user->id_pengepul;
-
-            $productQuery->whereExists(function ($query) use ($id_pengepul) {
-                $query->select(DB::raw(1))
-                    ->from('tambah_produk')
-                    ->whereColumn('products.id_produk', 'tambah_produk.id_produk')
-                    ->where('tambah_produk.id_pengepul', $id_pengepul);
-            });
+            $this->filterByPengepul($productQuery, $user->id_pengepul);
         }
 
-        if ($request->keyword) {
-            $productQuery->where('nama_produk', 'LIKE', '%' . $request->keyword . '%');
-        }
-
-        if ($request->filter) {
-            $productQuery->where('grade', $request->filter);
-        }
-
-        if ($request->price_filter) {
-            $this->applyPriceFilter($productQuery, $request->price_filter);
-        }
-
-        if ($request->kategori) {
-            $productQuery->whereHas('kategori', function ($query) use ($request) {
-                $query->where('nama', $request->kategori);
-            });
-        }
-
-        if ($request->petani) {
-            $productQuery->whereHas('petani', function ($query) use ($request) {
-                $query->where('nama', $request->petani);
-            });
-        }
+        $this->applyFilters($productQuery, $request);
 
         $products = $productQuery->paginate(10);
-
         $allPetani = Petani::pluck('nama');
         $allKategori = Kategori::pluck('nama');
 
@@ -263,35 +190,8 @@ class ProductController extends Controller
 
     public function showOrders($id_pengepul)
     {
-        // Mengambil pengepul berdasarkan ID
         $pengepul = Pengepul::findOrFail($id_pengepul);
-
-        // Mengambil produk yang dimiliki oleh pengepul melalui tabel pivot tambah_produk
-        $products = Product::whereHas('pengepul', function ($query) use ($id_pengepul) {
-            $query->where('users.id_pengepul', $id_pengepul);
-        })->with(['pengepul' => function ($query) use ($id_pengepul) {
-            $query->where('users.id_pengepul', $id_pengepul);
-        }, 'pesanan' => function ($query) {
-            $query->withPivot('jumlah');
-        }])->get();
-
-        // Mengambil semua pesanan yang berkaitan dengan produk-produk tersebut
-        $orders = collect();
-        foreach ($products as $product) {
-            $productOrders = $product->pesanan()->with('pembeli')->get();
-            foreach ($productOrders as $order) {
-                $order->product_name = $product->nama_produk;
-
-                // Cari jumlah produk dari pivot table tambah_produk
-                $pivotData = $product->pengepul->firstWhere('id_pengepul', $id_pengepul)->pivot ?? null;
-                $order->jumlah = $pivotData ? $pivotData->jumlah : 'N/A';
-
-                $orders->push($order);
-            }
-        }
-
-        // Menghilangkan duplikat pesanan
-        $orders = $orders->unique('id_pesanan');
+        $orders = $this->getOrdersByPengepul($id_pengepul);
 
         return view('pengepul.orders', compact('pengepul', 'orders'));
     }
@@ -301,24 +201,12 @@ class ProductController extends Controller
         return Excel::download(new OrdersExport($id_pengepul), 'orders.xlsx');
     }
 
-    public function productEntriesp($id_pengepul)
+    public function productEntries($id_pengepul)
     {
-        // Mengambil pengepul berdasarkan ID
         $user = auth()->user();
         $pengepul = Pengepul::findOrFail($id_pengepul);
-        $id_pengepul = $user->id_pengepul;
+        $tambahProduk = $this->getProductEntries($user->id_pengepul);
 
-        $tambahProduk = DB::table('tambah_produk')
-            ->join('products', 'tambah_produk.id_produk', '=', 'products.id_produk')
-            ->where('tambah_produk.id_pengepul', $id_pengepul)
-            ->select('tambah_produk.*', 'products.nama_produk', 'products.foto_produk')
-            ->get()
-            ->map(function ($item) {
-                // Ensure all properties are accessible
-                $item->foto_produk = $item->foto_produk;
-                $item->nama_produk = $item->nama_produk;
-                return $item;
-            });
         return view('pengepul.product-masuk', compact('pengepul', 'tambahProduk'));
     }
 
@@ -328,11 +216,89 @@ class ProductController extends Controller
 
         if ($order) {
             $order->status = $status;
+            if ($status == 'Diproses') {
+                $order->tanggal_diproses = now();
+            }
             $order->save();
 
-            return redirect()->back()->with('status', 'Status pesanan berhasil diperbarui.');
+            return redirect()->back()->with('status', 'Status pesanan berhasil diubah!');
         }
 
         return redirect()->back()->with('status', 'Pesanan tidak ditemukan.');
+    }
+
+    private function filterByPengepul($productQuery, $id_pengepul)
+    {
+        $productQuery->whereExists(function ($query) use ($id_pengepul) {
+            $query->select(DB::raw(1))
+                ->from('tambah_produk')
+                ->whereColumn('products.id_produk', 'tambah_produk.id_produk')
+                ->where('tambah_produk.id_pengepul', $id_pengepul);
+        });
+    }
+
+    private function applyFilters($productQuery, $request)
+    {
+        if ($request->keyword) {
+            $productQuery->where('nama_produk', 'LIKE', '%' . $request->keyword . '%');
+        }
+
+        if ($request->filter) {
+            $productQuery->where('grade', $request->filter);
+        }
+
+        if ($request->price_filter) {
+            $this->applyPriceFilter($productQuery, $request->price_filter);
+        }
+
+        if ($request->kategori) {
+            $productQuery->whereHas('kategori', function ($query) use ($request) {
+                $query->where('nama', $request->kategori);
+            });
+        }
+
+        if ($request->petani) {
+            $productQuery->whereHas('petani', function ($query) use ($request) {
+                $query->where('nama', $request->petani);
+            });
+        }
+    }
+
+    private function getOrdersByPengepul($id_pengepul)
+    {
+        $products = Product::whereHas('pengepul', function ($query) use ($id_pengepul) {
+            $query->where('users.id_pengepul', $id_pengepul);
+        })->with(['pengepul' => function ($query) use ($id_pengepul) {
+            $query->where('users.id_pengepul', $id_pengepul);
+        }, 'pesanan' => function ($query) {
+            $query->withPivot('jumlah');
+        }])->get();
+
+        $orders = collect();
+        foreach ($products as $product) {
+            $productOrders = $product->pesanan()->with('pembeli')->get();
+            foreach ($productOrders as $order) {
+                $order->product_name = $product->nama_produk;
+                $pivotData = $product->pengepul->firstWhere('id_pengepul', $id_pengepul)->pivot ?? null;
+                $order->jumlah = $pivotData ? $pivotData->jumlah : 'N/A';
+                $orders->push($order);
+            }
+        }
+
+        return $orders->unique('id_pesanan');
+    }
+
+    private function getProductEntries($id_pengepul)
+    {
+        return DB::table('tambah_produk')
+            ->join('products', 'tambah_produk.id_produk', '=', 'products.id_produk')
+            ->where('tambah_produk.id_pengepul', $id_pengepul)
+            ->select('tambah_produk.*', 'products.nama_produk', 'products.foto_produk')
+            ->get()
+            ->map(function ($item) {
+                $item->foto_produk = $item->foto_produk;
+                $item->nama_produk = $item->nama_produk;
+                return $item;
+            });
     }
 }

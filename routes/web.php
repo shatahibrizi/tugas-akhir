@@ -70,9 +70,11 @@ Route::prefix('admin')->group(function () {
 		Route::get('/profile/{id_admin}', [AdminController::class, 'edit'])->name('admin.profile');
 		Route::put('/profile/{id_admin}', [AdminController::class, 'update'])->name('admin.profile.update');
 		Route::get('/orders', [AdminController::class, 'viewAllOrders'])->name('admin.viewAllOrders');
+		Route::delete('/orders/{order}', [MarketController::class, 'destroy'])->name('orders.destroy');
 		Route::get('/produk-masuk', [AdminController::class, 'viewAllProductEntries'])->name('admin.produkMasuk');
 		Route::get('/produk-masuk/export', [AdminController::class, 'exportProductEntries'])->name('admin.produkMasuk.export');
 		Route::get('/{page}', [PageController::class, 'admin'])->name('admin.page'); // Updated route
+
 	});
 });
 
@@ -121,6 +123,7 @@ Route::prefix('stok')->group(function () {
 		Route::get('/{id_pengepul}/orders/exports', [ProductController::class, 'exportOrders'])->name('stok.export.orders');
 		Route::get('/{id_pengepul}/produk_masuk', [ProductController::class, 'productEntries'])->name('stok.produkMasuk');
 		Route::get('/orders/update-status/{order}/{status}', [ProductController::class, 'updateStatus'])->name('orders.update.status');
+		Route::put('/orders/{order}/shipping', [MarketController::class, 'updateShippingCost'])->name('orders.update.shipping');
 		Route::post('/mark-as-read', [PengepulController::class, 'markAsRead'])->name('markAsRead');
 
 		// Pengepul CRUD routes

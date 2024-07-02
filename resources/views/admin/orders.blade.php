@@ -39,6 +39,7 @@
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama Pembeli </th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Alamat Pembeli </th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama Penjual</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -105,34 +106,8 @@
                             @foreach ($order->products as $product)
                               @foreach ($product->pengepul as $pengepul)
                                 <li class="text-secondary font-weight-bold text-sm">{{ $pengepul->nama }}</li>
-                              @endforeach
-                            @endforeach
-                          </ul>
-                        </td>
-                      </tr>
-                    @endforeach
-                  </tbody>
-                </table>
-                <!-- Modal -->
-                <div class="modal fade" id="paymentProofModal-{{ $order->id_pesanan }}" tabindex="-1"
-                  aria-labelledby="paymentProofModalLabel-{{ $order->id_pesanan }}" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="paymentProofModalLabel-{{ $order->id_pesanan }}">Bukti Pembayaran
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body text-center">
-                        <img src="{{ asset('storage/bukti_bayar/' . $order->bukti_bayar) }}" class="img-fluid">
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              @endif
+                                !
+                              @endif
             </div>
           </div>
         </div>

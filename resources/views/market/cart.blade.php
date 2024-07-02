@@ -26,7 +26,7 @@
 
   <!-- Cart Page Start -->
   <div class="container-fluid py-5">
-    <div class="container py-5">
+    <div class="container pb-5">
       <div class="table-responsive">
         <table class="table align-middle">
           <thead class="table-light">
@@ -89,12 +89,7 @@
           </tbody>
         </table>
       </div>
-      <div class="mt-5">
-        <input type="text" class="border-bottom mb-4 me-5 rounded border-0 py-3" placeholder="Coupon Code">
-        <button class="btn border-secondary rounded-pill text-primary px-4 py-3" type="button">Apply Coupon</button>
-      </div>
-      <div class="row g-4 justify-content-end">
-        <div class="col-8"></div>
+      <div class="row g-4 justify-content-end mt-4">
         <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
           <div class="bg-light rounded">
             <div class="p-4">

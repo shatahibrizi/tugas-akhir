@@ -29,9 +29,9 @@ class PembeliController extends Controller
         $attributes['password'] = bcrypt($attributes['password']);
 
         $pembeli = Pembeli::create($attributes);
-        \Log::info('Signup berhasil');
+        Log::info('Signup berhasil');
         auth()->guard('pembeli')->login($pembeli);
-        \Log::info('Signup2 berhasil');
+        Log::info('Signup2 berhasil');
         return redirect()->route('market');
     }
 
@@ -43,7 +43,7 @@ class PembeliController extends Controller
 
     public function login(Request $request)
     {
-        \Log::info('Login request received', ['request' => $request->all()]);
+        Log::info('Login request received', ['request' => $request->all()]);
 
         $request->validate([
             'email' => ['required', 'email'],
@@ -51,14 +51,14 @@ class PembeliController extends Controller
         ]);
 
         $credentials = $request->only('email', 'password');
-        \Log::info('Credentials', ['credentials' => $credentials]);
+        Log::info('Credentials', ['credentials' => $credentials]);
 
         if (auth()->guard('pembeli')->attempt($credentials)) {
             $request->session()->regenerate();
-            \Log::info('Login berhasil');
+            Log::info('Login berhasil');
             return redirect()->route('market')->with('success', 'Login berhasil');
         } else {
-            \Log::info('Login gagal', ['credentials' => $credentials]);
+            Log::info('Login gagal', ['credentials' => $credentials]);
             return redirect()->route('pembeli.login')->with('error', 'Email atau password salah');
         }
     }

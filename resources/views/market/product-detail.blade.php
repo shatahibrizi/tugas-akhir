@@ -2,13 +2,14 @@
 
 @section('content')
   @include('layouts.navbars.market.topnav', ['title' => 'Product Table'])
+
   <!-- Single Page Header start -->
   <div class="container-fluid page-header py-5">
-    <h1 class="display-6 text-center text-white">Shop Detail</h1>
+    <h1 class="display-6 text-center text-white">Detail Produk</h1>
     <ol class="breadcrumb justify-content-center mb-0">
       <li class="breadcrumb-item"><a href="#">Home</a></li>
       <li class="breadcrumb-item"><a href="#">Pages</a></li>
-      <li class="breadcrumb-item active text-white">Shop Detail</li>
+      <li class="breadcrumb-item active text-white">Detail Produk</li>
     </ol>
   </div>
   <!-- Single Page Header End -->
@@ -52,15 +53,12 @@
                 <div class="nav nav-tabs mb-3">
                   <button class="nav-link active border-bottom-0 border-white" type="button" role="tab"
                     id="nav-about-tab" data-bs-toggle="tab" data-bs-target="#nav-about" aria-controls="nav-about"
-                    aria-selected="true">Description</button>
-                  <button class="nav-link border-bottom-0 border-white" type="button" role="tab" id="nav-mission-tab"
-                    data-bs-toggle="tab" data-bs-target="#nav-mission" aria-controls="nav-mission"
-                    aria-selected="false">Reviews</button>
+                    aria-selected="true">Deskripsi</button>
                 </div>
               </nav>
               <div class="tab-content mb-5">
                 <div class="tab-pane active" id="nav-about" role="tabpanel" aria-labelledby="nav-about-tab">
-                  <p>{{ $product->deskripsi }} </p>
+                  <p class="text-justify">{{ $product->deskripsi }}</p>
                   <p>Detail produk: </p>
                   <div class="px-2">
                     <div class="row g-4">
@@ -85,57 +83,8 @@
                     </div>
                   </div>
                 </div>
-                <div class="tab-pane" id="nav-mission" role="tabpanel" aria-labelledby="nav-mission-tab">
-                  <div class="d-flex">
-                    <img src="img/avatar.jpg" class="img-fluid rounded-circle p-3" style="width: 100px; height: 100px;"
-                      alt="">
-                    <div class="">
-                      <p class="mb-2" style="font-size: 14px;">April 12, 2024</p>
-                      <div class="d-flex justify-content-between">
-                        <h5>Jason Smith</h5>
-                        <div class="d-flex mb-3">
-                          <i class="fa fa-star text-secondary"></i>
-                          <i class="fa fa-star text-secondary"></i>
-                          <i class="fa fa-star text-secondary"></i>
-                          <i class="fa fa-star text-secondary"></i>
-                          <i class="fa fa-star"></i>
-                        </div>
-                      </div>
-                      <p>The generated Lorem Ipsum is therefore always free from repetition injected humour, or
-                        non-characteristic
-                        words etc. Susp endisse ultricies nisi vel quam suscipit </p>
-                    </div>
-                  </div>
-                  <div class="d-flex">
-                    <img src="img/avatar.jpg" class="img-fluid rounded-circle p-3" style="width: 100px; height: 100px;"
-                      alt="">
-                    <div class="">
-                      <p class="mb-2" style="font-size: 14px;">April 12, 2024</p>
-                      <div class="d-flex justify-content-between">
-                        <h5>Sam Peters</h5>
-                        <div class="d-flex mb-3">
-                          <i class="fa fa-star text-secondary"></i>
-                          <i class="fa fa-star text-secondary"></i>
-                          <i class="fa fa-star text-secondary"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                        </div>
-                      </div>
-                      <p class="text-dark">The generated Lorem Ipsum is therefore always free from repetition injected
-                        humour, or non-characteristic
-                        words etc. Susp endisse ultricies nisi vel quam suscipit </p>
-                    </div>
-                  </div>
-                </div>
-                <div class="tab-pane" id="nav-vision" role="tabpanel">
-                  <p class="text-dark">Tempor erat elitr rebum at clita. Diam dolor diam ipsum et tempor sit. Aliqu diam
-                    amet diam et eos labore. 3</p>
-                  <p class="mb-0">Diam dolor diam ipsum et tempor sit. Aliqu diam amet diam et eos labore.
-                    Clita erat ipsum et lorem et sit</p>
-                </div>
               </div>
             </div>
-
           </div>
         </div>
         <div class="col-lg-4 col-xl-3">
@@ -144,8 +93,8 @@
               <h4 class="my-3">Atur jumlah</h4>
               <div class="d-flex justify-content-start align-items-center mb-5">
                 @if ($product->foto_produk != '')
-                  <img src="{{ asset('storage/foto_produk/' . $product->foto_produk) }}"
-                    class="avatar avatar-xl rounded" alt="{{ $product->nama_produk }}">
+                  <img src="{{ asset('storage/foto_produk/' . $product->foto_produk) }}" class="avatar avatar-xl rounded"
+                    alt="{{ $product->nama_produk }}">
                 @else
                   <img src="{{ asset('photo/default-product.jpg') }}" class="avatar avatar-xl"
                     alt="{{ $product->nama_produk }}">
@@ -178,12 +127,8 @@
                 <a href="{{ route('addProduct.to.cart', $product->id_produk) }}"
                   class="btn border-secondary rounded-pill text-primary w-100 mb-4 border py-2">
                   <i class="fa fa-shopping-bag text-primary me-2"></i> Add to cart
-                </a> <!-- Penutup tag <a> -->
+                </a>
               </div>
-            </div>
-            <div class="d-flex justify-content-center my-4">
-              <a href="#" class="btn border-secondary rounded-pill text-primary w-100 border px-4 py-3">View
-                More</a>
             </div>
           </div>
         </div>
@@ -209,9 +154,6 @@
               </div>
               <div class="rounded-bottom d-flex flex-column flex-grow-1 p-4">
                 <h4>{{ $item->nama_produk }}</h4>
-                <p class="flex-grow-1">
-                  {{ $item->deskripsi }}
-                </p>
                 <div class="d-flex flex-column align-items-center">
                   <p class="text-dark fs-5 fw-bold mb-2">Rp.{{ $item->harga }} / kg</p>
                   <a href="#" class="btn border-secondary rounded-pill text-primary border px-3"
@@ -229,4 +171,31 @@
   </div>
   <!-- Single Product End -->
   @include('layouts.footers.market.footer')
+@endsection
+
+@section('scripts')
+  <script>
+    $(document).ready(function() {
+      var pricePerUnit = parseFloat($('#total-price').data('price-per-unit'));
+      $('#quantity-input').on('input', function() {
+        var quantity = $(this).val();
+        var totalPrice = pricePerUnit * quantity;
+        $('#total-price').text('Rp.' + totalPrice.toLocaleString());
+      });
+
+      $('.btn-minus').on('click', function() {
+        var quantityInput = $(this).closest('.quantity').find('#quantity-input');
+        var quantity = parseInt(quantityInput.val());
+        if (quantity > 1) {
+          quantityInput.val(quantity - 1).trigger('input');
+        }
+      });
+
+      $('.btn-plus').on('click', function() {
+        var quantityInput = $(this).closest('.quantity').find('#quantity-input');
+        var quantity = parseInt(quantityInput.val());
+        quantityInput.val(quantity + 1).trigger('input');
+      });
+    });
+  </script>
 @endsection

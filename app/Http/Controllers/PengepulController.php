@@ -68,7 +68,7 @@ class PengepulController extends Controller
             session()->flash('status', 'success');
             session()->flash('message', 'add data success!');
         }
-        return redirect('/pengepul');
+        return redirect()->route('pengepul');
     }
 
     public function edit(Request $request, $id_pengepul)
@@ -122,7 +122,7 @@ class PengepulController extends Controller
         session()->flash('message', 'Edit data success!');
 
         // Redirect ke halaman pengepul
-        return redirect('/pengepul');
+        return redirect()->route('pengepul');
     }
     function destroy(Request $request, $id_pengepul)
     {
@@ -132,7 +132,7 @@ class PengepulController extends Controller
             session()->flash('status', 'success');
             session()->flash('message', 'delete ' . $deletedPengepul->nama . ' success!');
         }
-        return redirect('/pengepul');
+        return redirect()->route('pengepul');
     }
 
     public function editProfile($id_pengepul)
@@ -161,7 +161,7 @@ class PengepulController extends Controller
         $pengepul = User::findOrFail($id_pengepul);
 
         // Log before update
-        Log::info('Updating user:', ['attributes' => $attributes]);
+
 
         // Update pengepul data except foto_profil
         $pengepul->update($request->except('foto_profil'));
@@ -182,7 +182,7 @@ class PengepulController extends Controller
         $pengepul->save();
 
         // Log after update
-        Log::info('Updated user:', ['pengepul' => $pengepul->toArray()]);
+
 
         session()->flash('status', 'success');
         session()->flash('message', 'Edit data success!');

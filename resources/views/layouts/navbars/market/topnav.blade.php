@@ -17,17 +17,13 @@
         <a href="{{ route('market') }}"
           class="nav-link {{ Route::currentRouteName() == 'market' ? 'active' : '' }}">Home</a>
         <a href="{{ route('products.shop') }}"
-          class="nav-item nav-link {{ Route::currentRouteName() == 'products.shop' ? 'active' : '' }}">Shop</a>
+          class="nav-item nav-link {{ Route::currentRouteName() == 'products.shop' ? 'active' : '' }}">Produk</a>
         <a href="{{ route('orders') }}"
           class="nav-item nav-link {{ Route::currentRouteName() == 'orders' ? 'active' : '' }}">Pesanan</a>
         <a href="{{ route('show.favorites') }}"
           class="nav-item nav-link {{ Route::currentRouteName() == 'show.favorites' ? 'active' : '' }}">Favorit</a>
       </div>
       <div class="d-flex align-items-center">
-        <div class="input-group me-4">
-          <input type="text" class="form-control" placeholder="Type here...">
-          <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
-        </div>
         <a href="{{ route('cart') }}" class="position-relative my-auto me-4">
           <i class="fa fa-shopping-bag fa-2x"></i>
           <span

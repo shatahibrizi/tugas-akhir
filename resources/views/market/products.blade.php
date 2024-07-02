@@ -1,14 +1,14 @@
 @extends('layouts.market-app')
 
 @section('content')
-  @include('layouts.navbars.market.topnav', ['title' => 'Product Table'])
+  @include('layouts.navbars.market.topnav', ['title' => 'Tabel Produk'])
 
   <div class="container-fluid page-header py-5">
-    <h1 class="display-6 text-center text-white">Shop</h1>
+    <h1 class="display-6 text-center text-white">Toko</h1>
     <ol class="breadcrumb justify-content-center mb-0">
-      <li class="breadcrumb-item text-secondary"><a href="{{ route('market') }}">Home</a></li>
-      <li class="breadcrumb-item text-secondary"><a href="#">Pages</a></li>
-      <li class="breadcrumb-item active text-white">Shop</li>
+      <li class="breadcrumb-item text-secondary"><a href="{{ route('market') }}">Beranda</a></li>
+      <li class="breadcrumb-item text-secondary"><a href="#">Halaman</a></li>
+      <li class="breadcrumb-item active text-white">Toko</li>
     </ol>
   </div>
   <!-- Single Page Header End -->
@@ -22,10 +22,10 @@
       {{ session('success') }}
     </div>
   @endif
-  <!-- Fruits Shop Start -->
+  <!-- Toko Buah Start -->
   <div class="container-fluid fruite flex-grow-1 py-5">
     <div class="container py-5">
-      <h1 class="mb-4">Fresh fruits shop</h1>
+      <h1 class="mb-4">Toko Buah Segar</h1>
       <div class="row g-4">
         <div class="col-lg-12">
           <form method="GET" action="">
@@ -33,30 +33,27 @@
               <div class="col-lg-3">
                 <div class="row g-4">
                   <div class="input-group w-100 d-flex mx-auto">
-                    <input type="search" name="keyword" class="form-control p-3" placeholder="Keyword"
+                    <input type="search" name="keyword" class="form-control p-3" placeholder="Kata Kunci"
                       aria-describedby="search-icon-1">
                     <button id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></button>
                   </div>
                   <div class="col-lg-12">
                     <div class="mb-1">
-                      <h4>Categories</h4>
+                      <h4>Kategori</h4>
                       <ul class="list-unstyled fruite-categorie">
                         <li>
                           <div class="d-flex justify-content-between fruite-name">
-                            <a href="?kategori=Buah"><i class="fas fa-apple-alt me-2"></i>Buah</a>
-                            <span>(3)</span>
+                            <a href="?kategori=Buah"><i class="fas fa-info-circle me-2"></i>Buah</a>
                           </div>
                         </li>
                         <li>
                           <div class="d-flex justify-content-between fruite-name">
-                            <a href="?kategori=Sayur"><i class="fas fa-apple-alt me-2"></i>Sayur</a>
-                            <span>(5)</span>
+                            <a href="?kategori=Sayur"><i class="fas fa-info-circle me-2"></i>Sayur</a>
                           </div>
                         </li>
                         <li>
                           <div class="d-flex justify-content-between fruite-name">
-                            <a href="?kategori=Palawija"><i class="fas fa-apple-alt me-2"></i>Palawija</a>
-                            <span>(2)</span>
+                            <a href="?kategori=Palawija"><i class="fas fa-info-circle me-2"></i>Palawija</a>
                           </div>
                         </li>
                       </ul>
@@ -64,11 +61,11 @@
                   </div>
                   <div class="col-lg-12">
                     <div class="mb-1">
-                      <h4 class="mb-2">Price</h4>
+                      <h4 class="mb-2">Harga</h4>
                       <div class="d-flex">
-                        <input type="number" name="min_price" class="form-control me-2" placeholder="Min Price"
+                        <input type="number" name="min_price" class="form-control me-2" placeholder="Harga Min"
                           value="{{ request('min_price') }}">
-                        <input type="number" name="max_price" class="form-control" placeholder="Max Price"
+                        <input type="number" name="max_price" class="form-control" placeholder="Harga Max"
                           value="{{ request('max_price') }}">
                       </div>
                     </div>
@@ -77,7 +74,7 @@
                     <div class="mb-1">
                       <h4>Grade</h4>
                       <select name="filter" class="form-select w-100">
-                        <option value="">All</option>
+                        <option value="">Semua</option>
                         <option value="A">A</option>
                         <option value="B">B</option>
                         <option value="C">C</option>
@@ -86,9 +83,9 @@
                   </div>
                   <div class="col-lg-12">
                     <div class="mb-3">
-                      <h4>Farmer</h4>
+                      <h4>Petani</h4>
                       <select name="petani" class="form-select w-100">
-                        <option value="">All</option>
+                        <option value="">Semua</option>
                         @foreach ($allPetani as $petaniName)
                           <option value="{{ $petaniName }}">{{ $petaniName }}</option>
                         @endforeach
@@ -145,11 +142,10 @@
                             </div>
                             <div class="rounded-bottom d-flex flex-column flex-grow-1 p-4 text-center">
                               <h4>{{ $item->nama_produk }}</h4>
-                              <p class="flex-grow-1">{{ $item->deskripsi }}</p>
                               <div class="d-flex flex-column align-items-center">
                                 <p class="text-dark fs-5 fw-bold mb-2">Rp.{{ number_format($item->harga, 0, ',', '.') }}
                                   / kg</p>
-                                <p class="text-dark fs-6 fw-bold mb-2">Pengepul:
+                                <p class="text-dark fs-6 fw-bold mb-2">
                                   @foreach ($item->pengepul as $pengepul)
                                     {{ $pengepul->nama }}@if (!$loop->last)
                                       ,
@@ -159,7 +155,7 @@
                                 <a href="{{ route('addProduct.to.cart', $item->id_produk) }}"
                                   class="btn border-secondary rounded-pill text-primary border px-3"
                                   style="margin-top: 10px;">
-                                  <i class="fa fa-shopping-bag text-primary me-2"></i> Add to cart
+                                  <i class="fa fa-shopping-bag text-primary me-2"></i> Tambahkan ke keranjang
                                 </a>
                               </div>
                             </div>
@@ -182,6 +178,6 @@
       </div>
     </div>
   </div>
-  <!-- Fruits Shop End -->
+  <!-- Toko Buah End -->
   @include('layouts.footers.market.footer')
 @endsection
