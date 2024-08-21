@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Petani;
 use App\Models\Product;
+use App\Models\PetaniLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -34,7 +35,7 @@ class PetaniController extends Controller
         return view('pengepul.petani.petani-add', ['petani' => $petani]);
     }
 
-    function store(Request $request)
+    public function store(Request $request)
     {
         $newName = '';
 
@@ -58,7 +59,13 @@ class PetaniController extends Controller
             'grup_petani' => $request->grup_petani,
         ]);
 
-        $date = now();
+        // Log the action
+        PetaniLog::create([
+            'id_pengepul' => auth()->user()->id_pengepul,
+            'id_petani' => $petani->id_petani,
+            'action' => 'create',
+            'changes' => json_encode($petani->toArray()),
+        ]);
 
         if ($petani) {
             session()->flash('status', 'success');
@@ -75,30 +82,44 @@ class PetaniController extends Controller
     }
 
 
-    function update(Request $request, $id_petani)
+
+    public function update(Request $request, $id_petani)
     {
         $petani = Petani::findOrFail($id_petani);
 
-        // Perbarui informasi produk lainnya
-        $petani->update($request->except('foto')); // Hindari menyertakan 'foto_produk' dalam proses update
+        // Filter out unwanted keys
+        $filteredRequest = $request->except(['_token', '_method', 'action']);
 
-        // Periksa apakah ada file baru yang diunggah
+        $changes = [];
+        foreach ($filteredRequest as $key => $value) {
+            $oldValue = html_entity_decode($petani->$key);
+            $newValue = html_entity_decode($value);
+            if ($oldValue != $newValue) {
+                $changes[$key] = ['old' => $oldValue, 'new' => $newValue];
+            }
+        }
+
+        $petani->update($filteredRequest);
+
         if ($request->hasFile('foto')) {
-            // Hapus gambar lama jika ada
             if ($petani->foto) {
                 Storage::delete('foto/' . $petani->foto);
             }
 
-            // Simpan gambar baru dan perbarui nama file di basis data
             $extension = $request->file('foto')->getClientOriginalExtension();
             $newName = $request->nama . '-' . now()->timestamp . '.' . $extension;
             $request->file('foto')->storeAs('foto', $newName);
             $petani->foto = $newName;
         }
 
-        // Simpan perubahan produk
         $petani->save();
 
+        PetaniLog::create([
+            'id_pengepul' => auth()->user()->id_pengepul,
+            'id_petani' => $petani->id_petani,
+            'action' => 'update',
+            'changes' => json_encode($changes),
+        ]);
 
         session()->flash('status', 'success');
         session()->flash('message', 'edit data success!');
@@ -106,14 +127,31 @@ class PetaniController extends Controller
         return redirect('/stok/petani');
     }
 
-    function destroy(Request $request, $id_petani)
+    public function destroy(Request $request, $id_petani)
     {
         $deletedPetani = Petani::findOrFail($id_petani);
+        $deletedPetaniData = $deletedPetani->toArray();
         $deletedPetani->delete();
+
+        // Log the action
+        PetaniLog::create([
+            'id_pengepul' => auth()->user()->id_pengepul,
+            'id_petani' => $deletedPetani->id_petani,
+            'action' => 'delete',
+            'changes' => json_encode($deletedPetaniData),
+        ]);
+
         if ($deletedPetani) {
             session()->flash('status', 'success');
             session()->flash('message', 'delete ' . $deletedPetani->nama . ' success!');
         }
         return redirect('/stok/petani');
+    }
+
+    public function showLogs()
+    {
+        $logs = PetaniLog::with(['pengepul', 'petani'])->orderBy('created_at', 'desc')->get();
+
+        return view('pengepul.petani.petani-logs', compact('logs'));
     }
 }

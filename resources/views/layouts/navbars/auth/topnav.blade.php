@@ -12,12 +12,27 @@
     </nav>
     <div class="navbar-collapse mt-sm-0 me-md-0 me-sm-4 collapse mt-2" id="navbar">
       <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-        <div class="input-group">
-          <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
-          <input type="text" class="form-control" placeholder="Type here...">
-        </div>
+        @if (auth()->guard('admin')->check())
+          <!-- Admin specific content here if needed -->
+        @else
+          <!-- Pengepul specific content here if needed -->
+        @endif
       </div>
       <ul class="navbar-nav justify-content-end">
+        @if (auth()->check())
+          <li class="nav-item d-flex align-items-center me-3">
+            <a href="{{ auth()->guard('admin')->check() ? route('admin.profile', auth()->user() ? auth()->user()->id_admin : '') : route('profile', auth()->user() ? auth()->user()->id_pengepul : '') }}"
+              class="d-flex align-items-center text-decoration-none">
+              <img
+                src="{{ auth()->user()->foto_profil ? asset('storage/foto_profil/' . auth()->user()->foto_profil) : asset('img/default-user.png') }}"
+                class="avatar avatar-sm me-2">
+              <div class="d-flex flex-column justify-content-center">
+                <span class="font-weight-bold text-white">{{ auth()->user()->nama }}</span>
+                <span class="text-xs text-white">{{ auth()->guard('admin')->check() ? 'Admin' : 'Pengepul' }}</span>
+              </div>
+            </a>
+          </li>
+        @endif
         <li class="nav-item d-flex align-items-center">
           @if (auth()->guard('admin')->check())
             <form role="form" method="POST" action="{{ route('admin_logout') }}" id="logout-form">
@@ -39,6 +54,7 @@
             </form>
           @endif
         </li>
+
         <li class="nav-item d-xl-none d-flex align-items-center ps-3">
           <a href="javascript:;" class="nav-link p-0 text-white" id="iconNavbarSidenav">
             <div class="sidenav-toggler-inner">
@@ -53,7 +69,7 @@
             <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
           </a>
         </li>
-        @if (auth()->guard('web')->check())
+        @if (auth()->check() && !auth()->guard('admin')->check())
           <li class="nav-item dropdown d-flex align-items-center pe-2">
             <a href="javascript:;" class="nav-link p-0 text-white" id="dropdownMenuButton" data-bs-toggle="dropdown"
               aria-expanded="false" onclick="markAsRead()">
@@ -119,17 +135,25 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
+  $.ajaxSetup({
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+  });
+
   function markAsRead() {
+    console.log('markAsRead function called'); // Tambahkan log ini
     $.ajax({
       type: 'POST',
       url: '{{ route('markAsRead') }}',
-      data: {
-        _token: '{{ csrf_token() }}'
-      },
       success: function(data) {
+        console.log('Success:', data); // Tambahkan log ini
         if (data.success) {
           $('#notification-count').remove();
         }
+      },
+      error: function(xhr) {
+        console.error('Error:', xhr.responseText); // Tambahkan log ini
       }
     });
   }

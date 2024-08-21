@@ -7,9 +7,10 @@
 <div class="container px-0">
   <nav class="navbar navbar-light navbar-expand-xl bg-white">
     <a href="index.html" class="navbar-brand">
-      <h1 class="text-primary display-6">Fruitables</h1>
+      <h1 class="text-primary display-6">Agro Sembalun</h1>
     </a>
-    <button class="navbar-toggler px-3 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+    <button class="navbar-toggler px-3 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+      aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
       <span class="fa fa-bars text-primary"></span>
     </button>
     <div class="navbar-collapse collapse bg-white" id="navbarCollapse">

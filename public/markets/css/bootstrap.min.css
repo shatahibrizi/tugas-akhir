@@ -2016,7 +2016,7 @@ progress {
 }
 .form-control:disabled,
 .form-control:read-only {
-    background-color: #e9ecef;
+    background-color: #ffffff;
     opacity: 1;
 }
 .form-control::file-selector-button {

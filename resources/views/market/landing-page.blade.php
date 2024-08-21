@@ -38,8 +38,8 @@
               <i class="fas fa-car-side fa-3x text-white"></i>
             </div>
             <div class="featurs-content text-center">
-              <h5>Pengiriman Gratis</h5>
-              <p class="mb-0">Untuk pesanan di atas harga tertentu</p>
+              <h5>Pengiriman Terjangkau</h5>
+              <p class="mb-0">Biaya yang relatif murah</p>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@
                                   @endif
                                 @endforeach
                               </p>
-                              <a href="#"
+                              <a href="{{ route('addProduct.to.cart', $item->id_produk) }}"
                                 class="btn border-secondary rounded-pill text-primary d-flex align-items-center border px-3"
                                 style="margin-top: 10px;">
                                 <i class="fa fa-shopping-bag text-primary" style="margin-right: 4px;"></i>Tambah ke

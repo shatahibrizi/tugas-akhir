@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use DB;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Admin;
@@ -13,6 +12,7 @@ use App\Models\Pesanan;
 use App\Models\Product;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Notifications\NewOrderNotification;
 
 class MarketController extends Controller
@@ -74,7 +74,8 @@ class MarketController extends Controller
                 "nama_produk" => $product->nama_produk,
                 "quantity" => 1,
                 "harga" => $product->harga,
-                "foto_produk" => $product->foto_produk
+                "foto_produk" => $product->foto_produk,
+                "jumlah" => $product->jumlah
             ];
         }
 
@@ -109,14 +110,125 @@ class MarketController extends Controller
         $cart = session()->get('cart', []);
         $pembeli = $this->getAuthenticatedPembeli();
         $alamat = $pembeli ? $pembeli->alamat : null;
+        $kabupaten = $pembeli ? $pembeli->kabupaten : null;
+        $kecamatan = $pembeli ? $pembeli->kecamatan : null;
 
         $totalPrice = $this->calculateTotalPrice($cart);
-        $totalPriceWithShipping = $totalPrice + 15000; // Flat rate shipping
 
+        // Menentukan biaya pengiriman berdasarkan kabupaten dan kecamatan
+        $kabupatenKecamatanDistance = [
+            'Lombok Utara' => [
+                'Bayan' => 23,
+                'Gangga' => 59,
+                'Kayangan' => 43,
+                'Pemenang' => 74,
+                'Tanjung' => 67,
+            ],
+            'Lombok Timur' => [
+                'Aikmel' => 39,
+                'Jerowaru' => 85,
+                'Keruak' => 70,
+                'Labuan Haji' => 55,
+                'Lenek' => 42,
+                'Masbagik' => 48,
+                'Montong Gading' => 55,
+                'Pringgabaya' => 38,
+                'Pringgasela' => 46,
+                'Sakra' => 56,
+                'Sakra Timur' => 61,
+                'Sakra Barat' => 64,
+                'Sambelia' => 33,
+                'Selong' => 51,
+                'Sembalun' => 7,
+                'Sikur' => 51,
+                'Sukamulia' => 50,
+                'Suralaga' => 44,
+            ],
+            'Lombok Tengah' => [
+                'Batukliang' => 68,
+                'Batukliang Utara' => 74,
+                'Janapria' => 64,
+                'Jonggat' => 83,
+                'Kopang' => 63,
+                'Praya' => 77,
+                'Praya Barat' => 103,
+                'Praya Barat Daya' => 90,
+                'Praya Tengah' => 78,
+                'Praya Timur' => 75,
+                'Pringgarata' => 76,
+                'Pujut' => 99,
+            ],
+            'Mataram' => [
+                'Ampenan' => 99,
+                'Cakranegara' => 101,
+                'Mataram' => 90,
+                'Sandubaya' => 90,
+                'Sekarbela' => 102,
+                'Selaparang' => 97,
+            ],
+            'Lombok Barat' => [
+                'Batu Layar' => 94,
+                'Gunungsari' => 94,
+                'Lingsar' => 88,
+                'Narmada' => 82,
+                'Kediri' => 88,
+                'Labuapi' => 93,
+                'Kuripan' => 95,
+                'Gerung' => 102,
+                'Lembar' => 106,
+                'Sekotong' => 146,
+            ]
+        ];
+
+        $shippingCost = 0;
+
+        if (isset($kabupatenKecamatanDistance[$kabupaten]) && isset($kabupatenKecamatanDistance[$kabupaten][$kecamatan])) {
+            $distance = $kabupatenKecamatanDistance[$kabupaten][$kecamatan];
+
+            if ($distance <= 40) {
+                $shippingCost = 5000;
+            } elseif ($distance <= 50) {
+                $shippingCost = 10000;
+            } elseif ($distance <= 60) {
+                $shippingCost = 15000;
+            } elseif ($distance <= 70) {
+                $shippingCost = 20000;
+            } elseif ($distance <= 80) {
+                $shippingCost = 25000;
+            } elseif ($distance <= 90) {
+                $shippingCost = 30000;
+            } elseif ($distance <= 100) {
+                $shippingCost = 35000;
+            } else {
+                $shippingCost = 50000;
+            }
+        } else {
+            $shippingCost = 30000; // Default shipping cost if not found
+        }
+
+        // Tambahkan biaya tambahan jika jumlah pembelian lebih besar dari 10
+        $additionalShippingCost = 0;
+        $totalItems = array_sum(array_column($cart, 'quantity'));
+        // Tambahkan biaya tambahan berdasarkan berat total pesanan
+        if ($totalItems > 10 && $totalItems <= 25) {
+            $additionalShippingCost = 5000;
+        } elseif ($totalItems > 25 && $totalItems <= 50) {
+            $additionalShippingCost = 10000;
+        } elseif ($totalItems > 50) {
+            $additionalShippingCost = 25000;
+        }
+
+        // Menghitung total harga dengan biaya pengiriman
+        $totalPriceWithShipping = $totalPrice + $shippingCost + $additionalShippingCost;
+
+        // Mendapatkan nomor rekening admin
         $admin = Admin::select('no_rek')->first();
 
-        return view('market.checkout', compact('cart', 'totalPrice', 'totalPriceWithShipping', 'alamat', 'admin'));
+        // Mengirim data ke view 'market.checkout'
+        return view('market.checkout', compact('cart', 'totalPrice', 'totalPriceWithShipping', 'alamat', 'admin', 'shippingCost', 'kabupaten', 'kecamatan', 'totalItems', 'additionalShippingCost'));
     }
+
+
 
     public function placeOrder(Request $request)
     {
@@ -124,17 +236,132 @@ class MarketController extends Controller
         $user = auth()->guard('pembeli')->user();
 
         if (empty($cart)) {
-            return redirect()->route('cart')->with('error', 'Your cart is empty!');
+            return redirect()->route('cart')->with('error', 'Keranjang belanja Anda kosong!');
         }
 
         // Validate the request
         $request->validate([
             'metode_pembayaran' => 'required|in:COD,Transfer',
-            'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'bukti_bayar' => 'required|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
+
+        // Check if the payment method is Transfer and proof of payment is provided
+        if ($request->metode_pembayaran == 'Transfer' && !$request->hasFile('bukti_bayar')) {
+            return redirect()->route('checkout')->with('error', 'Anda harus mengunggah bukti bayar untuk metode Transfer!');
+        }
 
         // Calculate total price
         $totalPrice = $this->calculateTotalPrice($cart);
+
+        // Get authenticated pembeli and their address details
+        $pembeli = $this->getAuthenticatedPembeli();
+        $alamat = $pembeli ? $pembeli->alamat : null;
+        $kabupaten = $pembeli ? $pembeli->kabupaten : null;
+        $kecamatan = $pembeli ? $pembeli->kecamatan : null;
+
+        // Determine shipping cost based on kabupaten and kecamatan
+        $kabupatenKecamatanDistance = [
+            'Lombok Utara' => [
+                'Bayan' => 23,
+                'Gangga' => 59,
+                'Kayangan' => 43,
+                'Pemenang' => 74,
+                'Tanjung' => 67,
+            ],
+            'Lombok Timur' => [
+                'Aikmel' => 39,
+                'Jerowaru' => 85,
+                'Keruak' => 70,
+                'Labuan Haji' => 55,
+                'Lenek' => 42,
+                'Masbagik' => 48,
+                'Montong Gading' => 55,
+                'Pringgabaya' => 38,
+                'Pringgasela' => 46,
+                'Sakra' => 56,
+                'Sakra Timur' => 61,
+                'Sakra Barat' => 64,
+                'Sambelia' => 33,
+                'Selong' => 51,
+                'Sembalun' => 7,
+                'Sikur' => 51,
+                'Sukamulia' => 50,
+                'Suralaga' => 44,
+            ],
+            'Lombok Tengah' => [
+                'Batukliang' => 68,
+                'Batukliang Utara' => 74,
+                'Janapria' => 64,
+                'Jonggat' => 83,
+                'Kopang' => 63,
+                'Praya' => 77,
+                'Praya Barat' => 103,
+                'Praya Barat Daya' => 90,
+                'Praya Tengah' => 78,
+                'Praya Timur' => 75,
+                'Pringgarata' => 76,
+                'Pujut' => 99,
+            ],
+            'Mataram' => [
+                'Ampenan' => 99,
+                'Cakranegara' => 101,
+                'Mataram' => 90,
+                'Sandubaya' => 90,
+                'Sekarbela' => 102,
+                'Selaparang' => 97,
+            ],
+            'Lombok Barat' => [
+                'Batu Layar' => 94,
+                'Gunungsari' => 94,
+                'Lingsar' => 88,
+                'Narmada' => 82,
+                'Kediri' => 88,
+                'Labuapi' => 93,
+                'Kuripan' => 95,
+                'Gerung' => 102,
+                'Lembar' => 106,
+                'Sekotong' => 146,
+            ]
+        ];
+
+        $shippingCost = 0;
+
+        if (isset($kabupatenKecamatanDistance[$kabupaten]) && isset($kabupatenKecamatanDistance[$kabupaten][$kecamatan])) {
+            $distance = $kabupatenKecamatanDistance[$kabupaten][$kecamatan];
+
+            if ($distance <= 40) {
+                $shippingCost = 5000;
+            } elseif ($distance <= 50) {
+                $shippingCost = 10000;
+            } elseif ($distance <= 60) {
+                $shippingCost = 15000;
+            } elseif ($distance <= 70) {
+                $shippingCost = 20000;
+            } elseif ($distance <= 80) {
+                $shippingCost = 25000;
+            } elseif ($distance <= 90) {
+                $shippingCost = 30000;
+            } elseif ($distance <= 100) {
+                $shippingCost = 35000;
+            } else {
+                $shippingCost = 50000;
+            }
+        } else {
+            $shippingCost = 30000; // Default shipping cost if not found
+        }
+
+        // Tambahkan biaya tambahan jika jumlah pembelian lebih besar dari 10
+        $totalItems = array_sum(array_column($cart, 'quantity'));
+        // Tambahkan biaya tambahan berdasarkan berat total pesanan
+        if ($totalItems > 10 && $totalItems <= 25) {
+            $shippingCost += 5000;
+        } elseif ($totalItems > 25 && $totalItems <= 50) {
+            $shippingCost += 10000;
+        } elseif ($totalItems > 50) {
+            $shippingCost += 25000;
+        }
+
+        $totalPriceWithShipping = $totalPrice + $shippingCost;
 
         // Handle file upload using the new function
         $buktiBayarPath = $this->storePaymentProofImage($request);
@@ -144,12 +371,14 @@ class MarketController extends Controller
             'id_pembeli' => $user->id_pembeli,
             'status' => 'Pending', // Initial status
             'metode_pembayaran' => $request->metode_pembayaran,
-            'total_harga' => $totalPrice, // Only the total product price
+            'total_harga' => $totalPriceWithShipping,
             'tanggal_pesanan' => now(), // Use now() to get the current time in the app's timezone
             'created_at' => now(),
             'updated_at' => now(),
             'bukti_bayar' => $buktiBayarPath
         ]);
+
+        $pengepulsNotified = []; // Array to keep track of notified pengepuls
 
         // Process each product in the cart
         foreach ($cart as $id_produk => $details) {
@@ -158,7 +387,7 @@ class MarketController extends Controller
 
             // Check if stock is sufficient
             if ($product->jumlah < $details['quantity']) {
-                return redirect()->route('cart')->with('error', 'Stock is insufficient for product: ' . $product->nama_produk);
+                return redirect()->route('cart')->with('error', 'Stok tidak mencukupi untuk produk: ' . $product->nama_produk);
             }
 
             // Reduce the stock
@@ -171,13 +400,25 @@ class MarketController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
+            $pengepulIds = DB::table('tambah_produk')->where('id_produk', $id_produk)->pluck('id_pengepul');
+            $pengepulUsers = User::whereIn('id_pengepul', $pengepulIds)->get();
+
+            foreach ($pengepulUsers as $pengepulUser) {
+                if (!in_array($pengepulUser->id_pengepul, $pengepulsNotified)) {
+                    // Send notification to each seller only once
+                    $pengepulUser->notify(new NewOrderNotification($order));
+                    $pengepulsNotified[] = $pengepulUser->id_pengepul; // Mark pengepul as notified
+                }
+            }
         }
 
         // Clear the cart
         session()->forget('cart');
 
-        return redirect()->route('market')->with('success', 'Order placed successfully!');
+        return redirect()->route('market')->with('success', 'Pesanan berhasil dilakukan!');
     }
+
 
     public function showOrders()
     {
@@ -257,23 +498,6 @@ class MarketController extends Controller
         return redirect()->route('admin.viewAllOrders')->with('status', 'Pesanan berhasil dihapus!');
     }
 
-    public function updateShippingCost(Request $request, $id_pesanan)
-    {
-        $request->validate([
-            'biaya_pengiriman' => 'required|numeric',
-        ]);
-
-        $order = Pesanan::findOrFail($id_pesanan);
-        $order->biaya_pengiriman = $request->biaya_pengiriman;
-        $order->status = 'Diproses';
-        $order->tanggal_diproses = now();
-        $order->save();
-        session()->flash('status', 'success');
-        session()->flash('message', 'Biaya pengiriman berhasil ditambahkan dan status pesanan diubah menjadi Diproses.');
-        return redirect()->back();
-    }
-
-
 
     private function filterProducts(Request $request)
     {
@@ -287,18 +511,13 @@ class MarketController extends Controller
             $productQuery->where('grade', $request->filter);
         }
 
-        if ($request->price_filter) {
-            switch ($request->price_filter) {
-                case 'Below 10000':
-                    $productQuery->where('harga', '<', 10000);
-                    break;
-                case '10000 - 50000':
-                    $productQuery->whereBetween('harga', [10000, 50000]);
-                    break;
-                case 'Above 50000':
-                    $productQuery->where('harga', '>', 50000);
-                    break;
-            }
+        // Filter Harga
+        if ($request->filled('min_price') && $request->filled('max_price')) {
+            $productQuery->whereBetween('harga', [$request->min_price, $request->max_price]);
+        } elseif ($request->filled('min_price')) {
+            $productQuery->where('harga', '>=', $request->min_price);
+        } elseif ($request->filled('max_price')) {
+            $productQuery->where('harga', '<=', $request->max_price);
         }
 
         if ($request->kategori) {

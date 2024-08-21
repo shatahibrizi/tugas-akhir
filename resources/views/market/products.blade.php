@@ -1,14 +1,14 @@
 @extends('layouts.market-app')
 
 @section('content')
-  @include('layouts.navbars.market.topnav', ['title' => 'Tabel Produk'])
+  @include('layouts.navbars.market.topnav', ['title' => 'Produk'])
 
   <div class="container-fluid page-header py-5">
-    <h1 class="display-6 text-center text-white">Toko</h1>
+    <h1 class="display-6 text-center text-white">Produk</h1>
     <ol class="breadcrumb justify-content-center mb-0">
       <li class="breadcrumb-item text-secondary"><a href="{{ route('market') }}">Beranda</a></li>
       <li class="breadcrumb-item text-secondary"><a href="#">Halaman</a></li>
-      <li class="breadcrumb-item active text-white">Toko</li>
+      <li class="breadcrumb-item active text-white">Produk</li>
     </ol>
   </div>
   <!-- Single Page Header End -->
@@ -24,7 +24,7 @@
   @endif
   <!-- Toko Buah Start -->
   <div class="container-fluid fruite flex-grow-1 py-5">
-    <div class="container py-5">
+    <div class="container py-2">
       <h1 class="mb-4">Toko Buah Segar</h1>
       <div class="row g-4">
         <div class="col-lg-12">
@@ -78,17 +78,6 @@
                         <option value="A">A</option>
                         <option value="B">B</option>
                         <option value="C">C</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-lg-12">
-                    <div class="mb-3">
-                      <h4>Petani</h4>
-                      <select name="petani" class="form-select w-100">
-                        <option value="">Semua</option>
-                        @foreach ($allPetani as $petaniName)
-                          <option value="{{ $petaniName }}">{{ $petaniName }}</option>
-                        @endforeach
                       </select>
                     </div>
                   </div>
@@ -179,5 +168,4 @@
     </div>
   </div>
   <!-- Toko Buah End -->
-  @include('layouts.footers.market.footer')
 @endsection

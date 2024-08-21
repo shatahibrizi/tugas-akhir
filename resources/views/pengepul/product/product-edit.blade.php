@@ -86,7 +86,7 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <x-text-input label="Estimasi busuk" name="estimasi_busuk" id="estimasi_busuk"
-                      value="{{ $product->estimasi_busuk }}" required />
+                      value="{{ $product->estimasi_busuk }}" />
                   </div>
                 </div>
                 <div class="col-md-6">

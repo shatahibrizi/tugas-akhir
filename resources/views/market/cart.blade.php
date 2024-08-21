@@ -5,11 +5,11 @@
 
   <!-- Single Page Header start -->
   <div class="container-fluid page-header py-5">
-    <h1 class="display-6 text-center text-white">Cart</h1>
+    <h1 class="display-6 text-center text-white">Keranjang</h1>
     <ol class="breadcrumb justify-content-center mb-0">
-      <li class="breadcrumb-item"><a href="#">Home</a></li>
-      <li class="breadcrumb-item"><a href="#">Pages</a></li>
-      <li class="breadcrumb-item active text-white">Cart</li>
+      <li class="breadcrumb-item"><a href="#">Beranda</a></li>
+      <li class="breadcrumb-item"><a href="#">Halaman</a></li>
+      <li class="breadcrumb-item active text-white">Keranjang</li>
     </ol>
   </div>
   <!-- Single Page Header End -->
@@ -43,6 +43,9 @@
             @php $total = 0 @endphp
             @if (session('cart'))
               @foreach (session('cart') as $id_produk => $details)
+                @php
+                  $jumlah = isset($details['jumlah']) ? $details['jumlah'] : 0;
+                @endphp
                 <tr rowId="{{ $id_produk }}">
                   <th scope="row">
                     <div class="d-flex align-items-center">
@@ -93,17 +96,12 @@
         <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
           <div class="bg-light rounded">
             <div class="p-4">
-              <h1 class="display-6 mb-4">Cart <span class="fw-normal">Total</span></h1>
+              <h1 class="display-6 mb-4">Total <span class="fw-normal">Keranjang</span></h1>
               <div class="d-flex justify-content-between mb-4">
                 <h5 class="mb-0 me-4">Subtotal:</h5>
                 <p class="subtotal mb-0">Rp.{{ number_format($total, 0, ',', '.') }}</p>
               </div>
-              <div class="d-flex justify-content-between mb-4">
-                <h5 class="mb-0 me-4">Shipping</h5>
-                <div class="">
-                  <p class="mb-0">Flat rate: Rp.30,000</p>
-                </div>
-              </div>
+
               @if ($alamat)
                 <div class="d-flex justify-content-between">
                   <h5>Alamat:</h5>
@@ -118,11 +116,11 @@
             </div>
             <div class="border-top border-bottom d-flex justify-content-between mb-4 py-4">
               <h5 class="mb-0 me-4 ps-4">Total</h5>
-              <p class="total mb-0 pe-4">Rp.{{ number_format($total + 30000, 0, ',', '.') }}</p>
+              <p class="total mb-0 pe-4">Rp.{{ number_format($total, 0, ',', '.') }}</p>
             </div>
             <a href="{{ route('checkout') }}"
-              class="btn border-secondary rounded-pill text-primary text-uppercase mb-4 ms-4 px-4 py-3">
-              Proceed Checkout
+              class="btn border-secondary rounded-pill text-primary text-uppercase {{ $jumlah == 1 ? 'disabled' : '' }} mb-4 ms-4 px-4 py-3">
+              Buat Pesanan
             </a>
           </div>
         </div>
@@ -131,7 +129,6 @@
   </div>
   <!-- Cart Page End -->
 
-  @include('layouts.footers.market.footer')
 @endsection
 
 @section('scripts')
@@ -185,8 +182,7 @@
           subtotal += parseFloat($(this).text().replace("Rp.", "").replaceAll(".", ""));
         });
         $(".subtotal").text("Rp." + subtotal.toLocaleString('id-ID'));
-        var total = subtotal + 30000; // Assuming flat rate shipping of Rp.30,000
-        $(".total").text("Rp." + total.toLocaleString('id-ID'));
+        $(".total").text("Rp." + subtotal.toLocaleString('id-ID'));
       }
 
       updateCartTotal();

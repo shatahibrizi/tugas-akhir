@@ -22,6 +22,8 @@ class PembeliController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:pembeli',
             'password' => 'required|string|min:5|confirmed',
+            'kabupaten' => 'required|string',
+            'kecamatan' => 'required|string',
             'terms' => 'accepted'
         ]);
 

@@ -9,7 +9,7 @@
             }
         }, 1);
     };
-    spinner(0);
+    spinner();
 
     // Fixed Navbar
     $(window).scroll(function () {
@@ -39,6 +39,11 @@
     $(".back-to-top").click(function () {
         $("html, body").animate({ scrollTop: 0 }, 1500, "easeInOutExpo");
         return false;
+    });
+
+    // Navbar Toggler
+    $(".navbar-toggler").on("click", function () {
+        $("#navbarCollapse").toggleClass("show");
     });
 
     // Testimonial carousel
@@ -74,7 +79,7 @@
         },
     });
 
-    // vegetable carousel
+    // Vegetable carousel
     $(".vegetable-carousel").owlCarousel({
         autoplay: true,
         smartSpeed: 1500,
@@ -113,7 +118,6 @@
         $(".btn-play").click(function () {
             $videoSrc = $(this).data("src");
         });
-        console.log($videoSrc);
 
         $("#videoModal").on("shown.bs.modal", function (e) {
             $("#video").attr(

@@ -1,7 +1,7 @@
 @extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-  @include('layouts.navbars.auth.topnav', ['title' => 'Admin Dashboard'])
+  @include('layouts.navbars.auth.topnav', ['title' => 'Pengepul Dashboard'])
   <div class="container-fluid py-4">
     <!-- Cards Section -->
     <div class="row">
@@ -117,6 +117,21 @@
           </div>
         </div>
       </div>
+      <!-- Grafik Sisa Jumlah Produk -->
+      <div class="row mt-4">
+        <div class="col-lg-12">
+          <div class="card z-index-2">
+            <div class="card-header pb-0">
+              <h6>Grafik Sisa Jumlah Produk</h6>
+            </div>
+            <div class="card-body p-3">
+              <div class="chart">
+                <canvas id="remainingProductsChart" class="chart-canvas" height="300"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="row my-4">
         <div class="col-lg-6 col-md-6 mb-md-0 mb-4">
@@ -174,8 +189,8 @@
                 <table class="align-items-center mb-0 table">
                   <thead>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Order
-                        ID</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Tanggal
+                      </th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Nama
                         Pembeli</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Total
@@ -188,7 +203,7 @@
                     @foreach ($orders as $order)
                       <tr>
                         <td class="text-center">
-                          <p class="font-weight-bold mb-0 text-xs">{{ $order->id_pesanan }}</p>
+                          <p class="font-weight-bold mb-0 text-xs">{{ $order->tanggal_pesanan }}</p>
                         </td>
                         <td class="text-center">
                           <p class="font-weight-bold mb-0 text-xs">{{ $order->pembeli->nama }}</p>
@@ -286,13 +301,15 @@
       });
 
       var ctx3 = document.getElementById("orderChart").getContext("2d");
+      var orderData = {!! json_encode($orderData) !!};
+
       var orderChart = new Chart(ctx3, {
         type: "line",
         data: {
-          labels: {!! json_encode($orderChartData['labels'], JSON_NUMERIC_CHECK) !!},
+          labels: orderData.map(item => item.date),
           datasets: [{
             label: "Jumlah Produk Terjual",
-            data: {!! json_encode($orderChartData['data'], JSON_NUMERIC_CHECK) !!},
+            data: orderData.map(item => item.total_sold),
             borderColor: "#5e72e4",
             backgroundColor: 'rgba(94, 114, 228, 0.2)',
             borderWidth: 2,
@@ -303,9 +320,31 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              labels: {
-                color: '#fff' // Set legend text color to white
+            tooltip: {
+              callbacks: {
+                title: function(context) {
+                  return 'Tanggal: ' + context[0].label;
+                },
+                label: function(context) {
+                  var index = context.dataIndex;
+                  var products = orderData[index].products.split(',');
+                  var quantities = orderData[index].quantities.split(',');
+                  var tooltipText = 'Jumlah Produk Terjual: ' + context.raw;
+
+                  return tooltipText;
+                },
+                afterLabel: function(context) {
+                  var index = context.dataIndex;
+                  var products = orderData[index].products.split(',');
+                  var quantities = orderData[index].quantities.split(',');
+                  var afterLabel = '';
+
+                  for (var i = 0; i < products.length; i++) {
+                    afterLabel += products[i] + ': ' + quantities[i] + '\n';
+                  }
+
+                  return afterLabel;
+                }
               }
             }
           },
@@ -313,17 +352,56 @@
             y: {
               beginAtZero: true,
               ticks: {
-                color: '#fff',
                 callback: function(value) {
                   if (value % 1 === 0) {
                     return value;
                   }
                 } // Display only integer values
               }
-            },
-            x: {
+            }
+          }
+        }
+      });
+
+      var ctx4 = document.getElementById("remainingProductsChart").getContext("2d");
+      var productsData = {!! json_encode($productsData) !!};
+      var colors = {!! json_encode($colors) !!};
+
+      // Convert hex colors to rgba with transparency
+      function hexToRgba(hex, alpha) {
+        var r = parseInt(hex.slice(1, 3), 16);
+        var g = parseInt(hex.slice(3, 5), 16);
+        var b = parseInt(hex.slice(5, 7), 16);
+        return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+      }
+
+      var backgroundColors = colors.map(color => hexToRgba(color, 0.5));
+      var borderColors = colors.map(color => hexToRgba(color, 1));
+
+      var remainingProductsChart = new Chart(ctx4, {
+        type: "bar",
+        data: {
+          labels: productsData.map(product => product.nama_produk),
+          datasets: [{
+            label: "Sisa Jumlah Produk",
+            data: productsData.map(product => product.jumlah),
+            backgroundColor: backgroundColors,
+            borderColor: borderColors,
+            borderWidth: 1,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
               ticks: {
-                color: '#fff',
+                callback: function(value) {
+                  if (value % 1 === 0) {
+                    return value;
+                  }
+                } // Display only integer values
               }
             }
           }

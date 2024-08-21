@@ -49,6 +49,8 @@ class DashboardController extends Controller
             $orderData = DB::table('item_pesanan')
                 ->select(
                     DB::raw('DATE(item_pesanan.created_at) as date'),
+                    DB::raw('GROUP_CONCAT(products.nama_produk) as products'),
+                    DB::raw('GROUP_CONCAT(item_pesanan.jumlah) as quantities'),
                     DB::raw('SUM(item_pesanan.jumlah) as total_sold')
                 )
                 ->join('pesanan', 'item_pesanan.id_pesanan', '=', 'pesanan.id_pesanan')
@@ -124,6 +126,17 @@ class DashboardController extends Controller
                 $query->where('users.id_pengepul', $pengepulId);
             })->sum('jumlah');
 
+            $productsData = DB::table('tambah_produk')
+                ->join('products', 'tambah_produk.id_produk', '=', 'products.id_produk')
+                ->select('products.nama_produk', DB::raw('SUM(tambah_produk.jumlah) as jumlah'))
+                ->where('tambah_produk.id_pengepul', $pengepulId)
+                ->groupBy('products.nama_produk')
+                ->get();
+
+            $colors = [
+                '#306917', '#fffa44', '#744700', '#9966FF', '#f2483b', '#FF9F40', '#FFCD56', '#4BC0C0', '#5b2f02', '#ff0000'
+            ];
+
             return view('pengepul.dashboard', compact(
                 'salesChartData',
                 'productEntryChartData',
@@ -133,10 +146,12 @@ class DashboardController extends Controller
                 'totalProducts',
                 'salesGrowthPercentage',
                 'totalProductQuantity',
-                'orders'
+                'orders',
+                'productsData',
+                'colors',
+                'orderData'
             ));
         } else {
-            // Get sales data per day for the last 30 days
             $salesData = Pesanan::select(
                 DB::raw('DATE(tanggal_pesanan) as date'),
                 DB::raw('SUM(total_harga) as total_sales')
@@ -170,8 +185,6 @@ class DashboardController extends Controller
                 ->groupBy('date')
                 ->orderBy('date', 'asc')
                 ->get();
-
-
 
             // Get latest product additions from tambah_produk
             $productEntries = DB::table('tambah_produk')

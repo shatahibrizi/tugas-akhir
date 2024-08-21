@@ -104,7 +104,7 @@
               <hr>
               <div class="d-flex flex-column align-items-center">
                 <div class="d-flex justify-content-between align-items-center pt-4">
-                  <div class="input-group quantity mb-4" style="width: 100px;">
+                  {{-- <div class="input-group quantity mb-4" style="width: 100px;">
                     <div class="input-group-btn">
                       <button class="btn btn-sm btn-minus rounded-circle bg-light border">
                         <i class="fa fa-minus"></i>
@@ -117,7 +117,7 @@
                         <i class="fa fa-plus"></i>
                       </button>
                     </div>
-                  </div>
+                  </div> --}}
                   <h6 class="mb-4 ms-4">Stok: {{ $product->jumlah }}</h6>
                 </div>
                 <div class="d-flex justify-content-between align-items-center w-100">
@@ -142,8 +142,8 @@
             <a href="{{ $item->id_produk }}" class="text-decoration-none">
               <div class="vesitable-img">
                 @if ($item->foto_produk != '')
-                  <img src="{{ asset('storage/foto_produk/' . $item->foto_produk) }}"
-                    class="img-fluid w-100 rounded-top" alt="{{ $item->nama_produk }}">
+                  <img src="{{ asset('storage/foto_produk/' . $item->foto_produk) }}" class="img-fluid w-100 rounded-top"
+                    alt="{{ $item->nama_produk }}">
                 @else
                   <img src="{{ asset('storage/photo/default-product.jpg') }}" class="img-fluid w-100 rounded-top"
                     alt="{{ $item->nama_produk }}">

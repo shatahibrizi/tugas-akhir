@@ -1,7 +1,7 @@
 @extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-  @include('layouts.navbars.auth.topnav', ['title' => 'Tambah Produk'])
+  @include('layouts.navbars.auth.topnav', ['title' => 'Produk Masuk'])
 
   <div class="container-fluid py-4">
     <div class="row">
@@ -13,6 +13,11 @@
               {{ Session::get('message') }}
             </div>
           @endif
+          <div class="card-header d-flex justify-content-between align-items-center pb-0">
+            <h6>Produk Masuk</h6>
+            <a href="{{ route('stok.export.produkMasuk', $pengepul->id_pengepul) }}" class="btn btn-success">Ekspor ke
+              Excel</a>
+          </div>
 
           <div class="card-body px-0 pb-2 pt-0">
             <div class="table-responsive p-0">

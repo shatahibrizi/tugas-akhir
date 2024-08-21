@@ -20,7 +20,9 @@ class Pembeli extends Authenticatable
         'alamat',
         'password',
         'foto_profil',
-        'no_hp'
+        'no_hp',
+        'kabupaten',
+        'kecamatan'
     ];
 
     protected $hidden = [

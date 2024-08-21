@@ -96,7 +96,7 @@
                   <div class="form-group">
                     <label for="no_hp" class="form-control-label">No HP</label>
                     <input class="form-control" type="text" name="no_hp"
-                      value="{{ old('username', auth()->guard('pembeli')->user()->no_hp) }}">
+                      value="{{ old('no_hp', auth()->guard('pembeli')->user()->no_hp) }}">
                     @error('no_hp')
                       <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -106,8 +106,49 @@
                 <div class="col-md-6 mb-3">
                   <div class="form-group">
                     <label for="alamat" class="form-control-label">Alamat</label>
-                    <textarea class="form-control" name="alamat" rows="5">{{ old('alamat', auth()->guard('pembeli')->user()->alamat) }}</textarea>
+                    <input class="form-control" name="alamat"
+                      value="{{ old('alamat', auth()->guard('pembeli')->user()->alamat) }}">
                     @error('alamat')
+                      <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <div class="form-group">
+                    <label for="kabupaten" class="form-control-label">Kabupaten</label>
+                    <select class="form-control" name="kabupaten" id="kabupaten">
+                      <option value="">Pilih Kabupaten</option>
+                      <option value="Lombok Utara"
+                        {{ old('kabupaten', auth()->guard('pembeli')->user()->kabupaten) == 'Lombok Utara' ? 'selected' : '' }}>
+                        Lombok Utara</option>
+                      <option value="Lombok Timur"
+                        {{ old('kabupaten', auth()->guard('pembeli')->user()->kabupaten) == 'Lombok Timur' ? 'selected' : '' }}>
+                        Lombok Timur</option>
+                      <option value="Lombok Tengah"
+                        {{ old('kabupaten', auth()->guard('pembeli')->user()->kabupaten) == 'Lombok Tengah' ? 'selected' : '' }}>
+                        Lombok Tengah</option>
+                      <option value="Mataram"
+                        {{ old('kabupaten', auth()->guard('pembeli')->user()->kabupaten) == 'Mataram' ? 'selected' : '' }}>
+                        Mataram</option>
+                      <option value="Lombok Barat"
+                        {{ old('kabupaten', auth()->guard('pembeli')->user()->kabupaten) == 'Lombok Barat' ? 'selected' : '' }}>
+                        Lombok Barat</option>
+                    </select>
+                    @error('kabupaten')
+                      <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <div class="form-group">
+                    <label for="kecamatan" class="form-control-label">Kecamatan</label>
+                    <select class="form-control" name="kecamatan" id="kecamatan">
+                      <option value="">Pilih Kecamatan</option>
+                      <!-- Kecamatan options will be populated based on the selected kabupaten -->
+                    </select>
+                    @error('kecamatan')
                       <span class="text-danger">{{ $message }}</span>
                     @enderror
                   </div>
@@ -122,12 +163,69 @@
                     @enderror
                   </div>
                 </div>
-              </div>
 
+
+              </div>
             </div>
           </form>
         </div>
       </div>
     </div>
   </div>
+@endsection
+
+@section('scripts')
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      const kabupatenSelect = document.getElementById('kabupaten');
+      const kecamatanSelect = document.getElementById('kecamatan');
+      const selectedKecamatan = "{{ old('kecamatan', auth()->guard('pembeli')->user()->kecamatan) }}";
+
+      const kecamatanOptions = {
+        'Lombok Utara': ['Bayan', 'Gangga', 'Kayangan', 'Pemenang', 'Tanjung'],
+        'Lombok Timur': ['Aikmel', 'Jerowaru', 'Keruak', 'Labuan Haji', 'Lenek', 'Masbagik',
+          'Montong Gading', 'Pringgabaya', 'Pringgasela', 'Sakra', 'Sakra Timur',
+          'Sakra Barat', 'Sambelia', 'Selong', 'Sembalun', 'Sikur', 'Sukamulia',
+          'Suralaga', 'Suela', 'Terara', 'Wanasaba'
+        ],
+        'Lombok Tengah': ['Batukliang', 'Batukliang Utara',
+          'Janapria', 'Jonggat', 'Kopang', 'Praya', 'Praya Barat', 'Praya Barat Daya',
+          'Praya Tengah', 'Praya Timur', 'Pringgarata', 'Pujut'
+        ],
+        'Mataram': ['Ampenan', 'Cakranegara',
+          'Mataram', 'Sandubaya', 'Sekarbela', 'Selaparang'
+        ],
+        'Lombok Barat': ['Batu Layar',
+          'Gunungsari', 'Lingsar', 'Narmada', 'Kediri', 'Labuapi', 'Kuripan',
+          'Gerung', 'Lembar', 'Sekotong'
+        ]
+      };
+
+      kabupatenSelect.addEventListener('change', function() {
+        const selectedKabupaten = kabupatenSelect.value;
+
+        // Clear kecamatan options
+        kecamatanSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+
+        if (selectedKabupaten && kecamatanOptions[selectedKabupaten]) {
+          kecamatanOptions[selectedKabupaten].forEach(function(kecamatan) {
+            const option = document.createElement('option');
+            option.value = kecamatan;
+            option.textContent = kecamatan;
+            kecamatanSelect.appendChild(option);
+          });
+        }
+
+        // Select the previously selected kecamatan if it matches the current kabupaten
+        if (selectedKecamatan && kecamatanOptions[selectedKabupaten].includes(selectedKecamatan)) {
+          kecamatanSelect.value = selectedKecamatan;
+        }
+      });
+
+      // Trigger change event on page load to populate kecamatan if kabupaten is already selected
+      if (kabupatenSelect.value) {
+        kabupatenSelect.dispatchEvent(new Event('change'));
+      }
+    });
+  </script>
 @endsection

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>@yield('title', 'Fruitables - Vegetable Website Template')</title>
+  <title>@yield('title', 'Sembalun Agro')</title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <meta content="" name="keywords" />
   <meta content="" name="description" />
@@ -42,7 +42,9 @@
 
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- Bootstrap JS -->
+  <!-- Bootstrap JS and Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
   <script src="{{ asset('markets/lib/easing/easing.min.js') }}"></script>
   <script src="{{ asset('markets/lib/waypoints/waypoints.min.js') }}"></script>
   <script src="{{ asset('markets/lib/lightbox/js/lightbox.min.js') }}"></script>

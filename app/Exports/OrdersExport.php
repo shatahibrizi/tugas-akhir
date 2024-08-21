@@ -2,7 +2,6 @@
 
 namespace App\Exports;
 
-use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -12,21 +11,17 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping
 {
     protected $id_pengepul;
 
-    public function __construct($id_pengepul)
+    public function __construct($id_pengepul = null)
     {
         $this->id_pengepul = $id_pengepul;
     }
 
     public function collection()
     {
-        // Mengambil data dari tabel item_pesanan untuk pengepul ini
-        $orders = DB::table('pesanan')
+        $query = DB::table('pesanan')
             ->join('item_pesanan', 'pesanan.id_pesanan', '=', 'item_pesanan.id_pesanan')
             ->join('products', 'item_pesanan.id_produk', '=', 'products.id_produk')
-            ->join('tambah_produk', function ($join) {
-                $join->on('products.id_produk', '=', 'tambah_produk.id_produk')
-                    ->where('tambah_produk.id_pengepul', '=', $this->id_pengepul);
-            })
+            ->join('tambah_produk', 'products.id_produk', '=', 'tambah_produk.id_produk')
             ->join('pembeli', 'pesanan.id_pembeli', '=', 'pembeli.id_pembeli')
             ->select(
                 'pesanan.id_pesanan',
@@ -36,10 +31,15 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping
                 'products.nama_produk',
                 'item_pesanan.jumlah',
                 'pembeli.nama as nama_pembeli',
-                'pembeli.alamat as alamat_pembeli'
-            )
-            ->get()
-            ->groupBy('id_pesanan');
+                'pembeli.alamat as alamat_pembeli',
+                'tambah_produk.id_pengepul'
+            );
+
+        if ($this->id_pengepul) {
+            $query->where('tambah_produk.id_pengepul', $this->id_pengepul);
+        }
+
+        $orders = $query->get()->groupBy('id_pesanan');
 
         return $orders;
     }

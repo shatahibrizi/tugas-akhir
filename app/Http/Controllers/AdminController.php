@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Log;
 use App\Models\Admin;
 use App\Models\Pesanan;
 use Illuminate\Http\Request;
@@ -12,6 +11,8 @@ use App\Exports\ProductEntryExport;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+use App\Exports\OrdersExport;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -54,11 +55,11 @@ class AdminController extends Controller
             // Autentikasi berhasil
 
             $request->session()->regenerate();
-            \Log::info('Login berhasil');
+            Log::info('Login berhasil');
             return redirect()->route('admin_dashboard')->with('success', 'Login berhasil');
         } else {
             // Autentikasi gagal
-            \Log::info('Login gagal');
+            Log::info('Login gagal');
             return redirect()->route('admin_login')->with('error', 'Email atau password salah');
         }
     }
@@ -132,9 +133,9 @@ class AdminController extends Controller
 
         // Debugging
         if ($orders->isEmpty()) {
-            \Log::info('No orders found');
+            Log::info('No orders found');
         } else {
-            \Log::info('Orders found: ' . $orders->count());
+            Log::info('Orders found: ' . $orders->count());
         }
 
         return view('admin.orders', compact('orders'));
@@ -155,5 +156,10 @@ class AdminController extends Controller
     public function exportProductEntries()
     {
         return Excel::download(new ProductEntryExport, 'produk_masuk.xlsx');
+    }
+
+    public function exportAllOrders()
+    {
+        return Excel::download(new OrdersExport(), 'all_orders.xlsx');
     }
 }

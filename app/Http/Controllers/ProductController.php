@@ -62,7 +62,7 @@ class ProductController extends Controller
             $this->attachPengepulData($product, $request->jumlah);
             $this->generateAndStoreQrCode($product);
             session()->flash('status', 'success');
-            session()->flash('message', 'Add data success, and QR-code has been generated!');
+            session()->flash('message', 'Produk berhasil ditambah, dan QR-code sudah di-generated!');
         }
 
         return redirect()->route('product');
@@ -88,7 +88,7 @@ class ProductController extends Controller
 
         $this->generateAndStoreQrCode($product);
         session()->flash('status', 'success');
-        session()->flash('message', 'Edit data success!');
+        session()->flash('message', 'Edit data berhasil!');
 
         return redirect()->route('product');
     }
@@ -187,14 +187,21 @@ class ProductController extends Controller
             $productQuery->where('harga', '>', 50000);
         }
     }
-
     public function showOrders($id_pengepul)
     {
         $pengepul = Pengepul::findOrFail($id_pengepul);
-        $orders = $this->getOrdersByPengepul($id_pengepul);
+
+        // Retrieve orders by pengepul and sort them by 'tanggal_pesanan' in descending order
+        $orders = Pesanan::with(['products', 'pembeli'])
+            ->whereHas('products.pengepul', function ($query) use ($id_pengepul) {
+                $query->where('users.id_pengepul', $id_pengepul);
+            })
+            ->orderBy('tanggal_pesanan', 'asc') // Sort by 'tanggal_pesanan' in descending order
+            ->get();
 
         return view('pengepul.orders', compact('pengepul', 'orders'));
     }
+
 
     public function exportOrders($id_pengepul)
     {
@@ -229,13 +236,12 @@ class ProductController extends Controller
 
     private function filterByPengepul($productQuery, $id_pengepul)
     {
-        $productQuery->whereExists(function ($query) use ($id_pengepul) {
-            $query->select(DB::raw(1))
-                ->from('tambah_produk')
-                ->whereColumn('products.id_produk', 'tambah_produk.id_produk')
-                ->where('tambah_produk.id_pengepul', $id_pengepul);
-        });
+        $productQuery->join('tambah_produk', 'products.id_produk', '=', 'tambah_produk.id_produk')
+            ->where('tambah_produk.id_pengepul', $id_pengepul)
+            ->select('products.*', 'tambah_produk.jumlah', 'tambah_produk.tanggal')
+            ->orderBy('tambah_produk.tanggal', 'desc');
     }
+
 
     private function applyFilters($productQuery, $request)
     {

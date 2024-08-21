@@ -1,13 +1,13 @@
 @extends('layouts.market-app')
 
 @section('content')
-  @include('layouts.navbars.market.topnav', ['title' => 'Product Table'])
+  @include('layouts.navbars.market.topnav', ['title' => 'Tabel Produk'])
 
   <div class="container-fluid page-header py-5">
     <h1 class="display-6 text-center text-white">Checkout</h1>
     <ol class="breadcrumb justify-content-center mb-0">
-      <li class="breadcrumb-item"><a href="#">Home</a></li>
-      <li class="breadcrumb-item"><a href="#">Pages</a></li>
+      <li class="breadcrumb-item"><a href="#">Beranda</a></li>
+      <li class="breadcrumb-item"><a href="#">Halaman</a></li>
       <li class="breadcrumb-item active text-white">Checkout</li>
     </ol>
   </div>
@@ -21,12 +21,16 @@
     <div class="alert alert-success alert-dismissible fade show" role="alert">
       {{ session('success') }}
     </div>
+  @elseif (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ session('error') }}
+    </div>
   @endif
 
   <!-- Checkout Page Start -->
-  <div class="container-fluid py-5">
+  <div class="container-fluid py-2">
     <div class="container py-5">
-      <h1 class="mb-4">Billing details</h1>
+      <h1 class="mb-4">Detail Pembayaran</h1>
       <form action="{{ route('place.order') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="row">
@@ -35,10 +39,10 @@
               <table class="table">
                 <thead class="text-center">
                   <tr>
-                    <th scope="col">Products</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Price</th>
+                    <th scope="col">Produk</th>
+                    <th scope="col">Nama</th>
+                    <th scope="col">Jumlah</th>
+                    <th scope="col">Harga</th>
                     <th scope="col">Total</th>
                   </tr>
                 </thead>
@@ -68,57 +72,73 @@
               <label for="alamat" class="form-label">Alamat</label>
               <textarea class="form-control" id="alamat" name="alamat" rows="3" required>{{ $alamat ?? '' }}</textarea>
             </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group mb-4">
+                  <label for="kabupaten" class="form-label">Kabupaten</label>
+                  <input type="text" class="form-control" id="kabupaten" name="kabupaten"
+                    value="{{ old('kabupaten', $kabupaten ?? '') }}" readonly>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group mb-4">
+                  <label for="kecamatan" class="form-label">Kecamatan</label>
+                  <input type="text" class="form-control" id="kecamatan" name="kecamatan"
+                    value="{{ old('kecamatan', $kecamatan ?? '') }}" readonly>
+                </div>
+              </div>
+            </div>
+
             <div class="form-group mb-4">
-              <label for="paymentMethod" class="form-label">Payment Method</label>
+              <label for="paymentMethod" class="form-label">Metode Pembayaran</label>
               <select class="form-control" id="paymentMethod" name="metode_pembayaran" required>
-                <option value="COD">Cash on Delivery (COD)</option>
-                <option value="Transfer">Bank Transfer</option>
+                <option value="Transfer">Transfer Bank</option>
               </select>
             </div>
-            <div class="form-group mb-4" id="bankDetails" style="display: none;">
+            <div class="form-group mb-4" id="bankDetails">
               <label for="no_rek" class="form-label">Nomor Rekening Admin</label>
               <input type="text" class="form-control" id="no_rek" name="no_rek" value="{{ $admin->no_rek ?? '' }}"
                 readonly>
-              <label for="buktiBayar" class="form-label mt-3">Upload Bukti Bayar</label>
-              <input type="file" class="form-control" id="buktiBayar" name="bukti_bayar" accept="image/*">
+              <label for="buktiBayar" class="form-label mt-3">Unggah Bukti Bayar</label>
+              <input type="file" class="form-control" id="buktiBayar" name="bukti_bayar" accept="image/*" required>
             </div>
           </div>
 
           <div class="col-lg-6">
             <div class="bg-light mb-4 rounded">
               <div class="p-4">
-                <h1 class="display-6 mb-4">Cart <span class="fw-normal">Total</span></h1>
+                <h1 class="display-6 mb-4">Total <span class="fw-normal">Pesanan</span></h1>
                 <div class="d-flex justify-content-between mb-4">
                   <h5 class="mb-0 me-4">Subtotal:</h5>
                   <p class="subtotal mb-0">Rp.{{ number_format($totalPrice, 0, ',', '.') }}</p>
                 </div>
                 <div class="d-flex justify-content-between mb-4">
-                  <h5 class="mb-0 me-4">Shipping</h5>
-                  <div class="">
-                    <p class="mb-0">Rp.30,000</p>
-                  </div>
+                  <h5 class="mb-0 me-4">Biaya Pengiriman:</h5>
+                  <p class="shipping-cost mb-0">Rp.{{ number_format($shippingCost, 0, ',', '.') }}</p>
                 </div>
+                @if ($totalItems > 10)
+                  <div class="d-flex justify-content-between mb-4">
+                    <h5 class="mb-0 me-4">Biaya Pengiriman Tambahan:</h5>
+                    <p class="additional-shipping-cost mb-0">
+                      Rp.{{ number_format($additionalShippingCost, 0, ',', '.') }}</p>
+                  </div>
+                @endif
                 <div class="border-top border-bottom d-flex justify-content-between mb-4 py-4">
                   <h5 class="mb-0 me-4">Total</h5>
                   <p class="total mb-0">Rp.{{ number_format($totalPriceWithShipping, 0, ',', '.') }}</p>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div class="row g-4 align-items-center justify-content-end pt-4 text-center">
-          <div class="col-lg-6">
             <button type="submit" class="btn border-secondary text-uppercase w-100 text-primary px-4 py-3">
-              Place Order
+              Pesan Sekarang
             </button>
           </div>
+
         </div>
       </form>
     </div>
   </div>
   <!-- Checkout Page End -->
-  @include('layouts.footers.market.footer')
 @endsection
 
 @section('scripts')

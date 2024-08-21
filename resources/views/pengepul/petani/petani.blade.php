@@ -3,8 +3,6 @@
 @section('content')
   @include('layouts.navbars.auth.topnav', ['title' => 'Petani Table'])
 
-  {{-- Modal --}}
-
   <div class="container-fluid py-4">
     <div class="row">
       <div class="col-12">
@@ -13,6 +11,7 @@
             <h6>Tabel Petani</h6>
             <div class="col-auto">
               <a href="petani-add" class="btn btn-dark">Tambah Petani</a>
+              <a href="{{ route('petani.logs') }}" class="btn btn-info">Log Aktivitas</a>
             </div>
           </div>
           @if (Session::has('status'))
@@ -26,29 +25,23 @@
               <table class="align-items-center mb-0 table">
                 <thead>
                   <tr>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                      No</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                      Nama</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                      Alamat</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                      No HP</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                      Lokasi lahan</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                      Kelompok petani</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                      Action</th>
-                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Alamat</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">No HP</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Lokasi
+                      lahan</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Kelompok
+                      petani</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   @forelse ($petani as $item)
                     <tr>
                       <td>
-                        <p class="font-weight-bold mb-0 ms-3 text-xs">
-                          {{ $loop->iteration + $petani->firstItem() - 1 }}</p>
+                        <p class="font-weight-bold mb-0 ms-3 text-xs">{{ $loop->iteration + $petani->firstItem() - 1 }}
+                        </p>
                       </td>
                       <td>
                         <div class="d-flex px-2 py-1">
@@ -60,7 +53,6 @@
                               <img src="{{ asset('storage/photo/default-product.jpg') }}" class="avatar avatar-lg me-3"
                                 alt="{{ $item->nama }}">
                             @endif
-
                           </div>
                           <div class="d-flex flex-column justify-content-center">
                             <h6 class="mb-0 text-sm">{{ $item->nama }}</h6>
@@ -69,7 +61,6 @@
                       </td>
                       <td>
                         <p class="font-weight-bold mb-0 text-sm">{{ $item->alamat }}</p>
-                        {{-- <p class="text-secondary mb-0 text-sm">/Kg</p> --}}
                       </td>
                       <td class="text-center align-middle">
                         <span class="text-secondary font-weight-bold text-sm">{{ $item->no_hp }}</span>

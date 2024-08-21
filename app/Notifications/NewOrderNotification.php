@@ -43,7 +43,7 @@ class NewOrderNotification extends Notification
     {
         return [
             'order_id' => $this->order->id_pesanan,
-            'message' => 'A new order has been placed by ' . $this->order->pembeli->nama,
+            'message' => 'Pesanan baru saja dibuat oleh ' . $this->order->pembeli->nama,
             'total' => $this->order->total_harga,
             'pembeli_image' => $this->order->pembeli->foto_profil ? asset('storage/foto_profil/' . $this->order->pembeli->foto_profil) : asset('img/default-user.png'),
         ];

@@ -108,10 +108,8 @@
                         </td>
                         <td class="text-center align-middle">
                           @if ($order->status != 'Selesai')
-                            <a href="javascript:void(0);" class="btn btn-success btn-xs mt-3" data-bs-toggle="modal"
-                              data-bs-target="#shippingCostModal-{{ $order->id_pesanan }}">
-                              <i class="fas fa-check"></i>
-                            </a>
+                            <a href="{{ route('orders.update.status', ['order' => $order->id_pesanan, 'status' => 'Diproses']) }}"
+                              class="btn btn-success btn-xs mt-3"><i class="fas fa-check"></i></a>
                             <a href="{{ route('orders.update.status', ['order' => $order->id_pesanan, 'status' => 'Gagal']) }}"
                               class="btn btn-danger btn-xs mt-3"><i class="fas fa-times"></i></a>
                           @endif
@@ -133,41 +131,15 @@
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body text-center">
-                          <img src="{{ asset('storage/bukti_bayar/' . $order->bukti_bayar) }}" class="img-fluid">
+                          <img src="{{ asset('storage/bukti_bayar/' . $order->bukti_bayar) }}" class="img-fluid"
+                            id="payment-proof-img-{{ $order->id_pesanan }}">
                         </div>
                         <div class="modal-footer">
+                          <a href="{{ asset('storage/bukti_bayar/' . $order->bukti_bayar) }}"
+                            download="bukti_bayar_{{ $order->id_pesanan }}.jpg" class="btn btn-primary">Unduh Bukti
+                            Bayar</a>
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Modal Shipping Cost -->
-                  <div class="modal fade" id="shippingCostModal-{{ $order->id_pesanan }}" tabindex="-1"
-                    aria-labelledby="shippingCostModalLabel-{{ $order->id_pesanan }}" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="shippingCostModalLabel-{{ $order->id_pesanan }}">Masukkan Biaya
-                            Pengiriman
-                          </h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <form action="{{ route('orders.update.shipping', $order->id_pesanan) }}" method="POST">
-                          @csrf
-                          @method('PUT')
-                          <div class="modal-body">
-                            <div class="form-group">
-                              <label for="biaya_pengiriman" class="form-label">Biaya Pengiriman</label>
-                              <input type="number" class="form-control" id="biaya_pengiriman" name="biaya_pengiriman"
-                                required>
-                            </div>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Simpan</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                          </div>
-                        </form>
                       </div>
                     </div>
                   </div>

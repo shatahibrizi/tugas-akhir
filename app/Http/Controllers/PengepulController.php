@@ -6,11 +6,17 @@ use App\Models\User;
 use App\Models\Petani;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Exports\ProductEntryExport;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Notifications\ForgotPassword;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Notifications\Notifiable;
 
 class PengepulController extends Controller
 {
+    use Notifiable;
     function index()
     {
         // Mengambil id_pengepul dari user yang saat ini masuk
@@ -203,11 +209,22 @@ class PengepulController extends Controller
 
     public function markAsRead(Request $request)
     {
-        $user = auth()->user();
+        Log::info('markAsRead function called'); // Tambahkan log ini
+        Log::info('CSRF Token Received:', ['csrf_token' => $request->header('X-CSRF-TOKEN')]);
+
+        $user = Auth::user();
         if ($user) {
             $user->unreadNotifications->markAsRead();
+            return response()->json(['success' => true]);
         }
 
-        return response()->json(['success' => true]);
+        return response()->json(['success' => false], 401);
+    }
+
+    public function exportProductsEntries()
+    {
+        $pengepulId = auth()->user()->id_pengepul;
+
+        return Excel::download(new ProductEntryExport($pengepulId), 'produk_masuk.xlsx');
     }
 }

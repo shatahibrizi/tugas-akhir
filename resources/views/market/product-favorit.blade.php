@@ -4,11 +4,11 @@
   @include('layouts.navbars.market.topnav', ['title' => 'Your Orders'])
 
   <div class="container-fluid page-header py-5">
-    <h1 class="display-6 text-center text-white">Your Orders</h1>
+    <h1 class="display-6 text-center text-white">Produk Favorit</h1>
     <ol class="breadcrumb justify-content-center mb-0">
-      <li class="breadcrumb-item"><a href="#">Home</a></li>
-      <li class="breadcrumb-item"><a href="#">Pages</a></li>
-      <li class="breadcrumb-item active text-white">Orders</li>
+      <li class="breadcrumb-item"><a href="#">Beranda</a></li>
+      <li class="breadcrumb-item"><a href="#">Halaman</a></li>
+      <li class="breadcrumb-item active text-white">Favorit</li>
     </ol>
   </div>
   <!-- Single Page Header End -->
@@ -34,10 +34,10 @@
           <table class="table align-middle">
             <thead class="table-light">
               <tr>
-                <th scope="col" style="width: 20%;" class="text-center">Nama Produk</th>
-                <th scope="col" style="width: 30%;" class="text-center">Deskripsi</th>
+                <th scope="col" style="width: 25%;" class="text-center">Nama Produk</th>
                 <th scope="col" style="width: 15%;" class="text-center">Harga</th>
-                <th scope="col" style="width: 20%;" class="text-center">Pengepul</th>
+                <th scope="col" style="width: 25%;" class="text-center">Pengepul</th>
+                <th scope="col" style="width: 10%;" class="text-center">Stok</th>
                 <th scope="col" style="width: 10%;" class="text-center">Aksi</th>
               </tr>
             </thead>
@@ -62,9 +62,6 @@
                     </div>
                   </td>
                   <td>
-                    {{ $favorite->deskripsi }}
-                  </td>
-                  <td>
                     Rp.
                     {{ number_format($favorite->harga, 0, ',', '.') }}
                   </td>
@@ -75,6 +72,9 @@
                         ,
                       @endif
                     @endforeach
+                  </td>
+                  <td>
+                    {{ $favorite->jumlah }}
                   </td>
                   <td>
                     <div class="d-flex justify-content-evenly">

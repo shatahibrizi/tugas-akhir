@@ -8,7 +8,8 @@
       <div class="col-12">
         <div class="card mb-4">
           <div class="card-header d-flex justify-content-between align-items-center pb-0">
-            <h6>All Orders</h6>
+            <h6>Semua Pesanan</h6>
+            <a href="{{ route('admin.export.orders') }}" class="btn btn-success">Ekspor ke Excel</a>
           </div>
 
           @if (Session::has('status'))
@@ -26,15 +27,14 @@
                   <thead>
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Order ID</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Tanggal
                       </th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Status
                       </th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Produk</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Metode Pembayaran
                       </th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Status
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Bukti Bayar</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama Pembeli </th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Alamat Pembeli </th>
@@ -49,26 +49,7 @@
                           <p class="font-weight-bold mb-0 ms-3 text-xs">{{ $loop->iteration }}</p>
                         </td>
                         <td class="text-center align-middle">
-                          <span class="text-secondary font-weight-bold text-sm">{{ $order->id_pesanan }}</span>
-                        </td>
-                        <td class="text-center align-middle">
                           <span class="text-secondary font-weight-bold text-sm">{{ $order->tanggal_pesanan }}</span>
-                        </td>
-                        <td class="text-center align-middle">
-                          @php
-                            $status = $order->status;
-                            $badgeClass = 'bg-secondary';
-                            if ($status == 'Diproses') {
-                                $badgeClass = 'bg-warning';
-                            } elseif ($status == 'Pending') {
-                                $badgeClass = 'bg-secondary';
-                            } elseif ($status == 'Selesai') {
-                                $badgeClass = 'bg-success';
-                            } elseif ($status == 'Gagal') {
-                                $badgeClass = 'bg-danger';
-                            }
-                          @endphp
-                          <span class="badge {{ $badgeClass }}">{{ $status }}</span>
                         </td>
                         <td class="text-center align-middle">
                           <ul class="list-unstyled">
@@ -84,6 +65,19 @@
                         </td>
                         <td class="text-center align-middle">
                           <span class="text-secondary font-weight-bold text-sm">{{ $order->metode_pembayaran }}</span>
+                        </td>
+                        <td class="text-center align-middle">
+                          @php
+                            $status = $order->status;
+                            $badgeClass = match ($status) {
+                                'Diproses' => 'bg-warning',
+                                'Pending' => 'bg-secondary',
+                                'Selesai' => 'bg-success',
+                                'Gagal' => 'bg-danger',
+                                default => 'bg-secondary',
+                            };
+                          @endphp
+                          <span class="badge {{ $badgeClass }}">{{ $status }}</span>
                         </td>
                         <td class="text-center align-middle">
                           @if ($order->bukti_bayar)
@@ -106,14 +100,54 @@
                             @foreach ($order->products as $product)
                               @foreach ($product->pengepul as $pengepul)
                                 <li class="text-secondary font-weight-bold text-sm">{{ $pengepul->nama }}</li>
-                                !
-                              @endif
+                              @endforeach
+                            @endforeach
+                          </ul>
+                        </td>
+                        <td class="text-center align-middle">
+                          <form action="{{ route('orders.destroy', $order->id_pesanan) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                          </form>
+                        </td>
+                      </tr>
+                    @endforeach
+                  </tbody>
+                </table>
+
+                @foreach ($orders as $order)
+                  <!-- Modal Payment Proof -->
+                  <div class="modal fade" id="paymentProofModal-{{ $order->id_pesanan }}" tabindex="-1"
+                    aria-labelledby="paymentProofModalLabel-{{ $order->id_pesanan }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="paymentProofModalLabel-{{ $order->id_pesanan }}">Bukti Pembayaran
+                          </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                          <img src="{{ asset('storage/bukti_bayar/' . $order->bukti_bayar) }}" class="img-fluid"
+                            id="payment-proof-img-{{ $order->id_pesanan }}">
+                        </div>
+                        <div class="modal-footer">
+                          <a href="{{ asset('storage/bukti_bayar/' . $order->bukti_bayar) }}"
+                            download="bukti_bayar_{{ $order->id_pesanan }}.jpg" class="btn btn-primary">Unduh Bukti
+                            Bayar</a>
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                @endforeach
+              @endif
             </div>
           </div>
         </div>
       </div>
+      @include('layouts.footers.auth.footer')
     </div>
-    @include('layouts.footers.auth.footer')
   </div>
 @endsection
 

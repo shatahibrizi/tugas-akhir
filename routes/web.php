@@ -29,6 +29,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PengepulController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
 	return redirect('/');
@@ -71,10 +72,10 @@ Route::prefix('admin')->group(function () {
 		Route::put('/profile/{id_admin}', [AdminController::class, 'update'])->name('admin.profile.update');
 		Route::get('/orders', [AdminController::class, 'viewAllOrders'])->name('admin.viewAllOrders');
 		Route::delete('/orders/{order}', [MarketController::class, 'destroy'])->name('orders.destroy');
+		Route::get('/orders/export', [AdminController::class, 'exportAllOrders'])->name('admin.export.orders');
 		Route::get('/produk-masuk', [AdminController::class, 'viewAllProductEntries'])->name('admin.produkMasuk');
 		Route::get('/produk-masuk/export', [AdminController::class, 'exportProductEntries'])->name('admin.produkMasuk.export');
 		Route::get('/{page}', [PageController::class, 'admin'])->name('admin.page'); // Updated route
-
 	});
 });
 
@@ -86,11 +87,11 @@ Route::prefix('stok')->group(function () {
 		Route::get('/login', [LoginController::class, 'show'])->name('login');
 		Route::post('/login', [LoginController::class, 'login'])->name('login.perform');
 
-		Route::get('/reset-password', [ResetPassword::class, 'show'])->name('reset-password');
-		Route::post('/reset-password', [ResetPassword::class, 'send'])->name('reset.perform');
+		Route::get('/reset-password', [PengepulController::class, 'showResetPassword'])->name('reset-password');
+		Route::post('/reset-password', [PengepulController::class, 'send'])->name('reset.perform');
 
-		Route::get('/change-password', [ChangePassword::class, 'show'])->name('change-password');
-		Route::post('/change-password', [ChangePassword::class, 'update'])->name('change.perform');
+		Route::get('/change-password', [PengepulController::class, 'showChangePassword'])->name('change-password');
+		Route::post('/change-password', [PengepulController::class, 'updatePassword'])->name('change.perform');
 	});
 
 	Route::group(['middleware' => 'auth:web,admin'], function () {
@@ -117,14 +118,16 @@ Route::prefix('stok')->group(function () {
 		Route::get('/petani-edit/{id_petani}', [PetaniController::class, 'edit'])->name('petani.edit');
 		Route::put('/petani/{id_petani}', [PetaniController::class, 'update'])->name('petani.update');
 		Route::delete('/petani-delete/{id_petani}', [PetaniController::class, 'destroy'])->name('petani.delete');
+		Route::get('/petani-logs', [PetaniController::class, 'showLogs'])->name('petani.logs');
 
 		Route::get('/pembeli', [PembeliController::class, 'daftarPembeli'])->name('pembeli.list');
 		Route::get('/{id_pengepul}/orders', [ProductController::class, 'showOrders'])->name('stok.orders');
 		Route::get('/{id_pengepul}/orders/exports', [ProductController::class, 'exportOrders'])->name('stok.export.orders');
 		Route::get('/{id_pengepul}/produk_masuk', [ProductController::class, 'productEntries'])->name('stok.produkMasuk');
+		Route::get('/{id_pengepul}/produk_masuk/exports', [PengepulController::class, 'exportProductsEntries'])->name('stok.export.produkMasuk');
 		Route::get('/orders/update-status/{order}/{status}', [ProductController::class, 'updateStatus'])->name('orders.update.status');
 		Route::put('/orders/{order}/shipping', [MarketController::class, 'updateShippingCost'])->name('orders.update.shipping');
-		Route::post('/mark-as-read', [PengepulController::class, 'markAsRead'])->name('markAsRead');
+		Route::post('/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
 
 		// Pengepul CRUD routes
 		Route::group(['middleware' => 'admin'], function () {
@@ -136,8 +139,6 @@ Route::prefix('stok')->group(function () {
 			Route::put('/pengepul/{id_pengepul}', [PengepulController::class, 'update'])->name('pengepul.update');
 			Route::delete('/pengepul-delete/{id_pengepul}', [PengepulController::class, 'destroy'])->name('pengepul.delete');
 		});
-
-
 		Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	});
 });
